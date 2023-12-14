@@ -41,6 +41,10 @@ jobs:
 
       - if: steps.check_changes.outputs.changes_exist == 'false'
         run: |
+          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - if: steps.check_changes.outputs.changes_exist == 'false'
+        run: |
           tar --exclude .git --exclude .github --exclude "libquery_engine-*.so.node" -czf ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz .
 
       - if: steps.check_changes.outputs.changes_exist == 'false'
