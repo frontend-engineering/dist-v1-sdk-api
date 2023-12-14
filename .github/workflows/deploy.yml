@@ -1,0 +1,69 @@
+name: Deploy
+on:
+  push:
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - run: |
+          git diff-tree --no-commit-id --name-only -r HEAD~1 HEAD  > changed_files.txt
+          cat changed_files.txt
+
+      - run: |
+          grep -E 'schema.prisma|pnpm-lock.yaml' changed_files.txt > filtered_files.txt || true
+          cat filtered_files.txt
+
+      - id: check_changes
+        run: |
+          cat filtered_files.txt
+          if [[ -s "filtered_files.txt" ]]; then
+            echo "::set-output name=changes_exist::true"
+          else
+            echo "::set-output name=changes_exist::false"
+          fi
+
+      - id: my_vars
+        run: |
+          echo "::set-output name=tar_name::$(date +'%Y%m%dT%H%M%S')-$(echo $GITHUB_SHA | cut -c 1-7)"
+
+      - if: steps.check_changes.outputs.changes_exist == 'false'
+        run: |
+          echo "${{ secrets.SERVER_KEY }}" > ${{ runner.temp }}/private_key.pem
+          chmod 600 ${{ runner.temp }}/private_key.pem
+          mkdir ~/.ssh
+          touch ~/.ssh/known_hosts
+          ssh-keygen -y -f ${{ runner.temp }}/private_key.pem > ${{ runner.temp }}/private_key.pub
+          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - if: steps.check_changes.outputs.changes_exist == 'false'
+        run: |
+          tar --exclude .git --exclude .github --exclude "libquery_engine-*.so.node" -czf ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz .
+
+      - if: steps.check_changes.outputs.changes_exist == 'false'
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.my_vars.outputs.tar_name }}
+          path: ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz
+
+      - if: steps.check_changes.outputs.changes_exist == 'false'
+        run: |
+          scp -i ${{ runner.temp }}/private_key.pem ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:~/chat/v1-sdk-api/
+
+      - if: steps.check_changes.outputs.changes_exist == 'false'
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_KEY }}
+          script: |
+            cd ~/chat/v1-sdk-api/
+            mkdir ${{ steps.my_vars.outputs.tar_name }}
+            tar -xzvf ${{ steps.my_vars.outputs.tar_name }}.tar.gz -C ./${{ steps.my_vars.outputs.tar_name }}
+            cp ${{ steps.my_vars.outputs.tar_name }}/main.js release/main.js
+            cp ${{ steps.my_vars.outputs.tar_name }}/main.js.map release/main.js.map
+            touch release/${{ steps.my_vars.outputs.tar_name }}.txt
