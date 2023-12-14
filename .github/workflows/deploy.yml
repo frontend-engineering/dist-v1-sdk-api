@@ -56,12 +56,12 @@ jobs:
 
       - if: steps.check_changes.outputs.changes_exist == 'false'
         run: |
-          scp -i ${{ runner.temp }}/private_key.pem ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:~/chat/v1-sdk-api/
+          scp -i ${{ runner.temp }}/private_key.pem ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz ${{ secrets.SERVER_USER }}@172.17.118.32:~/chat/v1-sdk-api/
 
       - if: steps.check_changes.outputs.changes_exist == 'false'
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.SERVER_HOST }}
+          host: 172.17.118.32
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_KEY }}
           script: |
