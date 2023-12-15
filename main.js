@@ -722,7 +722,7 @@ const common_1 = __webpack_require__("@nestjs/common");
 const core_1 = __webpack_require__("@nestjs/core");
 const sdk_module_1 = __webpack_require__("./src/sdk/sdk.module.ts");
 const transform_interceptor_1 = __webpack_require__("./src/sdk/transform.interceptor.ts");
-exports.globalPrefix = 'api';
+exports.globalPrefix = 'v1-sdk-api';
 function setupNestApp(app) {
     app.setGlobalPrefix(exports.globalPrefix);
     app.useGlobalInterceptors(new transform_interceptor_1.TransformInterceptor());
@@ -732,7 +732,7 @@ function bootstrap() {
     return tslib_1.__awaiter(this, void 0, void 0, function* () {
         const app = yield core_1.NestFactory.create(sdk_module_1.SdkModule, { cors: true });
         setupNestApp(app);
-        const port = process.env.PORT || 3333;
+        const port = process.env.PORT || 3341;
         app.enableCors();
         yield app.listen(port);
         common_1.Logger.log(`🚀 Application is running on: http://localhost:${port}/${exports.globalPrefix}`);

@@ -1,8 +1,7 @@
 {
   "name": "@flowda-projects/v1-sdk-api",
   "scripts": {
-    "serve": "../../../node_modules/.bin/dotenv -e .env.dev -- ../../../node_modules/.bin/nx serve sdk-api",
-    "serve:dev2": "../../../node_modules/.bin/dotenv -e .env.dev2 -- ../../../node_modules/.bin/nx serve sdk-api"
+    "serve": "../../../node_modules/.bin/dotenv -e .env.dev -- ../../../node_modules/.bin/nx serve v1-sdk-api"
   },
   "dependencies": {
     "@anatine/zod-mock": "^3.1.1",
@@ -11,6 +10,7 @@
     "@golevelup/ts-jest": "^0.3.4",
     "@nestjs/common": "^9.0.0",
     "@nestjs/core": "^9.0.0",
+    "@nestjs/microservices": "^10.2.10",
     "@nestjs/passport": "^9.0.0",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/swagger": "^6.1.3",
