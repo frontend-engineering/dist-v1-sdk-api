@@ -722,7 +722,7 @@ const common_1 = __webpack_require__("@nestjs/common");
 const core_1 = __webpack_require__("@nestjs/core");
 const sdk_module_1 = __webpack_require__("./src/sdk/sdk.module.ts");
 const transform_interceptor_1 = __webpack_require__("./src/sdk/transform.interceptor.ts");
-exports.globalPrefix = 'api';
+exports.globalPrefix = 'v1-sdk-api';
 function setupNestApp(app) {
     app.setGlobalPrefix(exports.globalPrefix);
     app.useGlobalInterceptors(new transform_interceptor_1.TransformInterceptor());
