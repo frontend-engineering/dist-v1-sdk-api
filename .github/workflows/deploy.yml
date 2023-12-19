@@ -31,6 +31,14 @@ jobs:
         run: |
           echo "::set-output name=tar_name::$(date +'%Y%m%dT%H%M%S')-$(echo $GITHUB_SHA | cut -c 1-7)"
 
+      - run: |
+          tar --exclude .git --exclude .github --exclude "libquery_engine-*.so.node" -czf ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz .
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.my_vars.outputs.tar_name }}
+          path: ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz
+
       - if: steps.check_changes.outputs.changes_exist == 'false'
         run: |
           echo "${{ secrets.SERVER_KEY }}" > ${{ runner.temp }}/private_key.pem
@@ -39,16 +47,6 @@ jobs:
           touch ~/.ssh/known_hosts
           ssh-keygen -y -f ${{ runner.temp }}/private_key.pem > ${{ runner.temp }}/private_key.pub
           ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
-
-      - if: steps.check_changes.outputs.changes_exist == 'false'
-        run: |
-          tar --exclude .git --exclude .github --exclude "libquery_engine-*.so.node" -czf ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz .
-
-      - if: steps.check_changes.outputs.changes_exist == 'false'
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ steps.my_vars.outputs.tar_name }}
-          path: ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz
 
       - if: steps.check_changes.outputs.changes_exist == 'false'
         run: |
