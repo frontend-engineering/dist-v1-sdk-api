@@ -39,8 +39,7 @@ jobs:
           name: ${{ steps.my_vars.outputs.tar_name }}
           path: ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz
 
-      - if: steps.check_changes.outputs.changes_exist == 'false'
-        run: |
+      - run: |
           echo "${{ secrets.SERVER_KEY }}" > ${{ runner.temp }}/private_key.pem
           chmod 600 ${{ runner.temp }}/private_key.pem
           mkdir ~/.ssh
@@ -48,12 +47,10 @@ jobs:
           ssh-keygen -y -f ${{ runner.temp }}/private_key.pem > ${{ runner.temp }}/private_key.pub
           ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
-      - if: steps.check_changes.outputs.changes_exist == 'false'
-        run: |
+      - run: |
           scp -i ${{ runner.temp }}/private_key.pem ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/root/chat/v1-sdk-api
 
-      - if: steps.check_changes.outputs.changes_exist == 'false'
-        uses: appleboy/ssh-action@master
+      - uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
@@ -65,3 +62,13 @@ jobs:
             cp ${{ steps.my_vars.outputs.tar_name }}/main.js release/main.js
             cp ${{ steps.my_vars.outputs.tar_name }}/main.js.map release/main.js.map
             touch release/${{ steps.my_vars.outputs.tar_name }}.txt
+
+      - if: steps.check_changes.outputs.changes_exist == 'true'
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_KEY }}
+          script: |
+            cd /root/chat/v1-sdk-api/release
+            pnpm install
