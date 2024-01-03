@@ -15,7 +15,7 @@ jobs:
           cat changed_files.txt
 
       - run: |
-          grep -E 'schema.prisma|pnpm-lock.yaml' changed_files.txt > filtered_files.txt || true
+          grep -E 'schema.prisma|pnpm-lock.yaml|deploy.yml' changed_files.txt > filtered_files.txt || true
           cat filtered_files.txt
 
       - id: check_changes
@@ -39,8 +39,7 @@ jobs:
           name: ${{ steps.my_vars.outputs.tar_name }}
           path: ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz
 
-      - if: steps.check_changes.outputs.changes_exist == 'false'
-        run: |
+      - run: |
           echo "${{ secrets.SERVER_KEY }}" > ${{ runner.temp }}/private_key.pem
           chmod 600 ${{ runner.temp }}/private_key.pem
           mkdir ~/.ssh
@@ -48,12 +47,26 @@ jobs:
           ssh-keygen -y -f ${{ runner.temp }}/private_key.pem > ${{ runner.temp }}/private_key.pub
           ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
-      - if: steps.check_changes.outputs.changes_exist == 'false'
-        run: |
+      - run: |
           scp -i ${{ runner.temp }}/private_key.pem ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/root/chat/v1-sdk-api
 
-      - if: steps.check_changes.outputs.changes_exist == 'false'
+      - if: steps.check_changes.outputs.changes_exist == 'true'
         uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_KEY }}
+          script: |
+            cd /root/chat/v1-sdk-api
+            cp ${{ steps.my_vars.outputs.tar_name }}/package.json release/package.json
+            cp ${{ steps.my_vars.outputs.tar_name }}/pnpm-lock.yml release/pnpm-lock.yml
+            cd release
+            pnpm install
+            cd -
+            cp -r ${{ steps.my_vars.outputs.tar_name }}/node_modules release/node_modules
+            touch release/${{ steps.my_vars.outputs.tar_name }}-pnpm-install.txt
+
+      - uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
@@ -65,3 +78,4 @@ jobs:
             cp ${{ steps.my_vars.outputs.tar_name }}/main.js release/main.js
             cp ${{ steps.my_vars.outputs.tar_name }}/main.js.map release/main.js.map
             touch release/${{ steps.my_vars.outputs.tar_name }}.txt
+            pm2 restart v1-sdk-api
