@@ -4418,7 +4418,7 @@ let CustomerAuthService = class CustomerAuthService extends authentication_servi
                 // 微信注册，只需要 name
                 customer = yield this.signup({
                     appId,
-                    name: data.unionid,
+                    name: data.unionid + appId,
                 });
                 const wxUser = yield this.wxLogin.getUser(data.openid, data.access_token);
                 const app = yield this.prisma.app.findUniqueOrThrow({ where: { id: appId } });

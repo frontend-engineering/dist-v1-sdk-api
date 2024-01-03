@@ -15,7 +15,7 @@ jobs:
           cat changed_files.txt
 
       - run: |
-          grep -E 'schema.prisma|pnpm-lock.yaml' changed_files.txt > filtered_files.txt || true
+          grep -E 'schema.prisma|pnpm-lock.yaml|deploy.yml' changed_files.txt > filtered_files.txt || true
           cat filtered_files.txt
 
       - id: check_changes
