@@ -50,6 +50,22 @@ jobs:
       - run: |
           scp -i ${{ runner.temp }}/private_key.pem ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/root/chat/v1-sdk-api
 
+      - if: steps.check_changes.outputs.changes_exist == 'true'
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_KEY }}
+          script: |
+            cd /root/chat/v1-sdk-api
+            cp ${{ steps.my_vars.outputs.tar_name }}/package.json release/package.json
+            cp ${{ steps.my_vars.outputs.tar_name }}/pnpm-lock.yml release/pnpm-lock.yml
+            cd release
+            pnpm install
+            cd -
+            cp -r ${{ steps.my_vars.outputs.tar_name }}/node_modules release/node_modules
+            touch release/${{ steps.my_vars.outputs.tar_name }}-pnpm-install.txt
+
       - uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -62,13 +78,4 @@ jobs:
             cp ${{ steps.my_vars.outputs.tar_name }}/main.js release/main.js
             cp ${{ steps.my_vars.outputs.tar_name }}/main.js.map release/main.js.map
             touch release/${{ steps.my_vars.outputs.tar_name }}.txt
-
-      - if: steps.check_changes.outputs.changes_exist == 'true'
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_KEY }}
-          script: |
-            cd /root/chat/v1-sdk-api/release
-            pnpm install
+            pm2 restart v1-sdk-api
