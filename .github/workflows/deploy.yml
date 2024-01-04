@@ -73,7 +73,7 @@ jobs:
             cd release
             pnpm install --registry=https://registry.npmmirror.com
             cd ..
-            cp -r ${{ steps.my_vars.outputs.tar_name }}/node_modules release/node_modules
+            cp -r ${{ steps.my_vars.outputs.tar_name }}/node_modules/@prisma release/node_modules
             touch release/${{ steps.my_vars.outputs.tar_name }}-pnpm-install.txt
 
       - uses: appleboy/ssh-action@master
