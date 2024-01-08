@@ -28,18 +28,21 @@ jobs:
           fi
 
       - id: my_vars
+        name: Set tar name
         run: |
           echo "::set-output name=tar_name::$(date +'%Y%m%dT%H%M%S')-$(echo $GITHUB_SHA | cut -c 1-7)"
 
-      - run: |
-          tar --exclude .git --exclude .github --exclude "libquery_engine-darwin.dylib.node" -czf ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz .
+      - name: Tar artifact
+        run: |
+          tar --exclude .git --exclude .github --exclude "libquery_engine-*.so.node" -czf ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz .
 
       - uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.my_vars.outputs.tar_name }}
           path: ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz
 
-      - run: |
+      - name: Set ssh
+        run: |
           echo "${{ secrets.SERVER_KEY }}" > ${{ runner.temp }}/private_key.pem
           chmod 600 ${{ runner.temp }}/private_key.pem
           mkdir ~/.ssh
@@ -47,42 +50,43 @@ jobs:
           ssh-keygen -y -f ${{ runner.temp }}/private_key.pem > ${{ runner.temp }}/private_key.pub
           ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
-      - run: |
+      - name: Scp to remote
+        run: |
           scp -i ${{ runner.temp }}/private_key.pem ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/root/chat/v1-sdk-api
 
       - uses: appleboy/ssh-action@master
+        name: Extract
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_KEY }}
           script: |
-            cd /root/chat/v1-sdk-api
-            mkdir ${{ steps.my_vars.outputs.tar_name }}
-            tar -xzvf ${{ steps.my_vars.outputs.tar_name }}.tar.gz -C ./${{ steps.my_vars.outputs.tar_name }}
+            mkdir /root/chat/v1-sdk-api/${{ steps.my_vars.outputs.tar_name }}
+            tar -xzvf /root/chat/v1-sdk-api/${{ steps.my_vars.outputs.tar_name }}.tar.gz -C /root/chat/v1-sdk-api/${{ steps.my_vars.outputs.tar_name }}
 
       - if: steps.check_changes.outputs.changes_exist == 'true'
+        name: Reinstall
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_KEY }}
           script: |
-            cd /root/chat/v1-sdk-api
-            cp ${{ steps.my_vars.outputs.tar_name }}/package.json release/package.json
-            cp ${{ steps.my_vars.outputs.tar_name }}/pnpm-lock.yml release/pnpm-lock.yml
-            cd release
-            pnpm install --registry=https://registry.npmmirror.com
-            cd ..
-            cp -r ${{ steps.my_vars.outputs.tar_name }}/node_modules/@prisma release/node_modules
-            touch release/${{ steps.my_vars.outputs.tar_name }}-pnpm-install.txt
+            cp /root/chat/v1-sdk-api/${{ steps.my_vars.outputs.tar_name }}/package.json /root/chat/v1-sdk-api/release/package.json
+            cp /root/chat/v1-sdk-api/${{ steps.my_vars.outputs.tar_name }}/pnpm-lock.yaml /root/chat/v1-sdk-api/release/pnpm-lock.yaml
+            cd /root/chat/v1-sdk-api/release; pnpm install --registry=https://registry.npmmirror.com
+            cp -r /root/chat/v1-sdk-api/${{ steps.my_vars.outputs.tar_name }}/node_modules/@prisma /root/chat/v1-sdk-api/release/node_modules
+            if [ -e "/root/chat/v1-sdk-api/release/node_modules/@prisma/client-cms_admin/libquery_engine-rhel-openssl-1.0.x.so.node" ]; then echo "File exists."; else wget -P /root/chat/v1-sdk-api/release/node_modules/@prisma/client-cms_admin/ https://common-1306445775.cos.ap-shanghai.myqcloud.com/libquery_engine/libquery_engine-rhel-openssl-1.0.x.so.node; fi
+            touch /root/chat/v1-sdk-api/release/${{ steps.my_vars.outputs.tar_name }}-pnpm-install.txt
 
       - uses: appleboy/ssh-action@master
+        name: Restart
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_KEY }}
           script: |
-            cd /root/chat/v1-sdk-api
-            cp ${{ steps.my_vars.outputs.tar_name }} release
-            touch release/${{ steps.my_vars.outputs.tar_name }}.txt
+            cp /root/chat/v1-sdk-api/${{ steps.my_vars.outputs.tar_name }}/main.js /root/chat/v1-sdk-api/release/main.js
+            cp /root/chat/v1-sdk-api/${{ steps.my_vars.outputs.tar_name }}/main.js.map /root/chat/v1-sdk-api/release/main.js.map
+            touch /root/chat/v1-sdk-api/release/${{ steps.my_vars.outputs.tar_name }}.txt
             pm2 restart v1-sdk-api
