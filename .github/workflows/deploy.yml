@@ -76,7 +76,7 @@ jobs:
             cp /root/chat/v1-sdk-api/${{ steps.my_vars.outputs.tar_name }}/pnpm-lock.yaml /root/chat/v1-sdk-api/release/pnpm-lock.yaml
             cd /root/chat/v1-sdk-api/release; pnpm install --registry=https://registry.npmmirror.com
             cp -r /root/chat/v1-sdk-api/${{ steps.my_vars.outputs.tar_name }}/node_modules/@prisma /root/chat/v1-sdk-api/release/node_modules
-            if [ -e "/root/chat/v1-sdk-api/release/node_modules/@prisma/client-cms_admin/libquery_engine-rhel-openssl-1.0.x.so.node" ]; then echo "File exists."; else wget -P /root/chat/v1-sdk-api/release/node_modules/@prisma/client-cms_admin/ https://common-1306445775.cos.ap-shanghai.myqcloud.com/libquery_engine/libquery_engine-rhel-openssl-1.0.x.so.node; fi
+            if [ -e "/root/chat/v1-sdk-api/release/node_modules/@prisma/client-v1-flowda/libquery_engine-rhel-openssl-1.0.x.so.node" ]; then echo "File exists."; else wget -P /root/chat/v1-sdk-api/release/node_modules/@prisma/client-v1-flowda/ https://common-1306445775.cos.ap-shanghai.myqcloud.com/libquery_engine/libquery_engine-rhel-openssl-1.0.x.so.node; fi
             touch /root/chat/v1-sdk-api/release/${{ steps.my_vars.outputs.tar_name }}-pnpm-install.txt
 
       - uses: appleboy/ssh-action@master
