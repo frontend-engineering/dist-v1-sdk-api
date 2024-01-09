@@ -158,6 +158,7 @@ exports.AppJwtAuthV4Guard = AppJwtAuthV4Guard;
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
+var AppJwtV4Strategy_1;
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppJwtV4Strategy = void 0;
@@ -166,7 +167,7 @@ const passport_1 = __webpack_require__("@nestjs/passport");
 const passport_jwt_1 = __webpack_require__("passport-jwt");
 const common_1 = __webpack_require__("@nestjs/common");
 const v1_flowda_services_1 = __webpack_require__("../../../libs/v1/flowda-services/src/index.ts");
-let AppJwtV4Strategy = class AppJwtV4Strategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy, 'appJwtV4') {
+let AppJwtV4Strategy = AppJwtV4Strategy_1 = class AppJwtV4Strategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy, 'appJwtV4') {
     constructor(service) {
         const at = passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken();
         super({
@@ -175,14 +176,17 @@ let AppJwtV4Strategy = class AppJwtV4Strategy extends (0, passport_1.PassportStr
             secretOrKey: service.getAccessTokenSecret(),
         });
         this.service = service;
+        this.logger = new common_1.Logger(AppJwtV4Strategy_1.name);
     }
     validate(payload) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.service.getUserV4(payload.uid);
+            this.logger.debug(`[validate]`);
+            const app = yield this.service.getUserV4(payload.uid);
+            return app;
         });
     }
 };
-AppJwtV4Strategy = tslib_1.__decorate([
+AppJwtV4Strategy = AppJwtV4Strategy_1 = tslib_1.__decorate([
     (0, common_1.Injectable)(),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_services_1.AppAuthService !== "undefined" && v1_flowda_services_1.AppAuthService) === "function" ? _a : Object])
 ], AppJwtV4Strategy);
@@ -3966,6 +3970,7 @@ let AppAuthService = class AppAuthService extends authentication_service_1.Authe
      */
     v4ConvertTo(tenant) {
         return {
+            id: tenant.id,
             name: tenant.name,
             displayName: tenant.name,
             description: tenant.name,
@@ -3973,6 +3978,7 @@ let AppAuthService = class AppAuthService extends authentication_service_1.Authe
     }
     getUserV4(userId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            this.logger.debug(`[getUserV4] userId ${userId}`);
             const tenant = yield this.flowdaTrpc.user.getTenant.query({
                 tid: Number(userId),
             });
@@ -4702,6 +4708,7 @@ let CustomerAuthService = class CustomerAuthService extends authentication_servi
     }
     wxValidateUser(code, appId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            this.logger.debug('invoke wxValidateUser');
             // appId valite
             if (!appId) {
                 throw new v1_flowda_types_1.AuthenticationError.InvalidAppId();
@@ -4740,6 +4747,7 @@ let CustomerAuthService = class CustomerAuthService extends authentication_servi
     }
     wxValidateUserV4(code, appId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            this.logger.debug(`invoke wxValidateUserV4, appId ${appId}`);
             // appId valite
             if (!appId) {
                 throw new v1_flowda_types_1.AuthenticationError.InvalidAppId();
@@ -4751,6 +4759,7 @@ let CustomerAuthService = class CustomerAuthService extends authentication_servi
                 tenantId: Number(appId),
             });
             let customer;
+            let weixinProfile;
             if (!findCustomerRet) {
                 // 如果不存在则创建
                 // 微信注册，只需要 name
@@ -4761,7 +4770,7 @@ let CustomerAuthService = class CustomerAuthService extends authentication_servi
                 const wxUser = yield this.wxLogin.getUser(data.openid, data.access_token);
                 // const app = await this.prisma.app.findUniqueOrThrow({ where: { id: appId } })
                 // 创建微信信息
-                yield this.prisma.weixinProfile.create({
+                weixinProfile = yield this.prisma.weixinProfile.create({
                     data: {
                         // tenantId: '不填写数据库默认值',
                         unionid: data.unionid,
@@ -4769,14 +4778,28 @@ let CustomerAuthService = class CustomerAuthService extends authentication_servi
                         headimgurl: wxUser.headimgurl,
                         nickname: wxUser.nickname,
                         sex: wxUser.sex,
-                        customerId: String(customer.id),
+                        customerId: null,
                     },
                 });
             }
             else {
                 customer = findCustomerRet;
+                weixinProfile = yield this.prisma.weixinProfile.findFirst({
+                    where: {
+                        unionid: data.unionid,
+                    },
+                });
             }
-            return this.validateUserReturnTokens('name', appId, customer.username);
+            return {
+                at: '',
+                rt: '',
+                user: Object.assign(customer, {
+                    id: String(customer.id),
+                    name: customer.username,
+                    weixinProfile,
+                }),
+                expireAt: 0,
+            };
         });
     }
     // 匿名登录 <- name: 匿名token
@@ -7029,7 +7052,7 @@ let AppExceptionFilter = AppExceptionFilter_1 = class AppExceptionFilter {
             message = rt.message;
             errorExtra = rt.extra;
             status = common_1.HttpStatus.OK;
-            // errorStack = exception.stack
+            errorStack = exception.stack;
         }
         else if (exception instanceof Error) {
             // 如果是一般 Error，提取 message，errorCode 继续 undef
@@ -7045,14 +7068,14 @@ let AppExceptionFilter = AppExceptionFilter_1 = class AppExceptionFilter {
             if (typeof res === 'object' && Array.isArray(res.message)) {
                 message = res.message.join(',');
             }
-            // errorStack = exception.stack
+            errorStack = exception.stack;
         }
         // 如果是权限相关的（jwt access token 过期）
         if (exception instanceof common_1.UnauthorizedException) {
             status = exception.getStatus();
             errorCode = status;
             message = exception.message;
-            // errorStack = exception.stack
+            errorStack = exception.stack;
         }
         if (exception instanceof nestjs_zod_1.ZodValidationException) {
             status = exception.getStatus();
@@ -7071,7 +7094,7 @@ let AppExceptionFilter = AppExceptionFilter_1 = class AppExceptionFilter {
             timestamp: new Date().toISOString(),
             message: message,
             extraInfo: errorExtra,
-            // errorStack: errorStack,
+            errorStack: errorStack,
         });
         response.status(status).json({
             message: message,
@@ -7450,8 +7473,8 @@ exports.zt = __webpack_require__("../../../libs/v1/prisma-flowda/src/zod/index.t
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.WeixinProfileWithRelationsSchema = exports.WeixinProfileSchema = exports.CustomerWithRelationsSchema = exports.CustomerSchema = exports.PayWithRelationsSchema = exports.PaySchema = exports.ProductWithRelationsSchema = exports.ProductSchema = exports.ArticleWithRelationsSchema = exports.ArticleSchema = exports.JYFreeCountWithRelationsSchema = exports.JYFreeCountSchema = exports.JYProfileWithRelationsSchema = exports.JYProfileSchema = exports.QuestionSchema = exports.TenantPreSignupSchema = exports.TenantSchema = exports.AppWithRelationsSchema = exports.AppSchema = exports.ProductTypeSchema = exports.PayStatusSchema = exports.OrderStatusSchema = exports.WeixinProfileScalarFieldEnumSchema = exports.TransactionIsolationLevelSchema = exports.TenantScalarFieldEnumSchema = exports.TenantPreSignupScalarFieldEnumSchema = exports.SortOrderSchema = exports.QuestionScalarFieldEnumSchema = exports.ProfileScalarFieldEnumSchema = exports.ProductSnapshotScalarFieldEnumSchema = exports.ProductScalarFieldEnumSchema = exports.PayScalarFieldEnumSchema = exports.OrderScalarFieldEnumSchema = exports.NullableJsonNullValueInputSchema = exports.LegacyProfileScalarFieldEnumSchema = exports.JsonNullValueFilterSchema = exports.JYProfileScalarFieldEnumSchema = exports.JYFreeCountScalarFieldEnumSchema = exports.CustomerScalarFieldEnumSchema = exports.CustomerPreSignupScalarFieldEnumSchema = exports.ArticleScalarFieldEnumSchema = exports.AppScalarFieldEnumSchema = exports.isValidDecimalInput = exports.DECIMAL_STRING_REGEX = exports.DecimalJSLikeListSchema = exports.DecimalJSLikeSchema = exports.InputJsonValue = exports.NullableJsonValue = exports.JsonValue = exports.transformJsonNull = void 0;
-exports.OrderWithRelationsSchema = exports.OrderSchema = exports.ProductSnapshotWithRelationsSchema = exports.ProductSnapshotSchema = exports.LegacyProfileWithRelationsSchema = exports.LegacyProfileSchema = exports.customerPreSignupSchema = exports.ProfileWithRelationsSchema = exports.ProfileSchema = void 0;
+exports.WeixinProfileSchema = exports.CustomerWithRelationsSchema = exports.CustomerSchema = exports.PayWithRelationsSchema = exports.PaySchema = exports.ProductWithRelationsSchema = exports.ProductSchema = exports.ArticleWithRelationsSchema = exports.ArticleSchema = exports.JYFreeCountWithRelationsSchema = exports.JYFreeCountSchema = exports.JYProfileWithRelationsSchema = exports.JYProfileSchema = exports.QuestionSchema = exports.TenantPreSignupSchema = exports.TenantSchema = exports.AppWithRelationsSchema = exports.AppSchema = exports.ProductTypeSchema = exports.PayStatusSchema = exports.OrderStatusSchema = exports.JsonNullValueFilterSchema = exports.NullsOrderSchema = exports.NullableJsonNullValueInputSchema = exports.SortOrderSchema = exports.OrderScalarFieldEnumSchema = exports.ProductSnapshotScalarFieldEnumSchema = exports.LegacyProfileScalarFieldEnumSchema = exports.CustomerPreSignupScalarFieldEnumSchema = exports.ProfileScalarFieldEnumSchema = exports.WeixinProfileScalarFieldEnumSchema = exports.CustomerScalarFieldEnumSchema = exports.PayScalarFieldEnumSchema = exports.ProductScalarFieldEnumSchema = exports.ArticleScalarFieldEnumSchema = exports.JYFreeCountScalarFieldEnumSchema = exports.JYProfileScalarFieldEnumSchema = exports.QuestionScalarFieldEnumSchema = exports.TenantPreSignupScalarFieldEnumSchema = exports.TenantScalarFieldEnumSchema = exports.AppScalarFieldEnumSchema = exports.TransactionIsolationLevelSchema = exports.isValidDecimalInput = exports.DECIMAL_STRING_REGEX = exports.DecimalJSLikeListSchema = exports.DecimalJSLikeSchema = exports.InputJsonValue = exports.NullableJsonValue = exports.JsonValue = exports.transformJsonNull = void 0;
+exports.OrderWithRelationsSchema = exports.OrderSchema = exports.ProductSnapshotWithRelationsSchema = exports.ProductSnapshotSchema = exports.LegacyProfileWithRelationsSchema = exports.LegacyProfileSchema = exports.customerPreSignupSchema = exports.ProfileWithRelationsSchema = exports.ProfileSchema = exports.WeixinProfileWithRelationsSchema = void 0;
 const zod_1 = __webpack_require__("zod");
 const client_v1_flowda_1 = __webpack_require__("@prisma/client-v1-flowda");
 const transformJsonNull = (v) => {
@@ -7496,26 +7519,27 @@ exports.isValidDecimalInput = isValidDecimalInput;
 /////////////////////////////////////////
 // ENUMS
 /////////////////////////////////////////
-exports.AppScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'name', 'hashedAppToken', 'hashedPassword', 'hashedRefreshToken', 'recoveryCode', 'recoveryToken', 'displayName', 'description', 'isDeleted', 'tenantId']);
-exports.ArticleScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'link', 'source', 'title', 'image', 'excerpt', 'profileId']);
-exports.CustomerPreSignupScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'email', 'verifyCode', 'appId', 'tenantId']);
-exports.CustomerScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'name', 'appId', 'email', 'hashedPassword', 'hashedRefreshToken', 'recoveryCode', 'recoveryToken', 'isDeleted', 'tenantId']);
-exports.JYFreeCountScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'cycle', 'count', 'profileId']);
-exports.JYProfileScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'userId']);
-exports.JsonNullValueFilterSchema = zod_1.z.enum(['DbNull', 'JsonNull', 'AnyNull',]);
-exports.LegacyProfileScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'customerId', 'license', 'refreshToken']);
-exports.NullableJsonNullValueInputSchema = zod_1.z.enum(['DbNull', 'JsonNull',]).transform((v) => (0, exports.transformJsonNull)(v));
-exports.OrderScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'serial', 'status', 'customerId', 'appId', 'isDeleted', 'tenantId']);
-exports.PayScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'status', 'orderId', 'transactionId', 'tenantId']);
-exports.ProductScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'name', 'price', 'productType', 'plan', 'amount', 'extendedDescriptionData', 'fileSize', 'storeDuration', 'hasAds', 'tecSupport', 'validityPeriod', 'appId', 'isDeleted', 'tenantId', 'restricted']);
-exports.ProductSnapshotScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'snapshotPrice', 'orderId', 'productId', 'tenantId']);
-exports.ProfileScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'customerId', 'productType', 'plan', 'amount', 'expireAt', 'tenantId']);
-exports.QuestionScalarFieldEnumSchema = zod_1.z.enum(['id', 'uid', 'question', 'answer', 'success', 'createdAt', 'updatedAt']);
-exports.SortOrderSchema = zod_1.z.enum(['asc', 'desc']);
-exports.TenantPreSignupScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'email', 'verifyCode']);
-exports.TenantScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'name', 'email', 'hashedPassword', 'hashedRefreshToken', 'recoveryCode', 'recoveryToken', 'role']);
 exports.TransactionIsolationLevelSchema = zod_1.z.enum(['ReadUncommitted', 'ReadCommitted', 'RepeatableRead', 'Serializable']);
+exports.AppScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'name', 'hashedAppToken', 'hashedPassword', 'hashedRefreshToken', 'recoveryCode', 'recoveryToken', 'displayName', 'description', 'isDeleted', 'tenantId']);
+exports.TenantScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'name', 'email', 'hashedPassword', 'hashedRefreshToken', 'recoveryCode', 'recoveryToken', 'role']);
+exports.TenantPreSignupScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'email', 'verifyCode']);
+exports.QuestionScalarFieldEnumSchema = zod_1.z.enum(['id', 'uid', 'question', 'answer', 'success', 'createdAt', 'updatedAt']);
+exports.JYProfileScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'userId']);
+exports.JYFreeCountScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'cycle', 'count', 'profileId']);
+exports.ArticleScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'link', 'source', 'title', 'image', 'excerpt', 'profileId']);
+exports.ProductScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'name', 'price', 'productType', 'plan', 'amount', 'extendedDescriptionData', 'fileSize', 'storeDuration', 'hasAds', 'tecSupport', 'validityPeriod', 'appId', 'isDeleted', 'tenantId', 'restricted']);
+exports.PayScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'status', 'orderId', 'transactionId', 'tenantId']);
+exports.CustomerScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'name', 'appId', 'email', 'hashedPassword', 'hashedRefreshToken', 'recoveryCode', 'recoveryToken', 'isDeleted', 'tenantId']);
 exports.WeixinProfileScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'unionid', 'loginOpenid', 'headimgurl', 'nickname', 'sex', 'customerId', 'tenantId']);
+exports.ProfileScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'customerId', 'productType', 'plan', 'amount', 'expireAt', 'tenantId']);
+exports.CustomerPreSignupScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'email', 'verifyCode', 'appId', 'tenantId']);
+exports.LegacyProfileScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'customerId', 'license', 'refreshToken']);
+exports.ProductSnapshotScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'snapshotPrice', 'orderId', 'productId', 'tenantId']);
+exports.OrderScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'serial', 'status', 'customerId', 'appId', 'isDeleted', 'tenantId']);
+exports.SortOrderSchema = zod_1.z.enum(['asc', 'desc']);
+exports.NullableJsonNullValueInputSchema = zod_1.z.enum(['DbNull', 'JsonNull',]).transform((v) => (0, exports.transformJsonNull)(v));
+exports.NullsOrderSchema = zod_1.z.enum(['first', 'last']);
+exports.JsonNullValueFilterSchema = zod_1.z.enum(['DbNull', 'JsonNull', 'AnyNull',]);
 exports.OrderStatusSchema = zod_1.z.enum(['INITIALIZED', 'PAY_ASSOCIATED', 'FREE_DEAL', 'CANCELED']);
 exports.PayStatusSchema = zod_1.z.enum(['UNPAIED', 'PAIED', 'REFUND']);
 exports.ProductTypeSchema = zod_1.z.enum(['AMOUNT', 'PLAN']);
@@ -7707,11 +7731,11 @@ exports.WeixinProfileSchema = zod_1.z.object({
     headimgurl: zod_1.z.string(),
     nickname: zod_1.z.string(),
     sex: zod_1.z.number().int(),
-    customerId: zod_1.z.string(),
+    customerId: zod_1.z.string().nullable(),
     tenantId: zod_1.z.string(),
 }).openapi({ "primary_key": "id", "display_name": "微信用户信息", "display_column": "nickname" });
 exports.WeixinProfileWithRelationsSchema = exports.WeixinProfileSchema.merge(zod_1.z.object({
-    customer: zod_1.z.lazy(() => exports.CustomerWithRelationsSchema),
+    customer: zod_1.z.lazy(() => exports.CustomerWithRelationsSchema).nullable(),
 }));
 /////////////////////////////////////////
 // PROFILE SCHEMA
