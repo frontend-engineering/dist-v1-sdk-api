@@ -1947,7 +1947,7 @@ let PrismaSchemaService = PrismaSchemaService_1 = class PrismaSchemaService {
     }
     toFindParam(pathname, query) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            if (!query.fields) {
+            if (!query['fields']) {
                 throw new Error('No query fields');
             }
             this.logger.debug(`pathname: ${pathname}, query: ${JSON.stringify(query, null, 2)}`);
@@ -1959,11 +1959,11 @@ let PrismaSchemaService = PrismaSchemaService_1 = class PrismaSchemaService {
             const theResourceSchema = schemaCache[resourceSchema];
             let action;
             let param = {};
-            const queryFields = query.fields;
+            const queryFields = query['fields'];
             const fields = this.toPrismaSelect(queryFields[resource]);
             const include = {};
-            if (typeof query.include === 'string' && query.include !== '') {
-                query.include.split(',').forEach((inc) => {
+            if (typeof query['include'] === 'string' && query['include'] !== '') {
+                query['include'].split(',').forEach((inc) => {
                     // this.logger.log(`[toFindParam] parse include ${inc}`)
                     const refSelect = this.getRefSelect(schemaCache, theResourceSchema, inc);
                     const selectRet = this.toPrismaSelect(queryFields[inc]);
@@ -1988,8 +1988,8 @@ let PrismaSchemaService = PrismaSchemaService_1 = class PrismaSchemaService {
                 const filter = this.convertQueryToPrismaFilter(schemaCache, theResourceSchema, query);
                 const orderBy = this.convertToOrderBy(query);
                 action = 'findMany';
-                const skip = query.current ? (_.toNumber(query.current) - 1) * _.toNumber(query.pageSize) : undefined;
-                const take = query.pageSize ? _.toNumber(query.pageSize) : undefined;
+                const skip = query['current'] ? (_.toNumber(query['current']) - 1) * _.toNumber(query['pageSize']) : undefined;
+                const take = query['pageSize'] ? _.toNumber(query['pageSize']) : undefined;
                 if (parsedPath.length > 1) {
                     // 情况1：根据前一个 resource id 搜索 list
                     const pResource = parsedPath[parsedPath.length - 2];
