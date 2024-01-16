@@ -1956,7 +1956,7 @@ let PrismaSchemaService = PrismaSchemaService_1 = class PrismaSchemaService {
             // if (!query['fields']) {
             //   throw new Error('No query fields')
             // }
-            this.logger.debug(`pathname: ${pathname}, query: ${JSON.stringify(query, null, 2)}`);
+            this.logger.debug(`[toFindParam] pathname: ${pathname}, query: ${JSON.stringify(query, null, 2)}`);
             const parsedPath = (0, matchPath_1.matchPath)(pathname);
             if (parsedPath.length === 0)
                 return Promise.resolve({});
@@ -1966,7 +1966,7 @@ let PrismaSchemaService = PrismaSchemaService_1 = class PrismaSchemaService {
             let action;
             let param = {};
             const queryFields = query['fields'];
-            const fields = this.toPrismaSelect(queryFields[resource], theResourceSchema);
+            const fields = this.toPrismaSelect(queryFields && queryFields[resource], theResourceSchema);
             const include = {};
             if (typeof query['include'] === 'string' && query['include'] !== '') {
                 query['include'].split(',').forEach((inc) => {
@@ -2028,7 +2028,7 @@ let PrismaSchemaService = PrismaSchemaService_1 = class PrismaSchemaService {
                 param,
                 resource,
             };
-            this.logger.debug(JSON.stringify(ret));
+            this.logger.debug(`[toFindParam] ret ${JSON.stringify(ret)}`);
             return ret;
         });
     }
