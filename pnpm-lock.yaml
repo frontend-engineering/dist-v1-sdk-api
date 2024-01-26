@@ -15,6 +15,7 @@ importers:
       '@nestjs/testing': ^9.0.0
       '@trpc/client': ^10.44.1
       '@trpc/server': ^10.44.1
+      '@upstash/redis': 1.18.0
       axios: 1.1.0
       bcrypt: ^5.1.0
       cache-manager: ^5.2.4
@@ -41,6 +42,7 @@ importers:
       passport-custom: ^1.1.1
       passport-jwt: ^4.0.1
       passport-local: ^1.0.0
+      pinyin-pro: ^3.19.3
       pluralize: ^8.0.0
       qs: ^6.11.2
       radash: ^11.0.0
@@ -64,6 +66,7 @@ importers:
       '@nestjs/testing': 9.2.0_3jiwpo56qab566j5kwfezyelg4
       '@trpc/client': 10.44.1_@trpc+server@10.44.1
       '@trpc/server': 10.44.1
+      '@upstash/redis': 1.18.0
       axios: 1.1.0
       bcrypt: 5.1.0
       cache-manager: 5.2.4
@@ -90,6 +93,7 @@ importers:
       passport-custom: 1.1.1
       passport-jwt: 4.0.1
       passport-local: 1.0.0
+      pinyin-pro: 3.19.3
       pluralize: 8.0.0
       qs: 6.11.2
       radash: 11.0.0
@@ -359,6 +363,14 @@ packages:
       '@ucast/core': 1.10.1
       '@ucast/js': 3.0.2
       '@ucast/mongo': 2.4.2
+    dev: false
+
+  /@upstash/redis/1.18.0:
+    resolution: {integrity: sha512-BBYz0X5EghFttYIk0vePW3/clQoAfxmPxwqc3UXem3Qp9iGFRwLN/HKvxuJQxkt18RyNPQ3fN4Eg0MG4lyu7Hw==}
+    dependencies:
+      isomorphic-fetch: 3.0.0
+    transitivePeerDependencies:
+      - encoding
     dev: false
 
   /abbrev/1.1.1:
@@ -1495,6 +1507,15 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: false
 
+  /isomorphic-fetch/3.0.0:
+    resolution: {integrity: sha512-qvUtwJ3j6qwsF3jLxkZ72qCgjMysPzDfeV240JHiGZsANBYd+EEuu35v7dfrJ9Up0Ak07D7GGSkGhCHTqg/5wA==}
+    dependencies:
+      node-fetch: 2.7.0
+      whatwg-fetch: 3.6.2
+    transitivePeerDependencies:
+      - encoding
+    dev: false
+
   /isstream/0.1.2:
     resolution: {integrity: sha512-Yljz7ffyPbrLpLngrMtZ7NduUgVvi6wG9RJ9IUcyCd59YQ911PBJphODUcbOVbqYfxe1wuYf/LJ8PauMRwsM/g==}
     dev: false
@@ -2108,6 +2129,10 @@ packages:
 
   /performance-now/2.1.0:
     resolution: {integrity: sha512-7EAHlyLHI56VEIdK57uwHdHKIaAGbnXPiw0yWbarQZOKaKpvUIgW0jWRVLiatnM+XXlSwsanIBH/hzGMJulMow==}
+    dev: false
+
+  /pinyin-pro/3.19.3:
+    resolution: {integrity: sha512-tIBL4ibq3P+MFbSwOTTi42Xf6jau726swgKqEmSkkiZiE1iUMhQdguR9aavLt9nqnRDpcBSIanNV8tPuKPSmvw==}
     dev: false
 
   /pkg-up/3.1.0:
@@ -2761,6 +2786,10 @@ packages:
       superagent: 6.1.0
     transitivePeerDependencies:
       - supports-color
+    dev: false
+
+  /whatwg-fetch/3.6.2:
+    resolution: {integrity: sha512-bJlen0FcuU/0EMLrdbJ7zOnW6ITZLrZMIarMUVmdKtsGvZna8vxKYaexICWPfZ8qwf9fzNq+UEIZrnSaApt6RA==}
     dev: false
 
   /whatwg-url/5.0.0:
