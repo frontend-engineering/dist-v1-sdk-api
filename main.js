@@ -339,6 +339,7 @@ const fwhLoginSimple_guard_1 = __webpack_require__("./src/customer/fwhLoginSimpl
 const customerAppCombinedAuth_guard_1 = __webpack_require__("./src/customer/customerAppCombinedAuth.guard.ts");
 const appJwtAuthV4_guard_1 = __webpack_require__("./src/app/appJwtAuthV4.guard.ts");
 const customerWeiXinAuthV4_guard_1 = __webpack_require__("./src/customer/customerWeiXinAuthV4.guard.ts");
+const customerAppCombinedAuthV4_guard_1 = __webpack_require__("./src/customer/customerAppCombinedAuthV4.guard.ts");
 let CustomerController = class CustomerController {
     constructor(customerAuth, customerTx) {
         this.customerAuth = customerAuth;
@@ -362,6 +363,11 @@ let CustomerController = class CustomerController {
     }
     login(req) {
         return req.user;
+    }
+    loginV4(req) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return req.user;
+        });
     }
     refreshToken(rt) {
         return this.customerAuth.refreshToken(rt);
@@ -465,7 +471,7 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", void 0)
 ], CustomerController.prototype, "signup", null);
 tslib_1.__decorate([
-    (0, common_1.Version)(common_1.VERSION_NEUTRAL),
+    (0, common_1.Version)([common_1.VERSION_NEUTRAL, '1']),
     (0, common_1.UseGuards)(appJwtAuth_guard_1.AppJwtAuthGuard, customerAppCombinedAuth_guard_1.CustomerAppCombinedAuthGuard),
     (0, common_1.Post)('login'),
     (0, common_1.HttpCode)(200),
@@ -474,6 +480,15 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", [Object]),
     tslib_1.__metadata("design:returntype", void 0)
 ], CustomerController.prototype, "login", null);
+tslib_1.__decorate([
+    (0, common_1.Version)('4'),
+    (0, common_1.UseGuards)(appJwtAuthV4_guard_1.AppJwtAuthV4Guard, customerAppCombinedAuthV4_guard_1.CustomerAppCombinedAuthV4Guard),
+    (0, common_1.Post)('login'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], CustomerController.prototype, "loginV4", null);
 tslib_1.__decorate([
     (0, common_1.Version)(common_1.VERSION_NEUTRAL),
     (0, common_1.Post)('refreshToken'),
@@ -636,6 +651,67 @@ exports.CustomerAppCombinedAuthGuard = CustomerAppCombinedAuthGuard;
 exports.CustomerAppCombinedAuthGuard = CustomerAppCombinedAuthGuard = tslib_1.__decorate([
     (0, common_1.Injectable)()
 ], CustomerAppCombinedAuthGuard);
+
+
+/***/ }),
+
+/***/ "./src/customer/customerAppCombinedAuthV4.guard.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CustomerAppCombinedAuthV4Guard = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const common_1 = __webpack_require__("@nestjs/common");
+const passport_1 = __webpack_require__("@nestjs/passport");
+let CustomerAppCombinedAuthV4Guard = class CustomerAppCombinedAuthV4Guard extends (0, passport_1.AuthGuard)('customerAppCombinedV4') {
+};
+exports.CustomerAppCombinedAuthV4Guard = CustomerAppCombinedAuthV4Guard;
+exports.CustomerAppCombinedAuthV4Guard = CustomerAppCombinedAuthV4Guard = tslib_1.__decorate([
+    (0, common_1.Injectable)()
+], CustomerAppCombinedAuthV4Guard);
+
+
+/***/ }),
+
+/***/ "./src/customer/customerAppCombinedV4.strategy.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+var CustomerAppCombinedV4Strategy_1;
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CustomerAppCombinedV4Strategy = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const passport_1 = __webpack_require__("@nestjs/passport");
+const passport_custom_1 = __webpack_require__("passport-custom");
+const common_1 = __webpack_require__("@nestjs/common");
+const v1_flowda_services_1 = __webpack_require__("../../../libs/v1/flowda-services/src/index.ts");
+let CustomerAppCombinedV4Strategy = CustomerAppCombinedV4Strategy_1 = class CustomerAppCombinedV4Strategy extends (0, passport_1.PassportStrategy)(passport_custom_1.Strategy, 'customerAppCombinedV4') {
+    constructor(customerAuth) {
+        super();
+        this.customerAuth = customerAuth;
+        this.logger = new common_1.Logger(CustomerAppCombinedV4Strategy_1.name);
+    }
+    validate(request) {
+        var _a;
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            this.logger.log('Customer App Combined Strategy guard v4:', (_a = request.body) === null || _a === void 0 ? void 0 : _a.email, request.user);
+            const body = request.body;
+            const appId = request.user.id;
+            const user = yield this.customerAuth.validateUserReturnTokensV4('email', appId, body === null || body === void 0 ? void 0 : body.email, body === null || body === void 0 ? void 0 : body.password);
+            if (!user) {
+                throw new common_1.UnauthorizedException();
+            }
+            return user;
+        });
+    }
+};
+exports.CustomerAppCombinedV4Strategy = CustomerAppCombinedV4Strategy;
+exports.CustomerAppCombinedV4Strategy = CustomerAppCombinedV4Strategy = CustomerAppCombinedV4Strategy_1 = tslib_1.__decorate([
+    (0, common_1.Injectable)(),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_services_1.CustomerAuthService !== "undefined" && v1_flowda_services_1.CustomerAuthService) === "function" ? _a : Object])
+], CustomerAppCombinedV4Strategy);
 
 
 /***/ }),
@@ -1212,6 +1288,7 @@ const customerAppCombined_strategy_1 = __webpack_require__("./src/customer/custo
 const appLocalV4_strategy_1 = __webpack_require__("./src/app/appLocalV4.strategy.ts");
 const appJwtV4_strategy_1 = __webpack_require__("./src/app/appJwtV4.strategy.ts");
 const customerWeiXinV4_strategy_1 = __webpack_require__("./src/customer/customerWeiXinV4.strategy.ts");
+const customerAppCombinedV4_strategy_1 = __webpack_require__("./src/customer/customerAppCombinedV4.strategy.ts");
 exports.sdkModuleControllers = [app_controller_1.AppController, customer_controller_1.CustomerController, order_controller_1.OrderController, product_controller_1.ProductController];
 exports.sdkModuleProviders = [
     {
@@ -1232,6 +1309,7 @@ exports.sdkModuleProviders = [
     customerWeiXinV4_strategy_1.CustomerWeiXinV4Strategy,
     fwhLoginSimple_strategy_1.FwhLoginSimpleStrategy,
     customerAppCombined_strategy_1.CustomerAppCombinedStrategy,
+    customerAppCombinedV4_strategy_1.CustomerAppCombinedV4Strategy,
 ];
 let SdkModule = class SdkModule {
 };
@@ -4728,6 +4806,38 @@ let CustomerAuthService = class CustomerAuthService extends authentication_servi
                 rt: user.refreshToken,
                 user: (0, authentication_service_1.excludedIdentityAndRefreshToken)(user),
                 expireAt: exp,
+            };
+        });
+    }
+    validateUserReturnTokensV4(nameField, appId, name, password) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.flowdaTrpc.user.validateByEmail.query({
+                tenantId: Number(appId),
+                email: name,
+                password: password,
+            });
+            const userRet = yield this.flowdaTrpc.user.findUnique.query({
+                email: name,
+            });
+            if (!userRet) {
+                throw new Error('Cannot find user by email ' + name);
+            }
+            const weixinProfile = yield this.prisma.weixinProfile.findFirst({
+                where: {
+                    unionid: userRet.unionid,
+                },
+            });
+            return {
+                at: '',
+                rt: '',
+                user: {
+                    id: String(userRet.id),
+                    name: userRet.username,
+                    email: userRet.email,
+                    image: userRet.image,
+                    weixinProfile,
+                },
+                expireAt: 0,
             };
         });
     }
