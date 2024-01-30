@@ -771,6 +771,61 @@ exports.CustomerJwtAuthGuard = CustomerJwtAuthGuard = tslib_1.__decorate([
 
 /***/ }),
 
+/***/ "./src/customer/customerJwtAuthV4.guard.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CustomerJwtAuthV4Guard = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const passport_1 = __webpack_require__("@nestjs/passport");
+const common_1 = __webpack_require__("@nestjs/common");
+let CustomerJwtAuthV4Guard = class CustomerJwtAuthV4Guard extends (0, passport_1.AuthGuard)('customerJwtV4') {
+};
+exports.CustomerJwtAuthV4Guard = CustomerJwtAuthV4Guard;
+exports.CustomerJwtAuthV4Guard = CustomerJwtAuthV4Guard = tslib_1.__decorate([
+    (0, common_1.Injectable)()
+], CustomerJwtAuthV4Guard);
+
+
+/***/ }),
+
+/***/ "./src/customer/customerJwtV4.strategy.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CustomerJwtV4Strategy = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const passport_1 = __webpack_require__("@nestjs/passport");
+const passport_jwt_1 = __webpack_require__("passport-jwt");
+const common_1 = __webpack_require__("@nestjs/common");
+const v1_flowda_services_1 = __webpack_require__("../../../libs/v1/flowda-services/src/index.ts");
+let CustomerJwtV4Strategy = class CustomerJwtV4Strategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy, 'customerJwtV4') {
+    constructor(service) {
+        super({
+            jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
+            ignoreExpiration: false,
+            secretOrKey: service.getAccessTokenSecret(),
+        });
+        this.service = service;
+    }
+    validate(payload) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.service.getUserV4(payload.uid);
+        });
+    }
+};
+exports.CustomerJwtV4Strategy = CustomerJwtV4Strategy;
+exports.CustomerJwtV4Strategy = CustomerJwtV4Strategy = tslib_1.__decorate([
+    (0, common_1.Injectable)(),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_services_1.CustomerAuthService !== "undefined" && v1_flowda_services_1.CustomerAuthService) === "function" ? _a : Object])
+], CustomerJwtV4Strategy);
+
+
+/***/ }),
+
 /***/ "./src/customer/customerLocal.strategy.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
@@ -1072,7 +1127,7 @@ bootstrap();
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b, _c, _d, _e;
+var _a, _b, _c, _d, _e, _f, _g, _h;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OrderController = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -1080,6 +1135,8 @@ const common_1 = __webpack_require__("@nestjs/common");
 const v1_flowda_services_1 = __webpack_require__("../../../libs/v1/flowda-services/src/index.ts");
 const customerJwtAuth_guard_1 = __webpack_require__("./src/customer/customerJwtAuth.guard.ts");
 const appJwtAuth_guard_1 = __webpack_require__("./src/app/appJwtAuth.guard.ts");
+const customerJwtAuthV4_guard_1 = __webpack_require__("./src/customer/customerJwtAuthV4.guard.ts");
+const appJwtAuthV4_guard_1 = __webpack_require__("./src/app/appJwtAuthV4.guard.ts");
 let OrderController = class OrderController {
     constructor(orderQuery, orderTx) {
         this.orderQuery = orderQuery;
@@ -1093,7 +1150,20 @@ let OrderController = class OrderController {
             return this.orderTx.create(user, dto);
         });
     }
+    createV4(req, dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const user = req.user;
+            this.logger.log(`creating order controller ${dto.productId} from user: ${JSON.stringify(user)}`);
+            return this.orderTx.create(user, dto);
+        });
+    }
     createJSAPI(req, dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const user = req.user;
+            return this.orderTx.createJSAPI(user, dto);
+        });
+    }
+    createJSAPIV4(req, dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const user = req.user;
             return this.orderTx.createJSAPI(user, dto);
@@ -1105,19 +1175,34 @@ let OrderController = class OrderController {
             return this.orderTx.createQuick(appId, dto);
         });
     }
+    quickV4(req, dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const appId = req.user.id;
+            return this.orderTx.createQuick(appId, dto);
+        });
+    }
     query(orderId) {
+        return this.orderQuery.query(orderId);
+    }
+    queryV4(orderId) {
         return this.orderQuery.query(orderId);
     }
     queryPayQuick(req, anonymousCustomerToken, orderId) {
         return this.orderTx.queryPayQuick(anonymousCustomerToken, orderId);
     }
+    queryPayQuickV4(req, anonymousCustomerToken, orderId) {
+        return this.orderTx.queryPayQuick(anonymousCustomerToken, orderId);
+    }
     queryPay(req, orderId) {
+        return this.orderTx.queryPay(req.user.id, orderId);
+    }
+    queryPayV4(req, orderId) {
         return this.orderTx.queryPay(req.user.id, orderId);
     }
 };
 exports.OrderController = OrderController;
 tslib_1.__decorate([
-    (0, common_1.Version)(common_1.VERSION_NEUTRAL),
+    (0, common_1.Version)([common_1.VERSION_NEUTRAL, '1']),
     (0, common_1.UseGuards)(customerJwtAuth_guard_1.CustomerJwtAuthGuard),
     (0, common_1.Post)(),
     tslib_1.__param(0, (0, common_1.Req)()),
@@ -1127,27 +1212,57 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", Promise)
 ], OrderController.prototype, "create", null);
 tslib_1.__decorate([
-    (0, common_1.Version)(common_1.VERSION_NEUTRAL),
+    (0, common_1.Version)('4'),
+    (0, common_1.UseGuards)(customerJwtAuthV4_guard_1.CustomerJwtAuthV4Guard),
+    (0, common_1.Post)(),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Body)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_d = typeof v1_flowda_services_1.SdkCreateOrderDto !== "undefined" && v1_flowda_services_1.SdkCreateOrderDto) === "function" ? _d : Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], OrderController.prototype, "createV4", null);
+tslib_1.__decorate([
+    (0, common_1.Version)([common_1.VERSION_NEUTRAL, '1']),
     (0, common_1.UseGuards)(customerJwtAuth_guard_1.CustomerJwtAuthGuard),
     (0, common_1.Post)('createJSAPI'),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, typeof (_d = typeof v1_flowda_services_1.SdkCreateOrderInJSAPIDto !== "undefined" && v1_flowda_services_1.SdkCreateOrderInJSAPIDto) === "function" ? _d : Object]),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_e = typeof v1_flowda_services_1.SdkCreateOrderInJSAPIDto !== "undefined" && v1_flowda_services_1.SdkCreateOrderInJSAPIDto) === "function" ? _e : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], OrderController.prototype, "createJSAPI", null);
 tslib_1.__decorate([
-    (0, common_1.Version)(common_1.VERSION_NEUTRAL),
+    (0, common_1.Version)('4'),
+    (0, common_1.UseGuards)(customerJwtAuthV4_guard_1.CustomerJwtAuthV4Guard),
+    (0, common_1.Post)('createJSAPI'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Body)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_f = typeof v1_flowda_services_1.SdkCreateOrderInJSAPIDto !== "undefined" && v1_flowda_services_1.SdkCreateOrderInJSAPIDto) === "function" ? _f : Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], OrderController.prototype, "createJSAPIV4", null);
+tslib_1.__decorate([
+    (0, common_1.Version)([common_1.VERSION_NEUTRAL, '1']),
     (0, common_1.UseGuards)(appJwtAuth_guard_1.AppJwtAuthGuard),
     (0, common_1.Post)('quick'),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, typeof (_e = typeof v1_flowda_services_1.SdkCreateQuickOrderDto !== "undefined" && v1_flowda_services_1.SdkCreateQuickOrderDto) === "function" ? _e : Object]),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_g = typeof v1_flowda_services_1.SdkCreateQuickOrderDto !== "undefined" && v1_flowda_services_1.SdkCreateQuickOrderDto) === "function" ? _g : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], OrderController.prototype, "quick", null);
 tslib_1.__decorate([
-    (0, common_1.Version)(common_1.VERSION_NEUTRAL),
+    (0, common_1.Version)('4'),
+    (0, common_1.UseGuards)(appJwtAuthV4_guard_1.AppJwtAuthV4Guard),
+    (0, common_1.Post)('quick'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Body)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_h = typeof v1_flowda_services_1.SdkCreateQuickOrderDto !== "undefined" && v1_flowda_services_1.SdkCreateQuickOrderDto) === "function" ? _h : Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], OrderController.prototype, "quickV4", null);
+tslib_1.__decorate([
+    (0, common_1.Version)([common_1.VERSION_NEUTRAL, '1']),
     (0, common_1.UseGuards)(customerJwtAuth_guard_1.CustomerJwtAuthGuard),
     (0, common_1.Get)(),
     tslib_1.__param(0, (0, common_1.Query)('orderId')),
@@ -1156,7 +1271,16 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", void 0)
 ], OrderController.prototype, "query", null);
 tslib_1.__decorate([
-    (0, common_1.Version)(common_1.VERSION_NEUTRAL),
+    (0, common_1.Version)('4'),
+    (0, common_1.UseGuards)(customerJwtAuthV4_guard_1.CustomerJwtAuthV4Guard),
+    (0, common_1.Get)(),
+    tslib_1.__param(0, (0, common_1.Query)('orderId')),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [String]),
+    tslib_1.__metadata("design:returntype", void 0)
+], OrderController.prototype, "queryV4", null);
+tslib_1.__decorate([
+    (0, common_1.Version)([common_1.VERSION_NEUTRAL, '1']),
     (0, common_1.UseGuards)(appJwtAuth_guard_1.AppJwtAuthGuard),
     (0, common_1.Get)('quick/queryPay'),
     tslib_1.__param(0, (0, common_1.Req)()),
@@ -1167,7 +1291,18 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", void 0)
 ], OrderController.prototype, "queryPayQuick", null);
 tslib_1.__decorate([
-    (0, common_1.Version)(common_1.VERSION_NEUTRAL),
+    (0, common_1.Version)('4'),
+    (0, common_1.UseGuards)(appJwtAuthV4_guard_1.AppJwtAuthV4Guard),
+    (0, common_1.Get)('quick/queryPay'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Query)('anonymousCustomerToken')),
+    tslib_1.__param(2, (0, common_1.Query)('orderId')),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object, String, String]),
+    tslib_1.__metadata("design:returntype", void 0)
+], OrderController.prototype, "queryPayQuickV4", null);
+tslib_1.__decorate([
+    (0, common_1.Version)([common_1.VERSION_NEUTRAL, '1']),
     (0, common_1.UseGuards)(customerJwtAuth_guard_1.CustomerJwtAuthGuard),
     (0, common_1.Get)('queryPay'),
     tslib_1.__param(0, (0, common_1.Req)()),
@@ -1176,6 +1311,16 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", [Object, String]),
     tslib_1.__metadata("design:returntype", void 0)
 ], OrderController.prototype, "queryPay", null);
+tslib_1.__decorate([
+    (0, common_1.Version)('4'),
+    (0, common_1.UseGuards)(customerJwtAuthV4_guard_1.CustomerJwtAuthV4Guard),
+    (0, common_1.Get)('queryPay'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Query)('orderId')),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object, String]),
+    tslib_1.__metadata("design:returntype", void 0)
+], OrderController.prototype, "queryPayV4", null);
 exports.OrderController = OrderController = tslib_1.__decorate([
     (0, common_1.Controller)('sdk/order'),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_services_1.OrderQuery !== "undefined" && v1_flowda_services_1.OrderQuery) === "function" ? _a : Object, typeof (_b = typeof v1_flowda_services_1.OrderTx !== "undefined" && v1_flowda_services_1.OrderTx) === "function" ? _b : Object])
@@ -1195,6 +1340,7 @@ const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const v1_flowda_services_1 = __webpack_require__("../../../libs/v1/flowda-services/src/index.ts");
 const appJwtAuth_guard_1 = __webpack_require__("./src/app/appJwtAuth.guard.ts");
+const appJwtAuthV4_guard_1 = __webpack_require__("./src/app/appJwtAuthV4.guard.ts");
 let ProductController = class ProductController {
     constructor(query, tx) {
         this.query = query;
@@ -1213,6 +1359,12 @@ let ProductController = class ProductController {
         });
     }
     queryAll(req) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const user = req.user;
+            return this.query.findAll(user.id);
+        });
+    }
+    queryAllV4(req) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const user = req.user;
             return this.query.findAll(user.id);
@@ -1239,7 +1391,7 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", Promise)
 ], ProductController.prototype, "createMany", null);
 tslib_1.__decorate([
-    (0, common_1.Version)(common_1.VERSION_NEUTRAL),
+    (0, common_1.Version)([common_1.VERSION_NEUTRAL, '1']),
     (0, common_1.UseGuards)(appJwtAuth_guard_1.AppJwtAuthGuard),
     (0, common_1.Get)('findAll'),
     tslib_1.__param(0, (0, common_1.Req)()),
@@ -1247,6 +1399,15 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", [Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], ProductController.prototype, "queryAll", null);
+tslib_1.__decorate([
+    (0, common_1.Version)('4'),
+    (0, common_1.UseGuards)(appJwtAuthV4_guard_1.AppJwtAuthV4Guard),
+    (0, common_1.Get)('findAll'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], ProductController.prototype, "queryAllV4", null);
 tslib_1.__decorate([
     (0, common_1.Version)(common_1.VERSION_NEUTRAL),
     (0, common_1.Get)('findAllByAppId'),
@@ -1289,6 +1450,7 @@ const appLocalV4_strategy_1 = __webpack_require__("./src/app/appLocalV4.strategy
 const appJwtV4_strategy_1 = __webpack_require__("./src/app/appJwtV4.strategy.ts");
 const customerWeiXinV4_strategy_1 = __webpack_require__("./src/customer/customerWeiXinV4.strategy.ts");
 const customerAppCombinedV4_strategy_1 = __webpack_require__("./src/customer/customerAppCombinedV4.strategy.ts");
+const customerJwtV4_strategy_1 = __webpack_require__("./src/customer/customerJwtV4.strategy.ts");
 exports.sdkModuleControllers = [app_controller_1.AppController, customer_controller_1.CustomerController, order_controller_1.OrderController, product_controller_1.ProductController];
 exports.sdkModuleProviders = [
     {
@@ -1305,6 +1467,7 @@ exports.sdkModuleProviders = [
     appJwtV4_strategy_1.AppJwtV4Strategy,
     customerLocal_strategy_1.CustomerLocalStrategy,
     customerJwt_strategy_1.CustomerJwtStrategy,
+    customerJwtV4_strategy_1.CustomerJwtV4Strategy,
     customerWeiXin_strategy_1.CustomerWeiXinStrategy,
     customerWeiXinV4_strategy_1.CustomerWeiXinV4Strategy,
     fwhLoginSimple_strategy_1.FwhLoginSimpleStrategy,
@@ -5067,6 +5230,26 @@ let CustomerAuthService = class CustomerAuthService extends authentication_servi
             const updatedUser = yield this.identityProvider.update(user);
             // db 不要明文存 refresh token，但是 refresh token 要返回给 client
             return Object.assign(Object.assign({}, user), { refreshToken: rt });
+        });
+    }
+    getUserV4(userId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const userRet = yield this.flowdaTrpc.user.findUnique.query({ id: Number(userId) });
+            if (!userRet) {
+                throw new v1_flowda_types_1.AuthenticationError.AccountNotFound();
+            }
+            const weixinProfile = yield this.prisma.weixinProfile.findFirst({
+                where: {
+                    unionid: userRet.unionid,
+                },
+            });
+            return {
+                id: String(userRet.id),
+                name: userRet.username,
+                email: userRet.email,
+                image: userRet.image,
+                weixinProfile,
+            };
         });
     }
 };
