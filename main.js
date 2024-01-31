@@ -1859,10 +1859,71 @@ tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared/src/servic
 /***/ }),
 
 /***/ "../../../libs/flowda-shared/src/interfaces/schema.ts":
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.resourceSchema = exports.resourceColumnSchema = exports.resourceAssociationSchema = exports.selectOptionSchema = void 0;
+const zod_1 = __webpack_require__("zod");
+exports.selectOptionSchema = zod_1.z.object({
+    value: zod_1.z.union([zod_1.z.string(), zod_1.z.number()]),
+    label: zod_1.z.string(),
+});
+exports.resourceAssociationSchema = zod_1.z.object({
+    foreign_key: zod_1.z.string(),
+    model_name: zod_1.z.string(),
+    primary_key: zod_1.z.string(),
+    name: zod_1.z.string(),
+    slug: zod_1.z.string(),
+    display_name: zod_1.z.string(),
+    schema_name: zod_1.z.string(),
+});
+exports.resourceColumnSchema = zod_1.z.object({
+    name: zod_1.z.string(),
+    access_type: zod_1.z.enum(['read_only']).optional(),
+    column_type: zod_1.z.enum(['reference', 'string', 'tag', 'integer', 'datetime', 'textarea', 'boolean']),
+    prisma: zod_1.z.boolean().optional(),
+    format: zod_1.z
+        .object({
+        select_options: exports.selectOptionSchema.array(),
+    })
+        .optional(),
+    reference: zod_1.z.object({
+        model_name: zod_1.z.string(),
+        primary_key: zod_1.z.string(),
+        display_name: zod_1.z.string(),
+        display_column: zod_1.z.union([zod_1.z.string(), zod_1.z.array(zod_1.z.string()), zod_1.z.undefined()]),
+        'x-relationField': zod_1.z.string(),
+        'x-onSoftDelete': zod_1.z.string(),
+        'x-unique': zod_1.z.boolean().optional(),
+    }),
+    display_name: zod_1.z.string().optional(),
+    validators: zod_1.z.array(zod_1.z.union([
+        zod_1.z.object({
+            required: zod_1.z.boolean(),
+        }),
+        zod_1.z.object({
+            format: zod_1.z.string(),
+            message: zod_1.z.string(),
+        }),
+    ])),
+});
+exports.resourceSchema = zod_1.z.object({
+    prisma: zod_1.z.boolean().optional(),
+    is_dynamic: zod_1.z.boolean().optional(),
+    schema_name: zod_1.z.string(),
+    name: zod_1.z.string(),
+    slug: zod_1.z.string(),
+    primary_key: zod_1.z.string(),
+    custom: zod_1.z.any(),
+    display_column: zod_1.z.union([zod_1.z.string(), zod_1.z.array(zod_1.z.string()), zod_1.z.undefined()]),
+    display_name: zod_1.z.string().nullable(),
+    display_primary_key: zod_1.z.boolean(),
+    searchable_columns: zod_1.z.array(zod_1.z.string()).optional(),
+    columns: exports.resourceColumnSchema.array(),
+    associations: exports.resourceAssociationSchema.array(),
+    __jsonschema: zod_1.z.any(),
+});
 
 
 /***/ }),
@@ -2177,7 +2238,7 @@ let PrismaSchemaService = PrismaSchemaService_1 = class PrismaSchemaService {
     toPrismaSelect(fields, theResourceSchema) {
         let fieldsArr = [];
         if (fields == null) {
-            fieldsArr = theResourceSchema.columns.map(c => c.name);
+            fieldsArr = theResourceSchema.columns.filter(c => c.prisma !== false).map(c => c.name);
         }
         else {
             fieldsArr = fields.split(',');
@@ -2727,10 +2788,19 @@ const tslib_1 = __webpack_require__("tslib");
 const zod_1 = __webpack_require__("zod");
 const inversify_1 = __webpack_require__("inversify");
 const zod_openapi_1 = __webpack_require__("@anatine/zod-openapi");
-const _ = tslib_1.__importStar(__webpack_require__("lodash"));
+const _ = tslib_1.__importStar(__webpack_require__("radash"));
+const lodash_1 = __webpack_require__("lodash");
 const types_1 = __webpack_require__("../../../libs/flowda-shared/src/interfaces/types.ts");
 const matchPath_1 = __webpack_require__("../../../libs/flowda-shared/src/utils/matchPath.ts");
 exports.SUFFIX = 'ResourceSchema';
+function undefinedKeys(obj) {
+    return Object.entries(obj).reduce((acc, [key, val]) => {
+        if (val === undefined) {
+            acc.push(key);
+        }
+        return acc;
+    }, []);
+}
 let SchemaTransformer = SchemaTransformer_1 = class SchemaTransformer {
     constructor(loggerFactory, prismaZod) {
         this.prismaZod = prismaZod;
@@ -2772,7 +2842,7 @@ let SchemaTransformer = SchemaTransformer_1 = class SchemaTransformer {
                 });
                 return acc; // 不处理 array
             }
-            const c = _.omitBy(_.assign({ name: k }, {
+            const c = _.assign({ name: k }, {
                 name: k,
                 column_type: this.doColumnType(k),
                 format: this.doFormat(k),
@@ -2781,8 +2851,8 @@ let SchemaTransformer = SchemaTransformer_1 = class SchemaTransformer {
                 reference: jsProp.reference ? this.doRef(k) : undefined,
                 validators: this.doValidators(k),
                 prisma: jsProp.prisma,
-            }), _.isUndefined);
-            acc.push(c);
+            });
+            acc.push(_.omit(c, undefinedKeys(c)));
             return acc;
         }, []);
         if (Array.isArray(this.extendSchema.columns)) {
@@ -2796,7 +2866,7 @@ let SchemaTransformer = SchemaTransformer_1 = class SchemaTransformer {
     }
     toSchema() {
         const name = this.schemaName.split(exports.SUFFIX)[0];
-        return _.omitBy({
+        const ret = {
             name: name,
             slug: (0, matchPath_1.toPath)(name),
             prisma: this.modelLevelSchema.prisma != null ? this.modelLevelSchema.prisma : undefined,
@@ -2805,16 +2875,15 @@ let SchemaTransformer = SchemaTransformer_1 = class SchemaTransformer {
             custom: this.jsonSchema.custom,
             display_column: this.doDisplayColumn(this.modelLevelSchema.display_column),
             display_name: this.modelLevelSchema.display_name,
-            display_primary_key: this.modelLevelSchema.display_primary_key == null
-                ? true
-                : this.modelLevelSchema.display_primary_key === 'true',
+            display_primary_key: this.modelLevelSchema.display_primary_key == null ? true : this.modelLevelSchema.display_primary_key === 'true',
             searchable_columns: this.modelLevelSchema.searchable_columns
                 ? this.modelLevelSchema.searchable_columns.split(',')
                 : undefined,
             columns: this.columns,
             associations: this.associations,
             // __jsonschema: this.jsonSchema,
-        }, _.isUndefined);
+        };
+        return _.omit(ret, undefinedKeys(ret));
     }
     doDisplayColumn(display_column) {
         if (!display_column)
@@ -2971,7 +3040,7 @@ let SchemaTransformer = SchemaTransformer_1 = class SchemaTransformer {
         if (fk)
             return fk;
         const schema = this.extendSchema.extends;
-        return _.lowerFirst(schema.split('Schema')[0]) + 'Id';
+        return (0, lodash_1.lowerFirst)(schema.split('Schema')[0]) + 'Id';
     }
 };
 exports.SchemaTransformer = SchemaTransformer;
