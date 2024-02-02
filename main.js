@@ -2007,7 +2007,7 @@ let DataService = DataService_1 = class DataService {
             const { resource, action, param } = findParamRet;
             if (action === 'findUnique') {
                 const ret = yield this.prisma[resource][action](param);
-                if (ret.isDeleted)
+                if (!ret || ret.isDeleted)
                     return {};
                 return _.omit(ret, ['isDeleted']);
             }
