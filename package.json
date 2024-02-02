@@ -1,7 +1,8 @@
 {
   "name": "@flowda-projects/v1-sdk-api",
   "scripts": {
-    "serve": "../../../node_modules/.bin/dotenv -e .env.dev -- ../../../node_modules/.bin/nx serve v1-sdk-api"
+    "serve": "../../../node_modules/.bin/dotenv -e .env.dev -- ../../../node_modules/.bin/nx serve v1-sdk-api",
+    "serve:prod": "../../../node_modules/.bin/dotenv -e .env.prod -- ../../../node_modules/.bin/nx serve v1-sdk-api"
   },
   "dependencies": {
     "@anatine/zod-mock": "^3.1.1",

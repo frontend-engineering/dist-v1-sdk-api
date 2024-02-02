@@ -340,6 +340,7 @@ const customerAppCombinedAuth_guard_1 = __webpack_require__("./src/customer/cust
 const appJwtAuthV4_guard_1 = __webpack_require__("./src/app/appJwtAuthV4.guard.ts");
 const customerWeiXinAuthV4_guard_1 = __webpack_require__("./src/customer/customerWeiXinAuthV4.guard.ts");
 const customerAppCombinedAuthV4_guard_1 = __webpack_require__("./src/customer/customerAppCombinedAuthV4.guard.ts");
+const customerJwtAuthV4_guard_1 = __webpack_require__("./src/customer/customerJwtAuthV4.guard.ts");
 let CustomerController = class CustomerController {
     constructor(customerAuth, customerTx) {
         this.customerAuth = customerAuth;
@@ -398,6 +399,11 @@ let CustomerController = class CustomerController {
         });
     }
     query(req) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return req.user;
+        });
+    }
+    queryV4(req) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return req.user;
         });
@@ -531,7 +537,7 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", Promise)
 ], CustomerController.prototype, "resetPassword", null);
 tslib_1.__decorate([
-    (0, common_1.Version)(common_1.VERSION_NEUTRAL),
+    (0, common_1.Version)([common_1.VERSION_NEUTRAL, '1']),
     (0, common_1.UseGuards)(customerJwtAuth_guard_1.CustomerJwtAuthGuard),
     (0, common_1.Get)(),
     tslib_1.__param(0, (0, common_1.Req)()),
@@ -539,6 +545,15 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", [Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], CustomerController.prototype, "query", null);
+tslib_1.__decorate([
+    (0, common_1.Version)('4'),
+    (0, common_1.UseGuards)(customerJwtAuthV4_guard_1.CustomerJwtAuthV4Guard),
+    (0, common_1.Get)(),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], CustomerController.prototype, "queryV4", null);
 tslib_1.__decorate([
     (0, common_1.Version)(common_1.VERSION_NEUTRAL),
     (0, common_1.UseGuards)(customerJwtAuth_guard_1.CustomerJwtAuthGuard),
@@ -5059,8 +5074,12 @@ let CustomerAuthService = class CustomerAuthService extends authentication_servi
                     unionid: userRet.unionid,
                 },
             });
+            const { at, exp } = this.jwt.generateAccessToken(userRet.id, {
+                secret: this.options.access_token_secret,
+                exp: this.options.access_token_expire,
+            });
             return {
-                at: '',
+                at: at,
                 rt: '',
                 user: {
                     id: String(userRet.id),
@@ -5069,7 +5088,7 @@ let CustomerAuthService = class CustomerAuthService extends authentication_servi
                     image: userRet.image,
                     weixinProfile,
                 },
-                expireAt: 0,
+                expireAt: exp,
             };
         });
     }
@@ -5157,15 +5176,19 @@ let CustomerAuthService = class CustomerAuthService extends authentication_servi
                     },
                 });
             }
+            const { at, exp } = this.jwt.generateAccessToken(customer.id, {
+                secret: this.options.access_token_secret,
+                exp: this.options.access_token_expire,
+            });
             return {
-                at: '',
+                at: at,
                 rt: '',
                 user: Object.assign(customer, {
                     id: String(customer.id),
                     name: customer.username,
                     weixinProfile,
                 }),
-                expireAt: 0,
+                expireAt: exp,
             };
         });
     }
@@ -5314,6 +5337,7 @@ let CustomerAuthService = class CustomerAuthService extends authentication_servi
             });
             return {
                 id: String(userRet.id),
+                appId: userRet.tenantId,
                 name: userRet.username,
                 email: userRet.email,
                 image: userRet.image,
@@ -6293,11 +6317,21 @@ let OrderQuery = OrderQuery_1 = class OrderQuery {
             const ret = yield this.prisma.order.findMany({
                 where: { id: orderId },
                 include: {
-                    customer: true,
+                    // customer: true,
                     productSnapshots: true,
                 },
             });
-            return ret.map(item => (Object.assign(Object.assign({}, item), { customer: (0, authentication_service_1.excludedIdentity)(item.customer) })));
+            const customersRet = yield this.prisma.customer.findMany({
+                where: {
+                    id: {
+                        in: ret.map(i => i.customerId),
+                    },
+                },
+            });
+            return ret.map(item => {
+                const customer = customersRet.find(c => c.id === item.customerId);
+                return Object.assign(Object.assign({}, item), { customer: customer ? (0, authentication_service_1.excludedIdentity)(customer) : {} });
+            });
         });
     }
     findAll(query) {
@@ -6312,11 +6346,21 @@ let OrderQuery = OrderQuery_1 = class OrderQuery {
                 where: query || {},
                 take: limit,
                 include: {
-                    customer: true,
+                    // customer: true,
                     productSnapshots: false,
                 },
             });
-            return ret;
+            const customersRet = yield this.prisma.customer.findMany({
+                where: {
+                    id: {
+                        in: ret.map(i => i.customerId),
+                    },
+                },
+            });
+            return ret.map(item => {
+                const customer = customersRet.find(c => c.id === item.customerId);
+                return Object.assign(Object.assign({}, item), { customer: customer });
+            });
         });
     }
     count(query) {
@@ -6397,7 +6441,7 @@ let OrderService = OrderService_1 = class OrderService {
     create(user, dto, { tx }) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             this.logger.log(`creating order: `, user.id, dto.productId);
-            const { product, productSnapshot, order } = yield this.doCreate(user.id, dto.productId, { tx });
+            const { product, productSnapshot, order } = yield this.doCreate(user.appId, user.id, dto.productId, { tx });
             const profile = yield tx.profile.findUnique({ where: { customerId: user.id } });
             this.logger.log(`profile `, profile);
             // 检查限购情况
@@ -6425,10 +6469,11 @@ let OrderService = OrderService_1 = class OrderService {
                 // 发起微信支付
                 this.logger.log(`product price ${productSnapshot.snapshotPrice}, call wechat pay`);
                 const wxRet = yield this.wxPayService.transactionsNative(order.id, product.name, productSnapshot.snapshotPrice.toNumber());
-                const { updatedOrder, customer } = yield this.processPaidOrder(order.id, user, { tx });
+                const { updatedOrder } = yield this.processPaidOrder(order.id, user, { tx });
                 return {
                     order: updatedOrder,
-                    customer: (0, authentication_service_1.excludedIdentity)(customer),
+                    // customer: excludedIdentity(customer),
+                    customer: user,
                     productSnapshot,
                     codeUrl: wxRet.code_url,
                 };
@@ -6440,7 +6485,7 @@ let OrderService = OrderService_1 = class OrderService {
      */
     createJSAPI(user, dto, { tx }) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const { product, productSnapshot, order } = yield this.doCreate(user.id, dto.productId, { tx });
+            const { product, productSnapshot, order } = yield this.doCreate(user.appId, user.id, dto.productId, { tx });
             const profile = yield tx.profile.findUnique({ where: { customerId: user.id } });
             // 检查限购情况
             if (product.restricted) {
@@ -6466,10 +6511,10 @@ let OrderService = OrderService_1 = class OrderService {
                 // 发起微信支付
                 this.logger.log(`product price ${productSnapshot.snapshotPrice}, call wechat jsapi pay`);
                 const wxRet = yield this.wxPayService.transactionsJSAPI(dto.openid, order.id, product.name, productSnapshot.snapshotPrice.toNumber());
-                const { updatedOrder, customer } = yield this.processPaidOrder(order.id, user, { tx });
+                const { updatedOrder } = yield this.processPaidOrder(order.id, user, { tx });
                 return {
                     order: updatedOrder,
-                    customer: (0, authentication_service_1.excludedIdentity)(customer),
+                    customer: user,
                     productSnapshot,
                     wxRet,
                 };
@@ -6481,10 +6526,10 @@ let OrderService = OrderService_1 = class OrderService {
        - 但是如果内聚了，还真容易出现这种情况
        - 那还是通过 jest 的 spyOn，拿到 instance 后 mock 相应的 method 吧
        */
-    doCreate(customerId, productId, { tx }) {
+    doCreate(tenantId, customerId, productId, { tx }) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            this.logger.log(`${customerId} creating order of product: ${productId} `);
-            const order = yield this.createOrder(customerId, { tx });
+            this.logger.log(`tenant: ${tenantId} customer: ${customerId} creating order of product: ${productId} `);
+            const order = yield this.createOrder(tenantId, customerId, { tx });
             const { product, snapshot } = yield this.productService.createProductSnapshot(productId, order.id, { tx });
             return {
                 order,
@@ -6493,7 +6538,7 @@ let OrderService = OrderService_1 = class OrderService {
             };
         });
     }
-    createOrder(customerId, { tx }) {
+    createOrder(tenantId, customerId, { tx }) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const last = yield tx.order.findFirst({
                 orderBy: [
@@ -6509,11 +6554,11 @@ let OrderService = OrderService_1 = class OrderService {
             else {
                 serial = last.serial + 1;
             }
-            const customer = yield tx.customer.findUniqueOrThrow({ where: { id: customerId } });
+            // const customer = await tx.customer.findUniqueOrThrow({ where: { id: customerId } })
             const order = yield tx.order.create({
                 data: {
-                    tenantId: customer.tenantId,
-                    appId: customer.appId,
+                    // tenantId: customer.tenantId,
+                    appId: String(tenantId),
                     customerId,
                     status: db.OrderStatus.INITIALIZED,
                     serial: serial,
@@ -6568,7 +6613,7 @@ let OrderService = OrderService_1 = class OrderService {
             const order = yield tx.order.findFirstOrThrow({
                 where: { id: orderId },
                 include: {
-                    customer: true,
+                    // customer: true,
                     productSnapshots: true,
                 },
             });
@@ -6595,8 +6640,11 @@ let OrderService = OrderService_1 = class OrderService {
                     transactionId: payQueryRet.transaction_id,
                 },
             });
+            const customer = yield tx.customer.findUnique({
+                where: { id: order.customerId },
+            });
             return {
-                order: Object.assign(Object.assign({}, order), { customer: (0, authentication_service_1.excludedIdentity)(order.customer) }),
+                order: Object.assign(Object.assign({}, order), { customer: customer ? (0, authentication_service_1.excludedIdentity)(customer) : {} }),
                 payQueryRet,
             };
         });
@@ -6608,12 +6656,12 @@ let OrderService = OrderService_1 = class OrderService {
                 data: { status: db.OrderStatus.PAY_ASSOCIATED },
             });
             this.logger.log(`order ${orderId} update to status ${db.OrderStatus.PAY_ASSOCIATED}`);
-            const customer = yield tx.customer.findFirstOrThrow({
-                where: {
-                    id: user.id,
-                },
-            });
-            return { updatedOrder, customer };
+            // const customer = await tx.customer.findFirstOrThrow({
+            //   where: {
+            //     id: user.id,
+            //   },
+            // })
+            return { updatedOrder };
         });
     }
     processFreeOrder(orderId, userId, profile, product, { tx }) {
@@ -6697,9 +6745,9 @@ let OrderTx = OrderTx_1 = class OrderTx {
             return this.prisma.$transaction((tx) => tslib_1.__awaiter(this, void 0, void 0, function* () { return this.service.doQueryPay(orderId, { tx }); }));
         });
     }
-    createOrder(customerId) {
+    createOrder(tenantId, customerId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.prisma.$transaction((tx) => tslib_1.__awaiter(this, void 0, void 0, function* () { return this.service.createOrder(customerId, { tx }); }));
+            return this.prisma.$transaction((tx) => tslib_1.__awaiter(this, void 0, void 0, function* () { return this.service.createOrder(tenantId, customerId, { tx }); }));
         });
     }
 };
@@ -6762,7 +6810,7 @@ let ProductQuery = ProductQuery_1 = class ProductQuery {
     findAll(appId) {
         return this.prisma.product.findMany({
             where: {
-                appId,
+                appId: String(appId),
             },
         });
     }
@@ -7952,12 +8000,14 @@ exports.AppSchema = zod_1.z.object({
     displayName: zod_1.z.string().openapi({ "title": "应用名" }),
     description: zod_1.z.string().nullable().openapi({ "title": "应用描述" }),
     isDeleted: zod_1.z.boolean().nullable(),
-    tenantId: zod_1.z.string(),
+    /**
+     * @schema.model_name Order
+     * @schema.foreign_key appId
+     */
+    tenantId: zod_1.z.string().openapi({ "model_name": "Order", "foreign_key": "appId", "primary_key": "id", "title": "Orders" }),
 }).openapi({ "primary_key": "id", "searchable_columns": "name,displayName,description", "display_column": "displayName", "display_name": "应用", "display_primary_key": "true" });
 exports.AppWithRelationsSchema = exports.AppSchema.merge(zod_1.z.object({
-    products: zod_1.z.lazy(() => exports.ProductWithRelationsSchema).array().openapi({ "model_name": "Product", "foreign_key": "appId", "primary_key": "id", "title": "Products" }),
     customers: zod_1.z.lazy(() => exports.CustomerWithRelationsSchema).array().openapi({ "model_name": "Customer", "foreign_key": "appId", "primary_key": "id", "title": "Customers" }),
-    orders: zod_1.z.lazy(() => exports.OrderWithRelationsSchema).array().openapi({ "model_name": "Order", "foreign_key": "appId", "primary_key": "id", "title": "Orders" }),
 }));
 /////////////////////////////////////////
 // TENANT SCHEMA
@@ -8061,14 +8111,17 @@ exports.ProductSchema = zod_1.z.object({
     hasAds: zod_1.z.string().nullable().openapi({ "title": "广告" }),
     tecSupport: zod_1.z.string().nullable().openapi({ "title": "技术支持" }),
     validityPeriod: zod_1.z.number().int().nullable().openapi({ "title": "有效期/天" }),
-    appId: zod_1.z.string().openapi({ "access_type": "read_only" }),
+    /**
+     * @schema.model_name App
+     * @schema.foreign_key appId
+     */
+    appId: zod_1.z.string().openapi({ "model_name": "App", "foreign_key": "appId", "primary_key": "id", "access_type": "read_only" }),
     isDeleted: zod_1.z.boolean().nullable(),
     tenantId: zod_1.z.string(),
     restricted: zod_1.z.number().int(),
 }).openapi({ "primary_key": "id", "searchable_columns": "id,name", "display_name": "产品", "display_column": "name" });
 exports.ProductWithRelationsSchema = exports.ProductSchema.merge(zod_1.z.object({
     productSnapshots: zod_1.z.lazy(() => exports.ProductSnapshotWithRelationsSchema).array().openapi({ "model_name": "ProductSnapshot", "foreign_key": "productId", "primary_key": "id" }),
-    app: zod_1.z.lazy(() => exports.AppWithRelationsSchema).openapi({ "model_name": "App", "foreign_key": "appId", "primary_key": "id" }),
 }));
 /////////////////////////////////////////
 // PAY SCHEMA
@@ -8104,8 +8157,7 @@ exports.CustomerSchema = zod_1.z.object({
 }).openapi({ "primary_key": "id", "display_name": "用户", "display_column": "name" });
 exports.CustomerWithRelationsSchema = exports.CustomerSchema.merge(zod_1.z.object({
     app: zod_1.z.lazy(() => exports.AppWithRelationsSchema),
-    orders: zod_1.z.lazy(() => exports.OrderWithRelationsSchema).array().openapi({ "model_name": "Order", "foreign_key": "customerId", "primary_key": "id", "title": "Orders" }),
-    legacyProfile: zod_1.z.lazy(() => exports.LegacyProfileWithRelationsSchema).nullable(),
+    legacyProfile: zod_1.z.lazy(() => exports.LegacyProfileWithRelationsSchema).nullable().openapi({ "model_name": "Order", "foreign_key": "customerId", "primary_key": "id", "title": "Orders" }),
     profile: zod_1.z.lazy(() => exports.ProfileWithRelationsSchema).nullable().openapi({ "reference": "Profile" }),
     weixinProfile: zod_1.z.lazy(() => exports.WeixinProfileWithRelationsSchema).nullable().openapi({ "reference": "WeixinProfile" }),
 }));
@@ -8201,10 +8253,8 @@ exports.OrderSchema = zod_1.z.object({
     tenantId: zod_1.z.string(),
 }).openapi({ "primary_key": "id", "display_name": "订单", "display_primary_key": "true" });
 exports.OrderWithRelationsSchema = exports.OrderSchema.merge(zod_1.z.object({
-    customer: zod_1.z.lazy(() => exports.CustomerWithRelationsSchema),
     pay: zod_1.z.lazy(() => exports.PayWithRelationsSchema).nullable(),
     productSnapshots: zod_1.z.lazy(() => exports.ProductSnapshotWithRelationsSchema).array(),
-    App: zod_1.z.lazy(() => exports.AppWithRelationsSchema),
 }));
 
 
