@@ -8844,7 +8844,7 @@ exports.JsonValue = zod_1.z.union([
 exports.NullableJsonValue = zod_1.z
     .union([exports.JsonValue, zod_1.z.literal('DbNull'), zod_1.z.literal('JsonNull')])
     .nullable()
-    .transform(v => (0, exports.transformJsonNull)(v));
+    .transform((v) => (0, exports.transformJsonNull)(v));
 exports.InputJsonValue = zod_1.z.union([
     zod_1.z.string(),
     zod_1.z.number(),
@@ -8854,15 +8854,8 @@ exports.InputJsonValue = zod_1.z.union([
 ]);
 // DECIMAL
 //------------------------------------------------------
-exports.DecimalJSLikeSchema = zod_1.z.object({
-    d: zod_1.z.array(zod_1.z.number()),
-    e: zod_1.z.number(),
-    s: zod_1.z.number(),
-    toFixed: zod_1.z.function().args().returns(zod_1.z.string()),
-});
-exports.DecimalJSLikeListSchema = zod_1.z
-    .object({ d: zod_1.z.array(zod_1.z.number()), e: zod_1.z.number(), s: zod_1.z.number(), toFixed: zod_1.z.function().args().returns(zod_1.z.string()) })
-    .array();
+exports.DecimalJSLikeSchema = zod_1.z.object({ d: zod_1.z.array(zod_1.z.number()), e: zod_1.z.number(), s: zod_1.z.number(), toFixed: zod_1.z.function().args().returns(zod_1.z.string()), });
+exports.DecimalJSLikeListSchema = zod_1.z.object({ d: zod_1.z.array(zod_1.z.number()), e: zod_1.z.number(), s: zod_1.z.number(), toFixed: zod_1.z.function().args().returns(zod_1.z.string()), }).array();
 exports.DECIMAL_STRING_REGEX = /^[0-9.,e+-bxffo_cp]+$|Infinity|NaN/;
 const isValidDecimalInput = (v) => {
     if (v === undefined || v === null)
@@ -8875,169 +8868,27 @@ exports.isValidDecimalInput = isValidDecimalInput;
 /////////////////////////////////////////
 // ENUMS
 /////////////////////////////////////////
-exports.TransactionIsolationLevelSchema = zod_1.z.enum([
-    'ReadUncommitted',
-    'ReadCommitted',
-    'RepeatableRead',
-    'Serializable',
-]);
-exports.AppScalarFieldEnumSchema = zod_1.z.enum([
-    'id',
-    'createdAt',
-    'updatedAt',
-    'name',
-    'hashedAppToken',
-    'hashedPassword',
-    'hashedRefreshToken',
-    'recoveryCode',
-    'recoveryToken',
-    'displayName',
-    'description',
-    'isDeleted',
-    'tenantId',
-]);
-exports.TenantScalarFieldEnumSchema = zod_1.z.enum([
-    'id',
-    'createdAt',
-    'updatedAt',
-    'name',
-    'email',
-    'hashedPassword',
-    'hashedRefreshToken',
-    'recoveryCode',
-    'recoveryToken',
-    'role',
-]);
+exports.TransactionIsolationLevelSchema = zod_1.z.enum(['ReadUncommitted', 'ReadCommitted', 'RepeatableRead', 'Serializable']);
+exports.AppScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'name', 'hashedAppToken', 'hashedPassword', 'hashedRefreshToken', 'recoveryCode', 'recoveryToken', 'displayName', 'description', 'isDeleted', 'tenantId']);
+exports.TenantScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'name', 'email', 'hashedPassword', 'hashedRefreshToken', 'recoveryCode', 'recoveryToken', 'role']);
 exports.TenantPreSignupScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'email', 'verifyCode']);
-exports.QuestionScalarFieldEnumSchema = zod_1.z.enum([
-    'id',
-    'uid',
-    'question',
-    'answer',
-    'success',
-    'createdAt',
-    'updatedAt',
-]);
+exports.QuestionScalarFieldEnumSchema = zod_1.z.enum(['id', 'uid', 'question', 'answer', 'success', 'createdAt', 'updatedAt']);
 exports.JYProfileScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'userId']);
 exports.JYFreeCountScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'cycle', 'count', 'profileId']);
-exports.ArticleScalarFieldEnumSchema = zod_1.z.enum([
-    'id',
-    'createdAt',
-    'updatedAt',
-    'link',
-    'source',
-    'title',
-    'image',
-    'excerpt',
-    'profileId',
-]);
-exports.ProductScalarFieldEnumSchema = zod_1.z.enum([
-    'id',
-    'createdAt',
-    'updatedAt',
-    'name',
-    'price',
-    'productType',
-    'plan',
-    'amount',
-    'extendedDescriptionData',
-    'fileSize',
-    'storeDuration',
-    'hasAds',
-    'tecSupport',
-    'validityPeriod',
-    'appId',
-    'isDeleted',
-    'tenantId',
-    'restricted',
-]);
-exports.PayScalarFieldEnumSchema = zod_1.z.enum([
-    'id',
-    'createdAt',
-    'updatedAt',
-    'status',
-    'orderId',
-    'transactionId',
-    'tenantId',
-]);
-exports.CustomerScalarFieldEnumSchema = zod_1.z.enum([
-    'id',
-    'createdAt',
-    'updatedAt',
-    'name',
-    'appId',
-    'email',
-    'hashedPassword',
-    'hashedRefreshToken',
-    'recoveryCode',
-    'recoveryToken',
-    'isDeleted',
-    'tenantId',
-]);
-exports.WeixinProfileScalarFieldEnumSchema = zod_1.z.enum([
-    'id',
-    'createdAt',
-    'updatedAt',
-    'unionid',
-    'loginOpenid',
-    'headimgurl',
-    'nickname',
-    'sex',
-    'customerId',
-    'tenantId',
-]);
-exports.ProfileScalarFieldEnumSchema = zod_1.z.enum([
-    'id',
-    'createdAt',
-    'updatedAt',
-    'customerId',
-    'productType',
-    'plan',
-    'amount',
-    'expireAt',
-    'tenantId',
-]);
-exports.CustomerPreSignupScalarFieldEnumSchema = zod_1.z.enum([
-    'id',
-    'createdAt',
-    'updatedAt',
-    'email',
-    'verifyCode',
-    'appId',
-    'tenantId',
-]);
-exports.LegacyProfileScalarFieldEnumSchema = zod_1.z.enum([
-    'id',
-    'createdAt',
-    'updatedAt',
-    'customerId',
-    'license',
-    'refreshToken',
-]);
-exports.ProductSnapshotScalarFieldEnumSchema = zod_1.z.enum([
-    'id',
-    'createdAt',
-    'updatedAt',
-    'snapshotPrice',
-    'orderId',
-    'productId',
-    'tenantId',
-]);
-exports.OrderScalarFieldEnumSchema = zod_1.z.enum([
-    'id',
-    'createdAt',
-    'updatedAt',
-    'serial',
-    'status',
-    'customerId',
-    'appId',
-    'isDeleted',
-    'tenantId',
-]);
+exports.ArticleScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'link', 'source', 'title', 'image', 'excerpt', 'profileId']);
+exports.ProductScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'name', 'price', 'productType', 'plan', 'amount', 'extendedDescriptionData', 'fileSize', 'storeDuration', 'hasAds', 'tecSupport', 'validityPeriod', 'appId', 'isDeleted', 'tenantId', 'restricted']);
+exports.PayScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'status', 'orderId', 'transactionId', 'tenantId']);
+exports.CustomerScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'name', 'appId', 'email', 'hashedPassword', 'hashedRefreshToken', 'recoveryCode', 'recoveryToken', 'isDeleted', 'tenantId']);
+exports.WeixinProfileScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'unionid', 'loginOpenid', 'headimgurl', 'nickname', 'sex', 'customerId', 'tenantId']);
+exports.ProfileScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'customerId', 'productType', 'plan', 'amount', 'expireAt', 'tenantId']);
+exports.CustomerPreSignupScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'email', 'verifyCode', 'appId', 'tenantId']);
+exports.LegacyProfileScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'customerId', 'license', 'refreshToken']);
+exports.ProductSnapshotScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'snapshotPrice', 'orderId', 'productId', 'tenantId']);
+exports.OrderScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'serial', 'status', 'customerId', 'appId', 'isDeleted', 'tenantId']);
 exports.SortOrderSchema = zod_1.z.enum(['asc', 'desc']);
-exports.NullableJsonNullValueInputSchema = zod_1.z.enum(['DbNull', 'JsonNull']).transform(v => (0, exports.transformJsonNull)(v));
+exports.NullableJsonNullValueInputSchema = zod_1.z.enum(['DbNull', 'JsonNull',]).transform((v) => (0, exports.transformJsonNull)(v));
 exports.NullsOrderSchema = zod_1.z.enum(['first', 'last']);
-exports.JsonNullValueFilterSchema = zod_1.z.enum(['DbNull', 'JsonNull', 'AnyNull']);
+exports.JsonNullValueFilterSchema = zod_1.z.enum(['DbNull', 'JsonNull', 'AnyNull',]);
 exports.OrderStatusSchema = zod_1.z.enum(['INITIALIZED', 'PAY_ASSOCIATED', 'FREE_DEAL', 'CANCELED']);
 exports.PayStatusSchema = zod_1.z.enum(['UNPAIED', 'PAIED', 'REFUND']);
 exports.ProductTypeSchema = zod_1.z.enum(['AMOUNT', 'PLAN']);
@@ -9047,38 +8898,27 @@ exports.ProductTypeSchema = zod_1.z.enum(['AMOUNT', 'PLAN']);
 /////////////////////////////////////////
 // APP SCHEMA
 /////////////////////////////////////////
-exports.AppSchema = zod_1.z
-    .object({
+exports.AppSchema = zod_1.z.object({
     id: zod_1.z.string().cuid(),
     createdAt: zod_1.z.date(),
     updatedAt: zod_1.z.date(),
-    name: zod_1.z.string().openapi({ title: '应用id', access_type: 'read_only' }),
+    name: zod_1.z.string().openapi({ "title": "应用id", "access_type": "read_only" }),
     hashedAppToken: zod_1.z.string().nullable(),
     hashedPassword: zod_1.z.string(),
     hashedRefreshToken: zod_1.z.string().nullable(),
     recoveryCode: zod_1.z.string().nullable(),
     recoveryToken: zod_1.z.string().nullable(),
-    displayName: zod_1.z.string().openapi({ title: '应用名' }),
-    description: zod_1.z.string().nullable().openapi({ title: '应用描述' }),
+    displayName: zod_1.z.string().openapi({ "title": "应用名" }),
+    description: zod_1.z.string().nullable().openapi({ "title": "应用描述" }),
     isDeleted: zod_1.z.boolean().nullable(),
     /**
      * @schema.model_name Order
      * @schema.foreign_key appId
      */
-    tenantId: zod_1.z.string().openapi({ model_name: 'Order', foreign_key: 'appId', primary_key: 'id', title: 'Orders' }),
-})
-    .openapi({
-    primary_key: 'id',
-    searchable_columns: 'name,displayName,description',
-    display_column: 'displayName',
-    display_name: '应用',
-    display_primary_key: 'true',
-});
+    tenantId: zod_1.z.string().openapi({ "model_name": "Order", "foreign_key": "appId", "primary_key": "id", "title": "Orders" }),
+}).openapi({ "primary_key": "id", "searchable_columns": "name,displayName,description", "display_column": "displayName", "display_name": "应用", "display_primary_key": "true" });
 exports.AppWithRelationsSchema = exports.AppSchema.merge(zod_1.z.object({
-    customers: zod_1.z
-        .lazy(() => exports.CustomerWithRelationsSchema)
-        .array()
-        .openapi({ model_name: 'Customer', foreign_key: 'appId', primary_key: 'id', title: 'Customers' }),
+    customers: zod_1.z.lazy(() => exports.CustomerWithRelationsSchema).array().openapi({ "model_name": "Customer", "foreign_key": "appId", "primary_key": "id", "title": "Customers" }),
 }));
 /////////////////////////////////////////
 // TENANT SCHEMA
@@ -9164,45 +9004,35 @@ exports.ArticleWithRelationsSchema = exports.ArticleSchema.merge(zod_1.z.object(
 /////////////////////////////////////////
 // PRODUCT SCHEMA
 /////////////////////////////////////////
-exports.ProductSchema = zod_1.z
-    .object({
+exports.ProductSchema = zod_1.z.object({
     productType: exports.ProductTypeSchema,
     id: zod_1.z.string().cuid(),
     createdAt: zod_1.z.date(),
     updatedAt: zod_1.z.date(),
-    name: zod_1.z.string().openapi({ title: '产品名' }),
+    name: zod_1.z.string().openapi({ "title": "产品名" }),
     /**
      * @schema.override_type integer
      */
-    price: zod_1.z
-        .union([zod_1.z.number(), zod_1.z.string(), exports.DecimalJSLikeSchema])
-        .refine(v => (0, exports.isValidDecimalInput)(v), {
-        message: "Field 'price' must be a Decimal. Location: ['Models', 'Product']",
-    })
-        .openapi({ title: '价格', override_type: 'integer' }),
+    price: zod_1.z.union([zod_1.z.number(), zod_1.z.string(), exports.DecimalJSLikeSchema,]).refine((v) => (0, exports.isValidDecimalInput)(v), { message: "Field 'price' must be a Decimal. Location: ['Models', 'Product']", }).openapi({ "title": "价格", "override_type": "integer" }),
     plan: zod_1.z.number().int().nullable(),
-    amount: zod_1.z.number().int().openapi({ title: '额度' }),
+    amount: zod_1.z.number().int().openapi({ "title": "额度" }),
     extendedDescriptionData: exports.NullableJsonValue.optional(),
     fileSize: zod_1.z.string().nullable(),
     storeDuration: zod_1.z.number().int().nullable(),
-    hasAds: zod_1.z.string().nullable().openapi({ title: '广告' }),
-    tecSupport: zod_1.z.string().nullable().openapi({ title: '技术支持' }),
-    validityPeriod: zod_1.z.number().int().nullable().openapi({ title: '有效期/天' }),
+    hasAds: zod_1.z.string().nullable().openapi({ "title": "广告" }),
+    tecSupport: zod_1.z.string().nullable().openapi({ "title": "技术支持" }),
+    validityPeriod: zod_1.z.number().int().nullable().openapi({ "title": "有效期/天" }),
     /**
      * @schema.model_name App
      * @schema.foreign_key appId
      */
-    appId: zod_1.z.string().openapi({ model_name: 'App', foreign_key: 'appId', primary_key: 'id', access_type: 'read_only' }),
+    appId: zod_1.z.string().openapi({ "model_name": "App", "foreign_key": "appId", "primary_key": "id", "access_type": "read_only" }),
     isDeleted: zod_1.z.boolean().nullable(),
     tenantId: zod_1.z.string(),
     restricted: zod_1.z.number().int(),
-})
-    .openapi({ primary_key: 'id', searchable_columns: 'id,name', display_name: '产品', display_column: 'name' });
+}).openapi({ "primary_key": "id", "searchable_columns": "id,name", "display_name": "产品", "display_column": "name" });
 exports.ProductWithRelationsSchema = exports.ProductSchema.merge(zod_1.z.object({
-    productSnapshots: zod_1.z
-        .lazy(() => exports.ProductSnapshotWithRelationsSchema)
-        .array()
-        .openapi({ model_name: 'ProductSnapshot', foreign_key: 'productId', primary_key: 'id' }),
+    productSnapshots: zod_1.z.lazy(() => exports.ProductSnapshotWithRelationsSchema).array().openapi({ "model_name": "ProductSnapshot", "foreign_key": "productId", "primary_key": "id" }),
 }));
 /////////////////////////////////////////
 // PAY SCHEMA
@@ -9222,42 +9052,30 @@ exports.PayWithRelationsSchema = exports.PaySchema.merge(zod_1.z.object({
 /////////////////////////////////////////
 // CUSTOMER SCHEMA
 /////////////////////////////////////////
-exports.CustomerSchema = zod_1.z
-    .object({
+exports.CustomerSchema = zod_1.z.object({
     id: zod_1.z.string().cuid(),
     createdAt: zod_1.z.date(),
     updatedAt: zod_1.z.date(),
-    name: zod_1.z.string().openapi({ title: '用户名' }),
-    appId: zod_1.z.string().openapi({ access_type: 'read_only' }),
-    email: zod_1.z.string().nullable().openapi({ title: '邮箱' }),
+    name: zod_1.z.string().openapi({ "title": "用户名" }),
+    appId: zod_1.z.string().openapi({ "access_type": "read_only" }),
+    email: zod_1.z.string().nullable().openapi({ "title": "邮箱" }),
     hashedPassword: zod_1.z.string().nullable(),
     hashedRefreshToken: zod_1.z.string().nullable(),
     recoveryCode: zod_1.z.string().nullable(),
     recoveryToken: zod_1.z.string().nullable(),
     isDeleted: zod_1.z.boolean().nullable(),
     tenantId: zod_1.z.string(),
-})
-    .openapi({ primary_key: 'id', display_name: '用户', display_column: 'name' });
+}).openapi({ "primary_key": "id", "display_name": "用户", "display_column": "name" });
 exports.CustomerWithRelationsSchema = exports.CustomerSchema.merge(zod_1.z.object({
     app: zod_1.z.lazy(() => exports.AppWithRelationsSchema),
-    legacyProfile: zod_1.z
-        .lazy(() => exports.LegacyProfileWithRelationsSchema)
-        .nullable()
-        .openapi({ model_name: 'Order', foreign_key: 'customerId', primary_key: 'id', title: 'Orders' }),
-    profile: zod_1.z
-        .lazy(() => exports.ProfileWithRelationsSchema)
-        .nullable()
-        .openapi({ reference: 'Profile' }),
-    weixinProfile: zod_1.z
-        .lazy(() => exports.WeixinProfileWithRelationsSchema)
-        .nullable()
-        .openapi({ reference: 'WeixinProfile' }),
+    legacyProfile: zod_1.z.lazy(() => exports.LegacyProfileWithRelationsSchema).nullable().openapi({ "model_name": "Order", "foreign_key": "customerId", "primary_key": "id", "title": "Orders" }),
+    profile: zod_1.z.lazy(() => exports.ProfileWithRelationsSchema).nullable().openapi({ "reference": "Profile" }),
+    weixinProfile: zod_1.z.lazy(() => exports.WeixinProfileWithRelationsSchema).nullable().openapi({ "reference": "WeixinProfile" }),
 }));
 /////////////////////////////////////////
 // WEIXIN PROFILE SCHEMA
 /////////////////////////////////////////
-exports.WeixinProfileSchema = zod_1.z
-    .object({
+exports.WeixinProfileSchema = zod_1.z.object({
     id: zod_1.z.string().cuid(),
     createdAt: zod_1.z.date(),
     updatedAt: zod_1.z.date(),
@@ -9268,16 +9086,14 @@ exports.WeixinProfileSchema = zod_1.z
     sex: zod_1.z.number().int(),
     customerId: zod_1.z.string().nullable(),
     tenantId: zod_1.z.string(),
-})
-    .openapi({ primary_key: 'id', display_name: '微信用户信息', display_column: 'nickname' });
+}).openapi({ "primary_key": "id", "display_name": "微信用户信息", "display_column": "nickname" });
 exports.WeixinProfileWithRelationsSchema = exports.WeixinProfileSchema.merge(zod_1.z.object({
     customer: zod_1.z.lazy(() => exports.CustomerWithRelationsSchema).nullable(),
 }));
 /////////////////////////////////////////
 // PROFILE SCHEMA
 /////////////////////////////////////////
-exports.ProfileSchema = zod_1.z
-    .object({
+exports.ProfileSchema = zod_1.z.object({
     productType: exports.ProductTypeSchema,
     id: zod_1.z.string().cuid(),
     createdAt: zod_1.z.date(),
@@ -9287,8 +9103,7 @@ exports.ProfileSchema = zod_1.z
     amount: zod_1.z.number().int().nullable(),
     expireAt: zod_1.z.date().nullable(),
     tenantId: zod_1.z.string(),
-})
-    .openapi({ primary_key: 'id', display_name: '用户信息', display_column: 'productType' });
+}).openapi({ "primary_key": "id", "display_name": "用户信息", "display_column": "productType" });
 exports.ProfileWithRelationsSchema = exports.ProfileSchema.merge(zod_1.z.object({
     customer: zod_1.z.lazy(() => exports.CustomerWithRelationsSchema),
 }));
@@ -9325,11 +9140,7 @@ exports.ProductSnapshotSchema = zod_1.z.object({
     id: zod_1.z.string().cuid(),
     createdAt: zod_1.z.date(),
     updatedAt: zod_1.z.date(),
-    snapshotPrice: zod_1.z
-        .union([zod_1.z.number(), zod_1.z.string(), exports.DecimalJSLikeSchema])
-        .refine(v => (0, exports.isValidDecimalInput)(v), {
-        message: "Field 'snapshotPrice' must be a Decimal. Location: ['Models', 'ProductSnapshot']",
-    }),
+    snapshotPrice: zod_1.z.union([zod_1.z.number(), zod_1.z.string(), exports.DecimalJSLikeSchema,]).refine((v) => (0, exports.isValidDecimalInput)(v), { message: "Field 'snapshotPrice' must be a Decimal. Location: ['Models', 'ProductSnapshot']", }),
     orderId: zod_1.z.string(),
     productId: zod_1.z.string(),
     tenantId: zod_1.z.string(),
@@ -9341,19 +9152,17 @@ exports.ProductSnapshotWithRelationsSchema = exports.ProductSnapshotSchema.merge
 /////////////////////////////////////////
 // ORDER SCHEMA
 /////////////////////////////////////////
-exports.OrderSchema = zod_1.z
-    .object({
+exports.OrderSchema = zod_1.z.object({
     status: exports.OrderStatusSchema,
     id: zod_1.z.string().cuid(),
     createdAt: zod_1.z.date(),
     updatedAt: zod_1.z.date(),
     serial: zod_1.z.number().int(),
-    customerId: zod_1.z.string().openapi({ reference: 'Customer' }),
+    customerId: zod_1.z.string().openapi({ "reference": "Customer" }),
     appId: zod_1.z.string(),
     isDeleted: zod_1.z.boolean().nullable(),
     tenantId: zod_1.z.string(),
-})
-    .openapi({ primary_key: 'id', display_name: '订单', display_primary_key: 'true' });
+}).openapi({ "primary_key": "id", "display_name": "订单", "display_primary_key": "true" });
 exports.OrderWithRelationsSchema = exports.OrderSchema.merge(zod_1.z.object({
     pay: zod_1.z.lazy(() => exports.PayWithRelationsSchema).nullable(),
     productSnapshots: zod_1.z.lazy(() => exports.ProductSnapshotWithRelationsSchema).array(),
