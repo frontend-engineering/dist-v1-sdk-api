@@ -1313,19 +1313,19 @@ let OrderController = class OrderController {
         return this.orderQuery.query(orderId);
     }
     queryV4(orderId) {
-        return this.orderV4.query(orderId);
+        return this.orderV4.query(Number(orderId));
     }
     queryPayQuick(req, anonymousCustomerToken, orderId) {
         return this.orderTx.queryPayQuick(anonymousCustomerToken, orderId);
     }
     queryPayQuickV4(req, anonymousCustomerToken, orderId) {
-        return this.orderV4.queryPayQuick(req.user.id, anonymousCustomerToken, orderId);
+        return this.orderV4.queryPayQuick(req.user.id, anonymousCustomerToken, Number(orderId));
     }
     queryPay(req, orderId) {
         return this.orderTx.queryPay(req.user.id, orderId);
     }
     queryPayV4(req, orderId) {
-        return this.orderV4.queryPay(req.user.tid, req.user.id, orderId);
+        return this.orderV4.queryPay(req.user.tid, req.user.id, Number(orderId));
     }
 };
 exports.OrderController = OrderController;
@@ -2013,7 +2013,7 @@ tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared-types/src/
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.MenuServiceSymbol = exports.DynamicTableDefServiceSymbol = exports.DynamicTableDataServiceSymbol = exports.WechatOAuthSymbol = exports.SmsClientSymbol = exports.COSSymbol = exports.K3CloudIdentifyInfoSymbol = exports.CustomZodSchemaSymbol = exports.PrismaZodSchemaSymbol = exports.ENVSymbol = exports.URLSymbol = exports.APISymbol = exports.ServiceSymbol = exports.PrismaClientSymbol = exports.FlowdaGatewayTrpcClientSymbol = exports.FlowdaTrpcClientSymbol = exports.DynamicTableSchemaTransformerSymbol = exports.SchemaServiceSymbol = exports.DataServiceSymbol = exports.PrismaUtilsSymbol = exports.SchemaTransformerSymbol = exports.PrismaSchemaServiceSymbol = void 0;
+exports.WechatpayNodeV3FactorySymbol = exports.WechatpayNodeV3Symbol = exports.MenuServiceSymbol = exports.DynamicTableDefServiceSymbol = exports.DynamicTableDataServiceSymbol = exports.WechatOAuthSymbol = exports.SmsClientSymbol = exports.COSSymbol = exports.K3CloudIdentifyInfoSymbol = exports.CustomZodSchemaSymbol = exports.PrismaZodSchemaSymbol = exports.ENVSymbol = exports.URLSymbol = exports.APISymbol = exports.ServiceSymbol = exports.PrismaClientSymbol = exports.FlowdaGatewayTrpcClientSymbol = exports.FlowdaTrpcClientSymbol = exports.DynamicTableSchemaTransformerSymbol = exports.SchemaServiceSymbol = exports.DataServiceSymbol = exports.PrismaUtilsSymbol = exports.SchemaTransformerSymbol = exports.PrismaSchemaServiceSymbol = void 0;
 exports.PrismaSchemaServiceSymbol = Symbol.for('PrismaSchemaService');
 exports.SchemaTransformerSymbol = Symbol.for('SchemaTransformer');
 exports.PrismaUtilsSymbol = Symbol.for('PrismaUtils');
@@ -2040,6 +2040,8 @@ exports.WechatOAuthSymbol = Symbol.for('WechatOAuth');
 exports.DynamicTableDataServiceSymbol = Symbol.for('DynamicTableDataService');
 exports.DynamicTableDefServiceSymbol = Symbol.for('DynamicTableDefService');
 exports.MenuServiceSymbol = Symbol.for('MenuService');
+exports.WechatpayNodeV3Symbol = Symbol.for('WechatpayNodeV3Symbol');
+exports.WechatpayNodeV3FactorySymbol = Symbol.for('WechatpayNodeV3FactorySymbol');
 
 
 /***/ }),
@@ -2066,8 +2068,8 @@ exports.Serial_Max = 99999;
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.fwhLoginTenantJwtPayloadSchemaDto = exports.fwhLoginSchema = exports.wxPayQuerySchema = exports.updateFreeProfileSchema = exports.updatePaidProfileSchema = exports.SdkProductCreateManyItemDto = exports.productCreateManyItemSchema = exports.ResetPasswordDto = exports.resetPasswordWithRecoveryCodeTenantJwtSchemaDto = exports.resetPasswordWithRecoveryCodeSchemaDto = exports.resetPasswordWithRecoveryCodeSchema = exports.GenerateRecoveryCodeDto = exports.generateRecoveryCodeTenantJwtSchemaDto = exports.generateRecoveryCodeSchemaDto = exports.generateRecoveryCodeSchema = exports.wxValidateUserSchemaDto = exports.wxValidateUserSchema = exports.wxGetUserRes = exports.wxGetAccessTokenRes = exports.customerSignupSchemaDto = exports.customerSignupSchema = exports.customerPreSignupSchemaDto = exports.customerPreSignupSchema = exports.userJwtPayloadSchema = exports.tenantJwtPayloadSchema = exports.verifyMobileSchemaDto = exports.verifyMobileSchema = exports.resetPasswordSchemaDto = exports.resetPasswordSchema = exports.RegisterByUnionIdSchemaDto = exports.registerByUnionIdSchema = exports.FindByUnionIdAndTenantIdSchemaDto = exports.findByUnionIdAndTenantIdSchema = exports.GetTenantByNameSchemaDto = exports.getTenantByNameSchema = exports.AccountExistsSchemaDto = exports.accountExistsSchema = exports.RegisterDto = exports.registerSchema = exports.prismaFilterSchema = exports.agSortSchema = exports.agFilterSchema = exports.agFilter2Schema = exports.agFilter1Schema = exports.agFilterInner2Schema = exports.agFilterInnerSchema = exports.resourceSchema = exports.resourceColumnSchema = exports.resourceAssociationSchema = exports.selectOptionSchema = void 0;
-exports.createQuickOrderTenantJWTPayloadSchemaDto = exports.SdkCreateQuickOrderDto = exports.createQuickOrderSchema = exports.SdkCreateOrderInJSAPIDto = exports.createOrderJSAPISchema = exports.transactionsNativeSchemaDto = exports.transactionsNativeSchema = exports.createOrderUserJwtPayloadSchemaDto = exports.SdkCreateOrderDto = exports.createOrderSchema = exports.amountUpdateUserJwtPayloadSchemaDto = exports.amountUpdateSchemaDto = exports.amountUpdateSchema = void 0;
+exports.updateFreeProfileSchema = exports.updatePaidProfileSchema = exports.SdkProductCreateManyItemDto = exports.productCreateManyItemSchema = exports.ResetPasswordDto = exports.resetPasswordWithRecoveryCodeTenantJwtSchemaDto = exports.resetPasswordWithRecoveryCodeSchemaDto = exports.resetPasswordWithRecoveryCodeSchema = exports.GenerateRecoveryCodeDto = exports.generateRecoveryCodeTenantJwtSchemaDto = exports.generateRecoveryCodeSchemaDto = exports.generateRecoveryCodeSchema = exports.wxValidateUserTenantJwtPayloadSchemaDto = exports.wxValidateUserSchema = exports.wxGetUserRes = exports.wxGetAccessTokenRes = exports.customerSignupTenantJwtPayloadSchemaDto = exports.customerSignupSchemaDto = exports.customerSignupSchema = exports.customerPreSignupTenantJwtPayloadSchemaDto = exports.customerPreSignupSchemaDto = exports.customerPreSignupSchema = exports.userJwtPayloadSchemaDto = exports.userJwtPayloadSchema = exports.tenantJwtPayloadSchema = exports.verifyMobileSchemaDto = exports.verifyMobileSchema = exports.resetPasswordSchemaDto = exports.resetPasswordSchema = exports.RegisterByUnionIdSchemaDto = exports.registerByUnionIdSchema = exports.FindByUnionIdAndTenantIdSchemaDto = exports.findByUnionIdAndTenantIdSchema = exports.GetTenantByNameSchemaDto = exports.getTenantByNameSchema = exports.AccountExistsSchemaDto = exports.accountExistsSchema = exports.RegisterDto = exports.registerSchema = exports.prismaFilterSchema = exports.agSortSchema = exports.agFilterSchema = exports.agFilter2Schema = exports.agFilter1Schema = exports.agFilterInner2Schema = exports.agFilterInnerSchema = exports.resourceSchema = exports.resourceColumnSchema = exports.resourceAssociationSchema = exports.selectOptionSchema = void 0;
+exports.validateByEmailSchemaDto = exports.validateByEmailSchema = exports.validateTenantSchemaDto = exports.validateTenantSchema = exports.appCreateV4SchemaDto = exports.appCreateV4Schema = exports.createQuickOrderTenantJWTPayloadSchemaDto = exports.SdkCreateQuickOrderDto = exports.createQuickOrderSchema = exports.SdkCreateOrderInJSAPIDto = exports.createOrderJSAPISchema = exports.transactionsNativeSchemaDto = exports.transactionsNativeSchema = exports.createOrderUserJwtPayloadSchemaDto = exports.SdkCreateOrderDto = exports.createOrderSchema = exports.amountUpdateUserJwtPayloadSchemaDto = exports.amountUpdateSchemaDto = exports.amountUpdateSchema = exports.fwhLoginTenantJwtPayloadSchemaDto = exports.fwhLoginSchema = exports.wxPayQuerySchema = void 0;
 const zod_1 = __webpack_require__("zod");
 const nestjs_zod_1 = __webpack_require__("nestjs-zod");
 exports.selectOptionSchema = zod_1.z.object({
@@ -2216,12 +2218,18 @@ exports.userJwtPayloadSchema = zod_1.z.object({
     uid: zod_1.z.number(),
     tid: zod_1.z.number(),
 });
+class userJwtPayloadSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.userJwtPayloadSchema) {
+}
+exports.userJwtPayloadSchemaDto = userJwtPayloadSchemaDto;
 exports.customerPreSignupSchema = zod_1.z.object({
     email: zod_1.z.string(),
 });
 class customerPreSignupSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.customerPreSignupSchema) {
 }
 exports.customerPreSignupSchemaDto = customerPreSignupSchemaDto;
+class customerPreSignupTenantJwtPayloadSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.customerPreSignupSchema.merge(exports.tenantJwtPayloadSchema)) {
+}
+exports.customerPreSignupTenantJwtPayloadSchemaDto = customerPreSignupTenantJwtPayloadSchemaDto;
 exports.customerSignupSchema = zod_1.z.object({
     email: zod_1.z.string(),
     verifyCode: zod_1.z.string(),
@@ -2230,6 +2238,9 @@ exports.customerSignupSchema = zod_1.z.object({
 class customerSignupSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.customerSignupSchema) {
 }
 exports.customerSignupSchemaDto = customerSignupSchemaDto;
+class customerSignupTenantJwtPayloadSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.customerSignupSchema.merge(exports.tenantJwtPayloadSchema)) {
+}
+exports.customerSignupTenantJwtPayloadSchemaDto = customerSignupTenantJwtPayloadSchemaDto;
 exports.wxGetAccessTokenRes = zod_1.z.object({
     access_token: zod_1.z.string(),
     expires_in: zod_1.z.string(),
@@ -2254,9 +2265,9 @@ exports.wxGetUserRes = zod_1.z.object({
 exports.wxValidateUserSchema = zod_1.z.object({
     code: zod_1.z.string(),
 });
-class wxValidateUserSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.wxValidateUserSchema) {
+class wxValidateUserTenantJwtPayloadSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.wxValidateUserSchema.merge(exports.tenantJwtPayloadSchema)) {
 }
-exports.wxValidateUserSchemaDto = wxValidateUserSchemaDto;
+exports.wxValidateUserTenantJwtPayloadSchemaDto = wxValidateUserTenantJwtPayloadSchemaDto;
 exports.generateRecoveryCodeSchema = zod_1.z.object({
     email: zod_1.z.string(),
 });
@@ -2343,7 +2354,7 @@ class amountUpdateUserJwtPayloadSchemaDto extends (0, nestjs_zod_1.createZodDto)
 }
 exports.amountUpdateUserJwtPayloadSchemaDto = amountUpdateUserJwtPayloadSchemaDto;
 exports.createOrderSchema = zod_1.z.object({
-    productId: zod_1.z.string(),
+    productId: zod_1.z.number(),
     openid: zod_1.z.string().optional(),
 });
 class SdkCreateOrderDto extends (0, nestjs_zod_1.createZodDto)(exports.createOrderSchema) {
@@ -2375,6 +2386,27 @@ exports.SdkCreateQuickOrderDto = SdkCreateQuickOrderDto;
 class createQuickOrderTenantJWTPayloadSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.createQuickOrderSchema.merge(exports.tenantJwtPayloadSchema)) {
 }
 exports.createQuickOrderTenantJWTPayloadSchemaDto = createQuickOrderTenantJWTPayloadSchemaDto;
+exports.appCreateV4Schema = zod_1.z.object({
+    displayName: zod_1.z.string(),
+});
+class appCreateV4SchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.appCreateV4Schema) {
+}
+exports.appCreateV4SchemaDto = appCreateV4SchemaDto;
+exports.validateTenantSchema = zod_1.z.object({
+    name: zod_1.z.string(),
+    password: zod_1.z.string(),
+});
+class validateTenantSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.validateTenantSchema) {
+}
+exports.validateTenantSchemaDto = validateTenantSchemaDto;
+exports.validateByEmailSchema = zod_1.z.object({
+    email: zod_1.z.string(),
+    tenantId: zod_1.z.number(),
+    password: zod_1.z.string(),
+});
+class validateByEmailSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.validateByEmailSchema) {
+}
+exports.validateByEmailSchemaDto = validateByEmailSchemaDto;
 
 
 /***/ }),
@@ -2429,6 +2461,7 @@ tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared/src/utils/
 tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared/src/utils/ag-grid-utils.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared/src/utils/schema-utils.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared/src/utils/custom-error.ts"), exports);
+tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared/src/utils/dayjs-utils.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared/src/services/schema/meta.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared/src/services/schema/schemaTransformer.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared/src/services/schema/dynamicTableSchemaTransformer.ts"), exports);
@@ -3679,6 +3712,39 @@ exports.CustomError = CustomError;
 
 /***/ }),
 
+/***/ "../../../libs/flowda-shared/src/utils/dayjs-utils.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getTimeByDay = exports.getTimeExpire = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const utc_1 = tslib_1.__importDefault(__webpack_require__("dayjs/plugin/utc"));
+const timezone_1 = tslib_1.__importDefault(__webpack_require__("dayjs/plugin/timezone"));
+const advancedFormat_1 = tslib_1.__importDefault(__webpack_require__("dayjs/plugin/advancedFormat"));
+const dayjs_1 = tslib_1.__importDefault(__webpack_require__("dayjs"));
+dayjs_1.default.extend(utc_1.default);
+dayjs_1.default.extend(timezone_1.default);
+dayjs_1.default.extend(advancedFormat_1.default);
+function getTimeExpire(min) {
+    const fmt = (0, dayjs_1.default)().tz('Asia/Shanghai').add(min, 'minute').format('YYYY-MM-DDTHH:mm:ss+z');
+    const ret = fmt.match(/.*(GMT\+(\d))/);
+    if (ret == null) {
+        return '';
+    }
+    else {
+        return ret[0].replace(ret[1], ret[2].padStart(2, '0') + ':00');
+    }
+}
+exports.getTimeExpire = getTimeExpire;
+function getTimeByDay(day) {
+    return (0, dayjs_1.default)().tz('Asia/Shanghai').add(day, 'day').toDate();
+}
+exports.getTimeByDay = getTimeByDay;
+
+
+/***/ }),
+
 /***/ "../../../libs/flowda-shared/src/utils/getServices.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
@@ -3914,7 +3980,7 @@ exports.flowdaInfraModule = new inversify_1.ContainerModule((bind) => {
         });
     })
         .inSingletonScope();
-    bind(legacy_libs_1.WechatpayNodeV3Symbol)
+    bind(flowda_shared_types_1.WechatpayNodeV3Symbol)
         .toDynamicValue((context) => {
         const config = context.container.get(config_service_2.IConfigService);
         return new legacy_libs_1.WechatpayNodeV3({
@@ -3925,8 +3991,8 @@ exports.flowdaInfraModule = new inversify_1.ContainerModule((bind) => {
         });
     })
         .inSingletonScope();
-    bind(legacy_libs_1.WechatpayNodeV3FactorySymbol).toFactory(context => {
-        return () => context.container.get(legacy_libs_1.WechatpayNodeV3Symbol);
+    bind(flowda_shared_types_1.WechatpayNodeV3FactorySymbol).toFactory(context => {
+        return () => context.container.get(flowda_shared_types_1.WechatpayNodeV3Symbol);
     });
     bind(flowda_shared_types_1.WechatOAuthSymbol)
         .toDynamicValue((context) => {
@@ -4661,7 +4727,7 @@ exports.prismaClientFlowdaModule = new inversify_1.ContainerModule((bind) => {
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.COS = exports.WechatpayNodeV3 = exports.advancedFormat = exports.timezone = exports.utc = exports.dayjs = exports.WechatOAuth = exports.cuid = exports.WechatpayNodeV3FactorySymbol = exports.WechatpayNodeV3Symbol = void 0;
+exports.COS = exports.WechatpayNodeV3 = exports.advancedFormat = exports.timezone = exports.utc = exports.dayjs = exports.WechatOAuth = exports.cuid = void 0;
 const cuid = __webpack_require__("cuid");
 exports.cuid = cuid;
 const WechatOAuth = __webpack_require__("wechat-oauth");
@@ -4676,8 +4742,6 @@ const advancedFormat = __webpack_require__("dayjs/plugin/advancedFormat");
 exports.advancedFormat = advancedFormat;
 const WechatpayNodeV3 = __webpack_require__("wechatpay-node-v3");
 exports.WechatpayNodeV3 = WechatpayNodeV3;
-exports.WechatpayNodeV3Symbol = Symbol.for('WechatpayNodeV3Symbol');
-exports.WechatpayNodeV3FactorySymbol = Symbol.for('WechatpayNodeV3FactorySymbol');
 const COS = __webpack_require__("cos-nodejs-sdk-v5");
 exports.COS = COS;
 
@@ -4924,8 +4988,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppAuthV4Service = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
-const flowda_shared_1 = __webpack_require__("../../../libs/flowda-shared/src/index.ts");
-const common_1 = __webpack_require__("@nestjs/common");
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
 const infra_1 = __webpack_require__("../../../libs/v1/flowda-services/src/infra/index.ts");
 /*
 和账户相关的，目前仅仅作为委托和 input output map（保持 v1 接口）
@@ -4939,49 +5002,29 @@ let AppAuthV4Service = AppAuthV4Service_1 = class AppAuthV4Service {
     }
     create(dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const tenantRet = yield this.flowdaTrpc.user.createTenant.mutate({
+            return this.flowdaTrpc.appAuthV4.create.mutate({
                 displayName: dto.displayName,
             });
-            return Object.assign({
-                appToken: tenantRet.appToken,
-            }, mapTenantToApp(tenantRet));
         });
     }
     validate(appId, appToken) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const ret = yield this.flowdaTrpc.user.validateTenant.query({
-                name: appId,
-                password: appToken,
+            return this.flowdaTrpc.appAuthV4.validate.mutate({
+                appId: appId,
+                appToken: appToken,
             });
-            return {
-                at: ret.at.token,
-                rt: ret.rt.token,
-                app: mapTenantToApp(ret.tenant),
-                expireAt: ret.at.exp,
-            };
         });
     }
     refreshToken(rt) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const ret = yield this.flowdaTrpc.user.refreshTenantToken.query({ rt });
-            return {
-                at: ret.at.token,
-                expireAt: ret.at.exp,
-                app: mapTenantToApp(ret),
-            };
+            return this.flowdaTrpc.appAuthV4.refreshToken.mutate({ rt });
         });
     }
     getApp(tid) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            this.logger.debug(`[getApp] tid ${tid}`);
-            const tenant = yield this.flowdaTrpc.user.getTenant.query({
+            return this.flowdaTrpc.appAuthV4.getApp.query({
                 tid: Number(tid),
             });
-            if (!tenant) {
-                const description = `tenant not found, tid:${tid}`;
-                throw new common_1.NotFoundException({ description });
-            }
-            return mapTenantToApp(tenant);
         });
     }
     getAccessTokenSecret() {
@@ -4992,7 +5035,7 @@ let AppAuthV4Service = AppAuthV4Service_1 = class AppAuthV4Service {
 exports.AppAuthV4Service = AppAuthV4Service;
 exports.AppAuthV4Service = AppAuthV4Service = AppAuthV4Service_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
-    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_1.FlowdaTrpcClientSymbol)),
+    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_types_1.FlowdaTrpcClientSymbol)),
     tslib_1.__param(1, (0, inversify_1.inject)(infra_1.IConfigService)),
     tslib_1.__param(2, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [Object, typeof (_a = typeof infra_1.IConfigService !== "undefined" && infra_1.IConfigService) === "function" ? _a : Object, Function])
@@ -5889,82 +5932,56 @@ exports.CustomerAuthService = CustomerAuthService = tslib_1.__decorate([
 
 
 var CustomerAuthV4Service_1;
-var _a, _b;
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.mapUserToCustomer = exports.CustomerAuthV4Service = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
 const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
 const infra_1 = __webpack_require__("../../../libs/v1/flowda-services/src/infra/index.ts");
-const customAuthV4_helper_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/customer-auth/customAuthV4.helper.ts");
 let CustomerAuthV4Service = CustomerAuthV4Service_1 = class CustomerAuthV4Service {
-    constructor(flowdaTrpc, config, helper, loggerFactory) {
+    constructor(flowdaTrpc, config, loggerFactory) {
         this.flowdaTrpc = flowdaTrpc;
         this.config = config;
-        this.helper = helper;
         this.logger = loggerFactory(CustomerAuthV4Service_1.name);
     }
     preSignup(reqApp, dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const ret = yield this.flowdaTrpc.user.preSignup.mutate({
+            return this.flowdaTrpc.customerAuthV4.preSignup.mutate({
                 tid: reqApp.id,
                 email: dto.email,
             });
-            return ret;
         });
     }
     verifyAndSignup(reqApp, dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const ret = yield this.flowdaTrpc.user.verifyAndSignup.mutate(Object.assign({ tid: reqApp.id }, dto));
-            return {
-                id: String(ret.id),
-                name: ret.username,
-                email: ret.email,
-            };
+            return this.flowdaTrpc.customerAuthV4.verifyAndSignup.mutate(Object.assign({ tid: reqApp.id }, dto));
         });
     }
     validateUserReturnTokens(appId, name, password) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const ret = yield this.flowdaTrpc.user.validateByEmail.query({
-                tenantId: Number(appId),
-                email: name,
+            return this.flowdaTrpc.customerAuthV4.validateUserReturnTokens.mutate({
+                tid: Number(appId),
+                name: name,
                 password: password,
             });
-            return {
-                at: ret.at.token,
-                rt: ret.rt.token,
-                user: mapUserToCustomer(ret.user),
-                expireAt: ret.at.exp,
-            };
         });
     }
     wxValidateUser(tid, code) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const ret = yield this.helper.wxValidateUser(tid, code);
-            return {
-                at: ret.at.token,
-                rt: ret.rt.token,
-                user: mapUserToCustomer(ret.user),
-                expireAt: ret.at.exp,
-            };
+            return this.flowdaTrpc.customerAuthV4.wxValidateUser.mutate({ tid, code });
         });
     }
     refreshToken(reqApp, rt) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const ret = yield this.flowdaTrpc.user.refreshToken.query({
+            return this.flowdaTrpc.customerAuthV4.refreshToken.mutate({
                 rt: rt,
             });
-            return {
-                at: ret.at.token,
-                user: mapUserToCustomer(ret.user),
-                expireAt: ret.at.exp,
-            };
         });
     }
     getUser(userId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const userRet = yield this.flowdaTrpc.user.findUnique.query({ id: Number(userId) });
-            return mapUserToCustomer(userRet);
+            return this.flowdaTrpc.customerAuthV4.getUser.query({ userId: Number(userId) });
         });
     }
     getAccessTokenSecret() {
@@ -5973,7 +5990,7 @@ let CustomerAuthV4Service = CustomerAuthV4Service_1 = class CustomerAuthV4Servic
     }
     logoutApi(tid, uid) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            yield this.flowdaTrpc.user.logout.mutate({
+            yield this.flowdaTrpc.customerAuthV4.logoutApi.mutate({
                 tid: Number(tid),
                 uid: Number(uid),
             });
@@ -5981,37 +5998,22 @@ let CustomerAuthV4Service = CustomerAuthV4Service_1 = class CustomerAuthV4Servic
     }
     generateRecoveryCode(dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.flowdaTrpc.user.generateRecoveryCode.mutate({
-                email: dto.email,
-                tid: Number(dto.appId),
-            });
+            return this.flowdaTrpc.customerAuthV4.generateRecoveryCode.mutate(dto);
         });
     }
     resetPassword(dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const userRet = yield this.flowdaTrpc.user.resetPasswordWithRecoveryCode.mutate({
-                recoveryCode: dto.recoveryCode,
-                password: dto.password,
-                tid: Number(dto.appId),
-            });
-            return mapUserToCustomer(userRet);
+            return this.flowdaTrpc.customerAuthV4.resetPassword.mutate(dto);
         });
     }
     fwhLogin(tid, code) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const ret = yield this.helper.fwhLogin(tid, code);
-            return {
-                at: ret.at.token,
-                rt: ret.rt.token,
-                user: mapUserToCustomer(ret.user),
-                expireAt: ret.at.exp,
-            };
+            return this.flowdaTrpc.customerAuthV4.fwhLogin.mutate({ tid, code });
         });
     }
     amountUpdate(dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const ret = yield this.flowdaTrpc.user.amountUpdate.mutate(dto);
-            return mapUserToCustomer(ret);
+            return this.flowdaTrpc.customerAuthV4.amountUpdate.mutate(dto);
         });
     }
 };
@@ -6020,9 +6022,8 @@ exports.CustomerAuthV4Service = CustomerAuthV4Service = CustomerAuthV4Service_1 
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_types_1.FlowdaTrpcClientSymbol)),
     tslib_1.__param(1, (0, inversify_1.inject)(infra_1.IConfigService)),
-    tslib_1.__param(2, (0, inversify_1.inject)(customAuthV4_helper_1.CustomAuthV4Helper)),
-    tslib_1.__param(3, (0, inversify_1.inject)('Factory<Logger>')),
-    tslib_1.__metadata("design:paramtypes", [Object, typeof (_a = typeof infra_1.IConfigService !== "undefined" && infra_1.IConfigService) === "function" ? _a : Object, typeof (_b = typeof customAuthV4_helper_1.CustomAuthV4Helper !== "undefined" && customAuthV4_helper_1.CustomAuthV4Helper) === "function" ? _b : Object, Function])
+    tslib_1.__param(2, (0, inversify_1.inject)('Factory<Logger>')),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_a = typeof infra_1.IConfigService !== "undefined" && infra_1.IConfigService) === "function" ? _a : Object, Function])
 ], CustomerAuthV4Service);
 function mapUserToCustomer(user) {
     return {
@@ -7050,7 +7051,7 @@ let OrderService = OrderService_1 = class OrderService {
     create(user, dto, { tx }) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             this.logger.log(`creating order: `, user.id, dto.productId);
-            const { product, productSnapshot, order } = yield this.doCreate(user.appId, user.id, dto.productId, { tx });
+            const { product, productSnapshot, order } = yield this.doCreate(user.appId, user.id, String(dto.productId), { tx });
             const profile = yield tx.profile.findUnique({ where: { customerId: user.id } });
             this.logger.log(`profile `, profile);
             // 检查限购情况
@@ -7098,7 +7099,7 @@ let OrderService = OrderService_1 = class OrderService {
      */
     createJSAPI(user, dto, { tx }) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const { product, productSnapshot, order } = yield this.doCreate(user.appId, user.id, dto.productId, { tx });
+            const { product, productSnapshot, order } = yield this.doCreate(user.appId, user.id, String(dto.productId), { tx });
             const profile = yield tx.profile.findUnique({ where: { customerId: user.id } });
             // 检查限购情况
             if (product.restricted) {
@@ -7386,275 +7387,49 @@ exports.OrderTx = OrderTx = OrderTx_1 = tslib_1.__decorate([
 
 
 var OrderV4Service_1;
-var _a, _b, _c;
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.OrderV4Service = exports.orderSelect = void 0;
+exports.OrderV4Service = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
-const common_1 = __webpack_require__("@nestjs/common");
-const db = tslib_1.__importStar(__webpack_require__("@prisma/client-v1-flowda"));
 const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
 const client_1 = __webpack_require__("@trpc/client");
-const _ = tslib_1.__importStar(__webpack_require__("radash"));
-const v1_flowda_types_1 = __webpack_require__("../../../libs/v1/flowda-types/src/index.ts");
-const wxPay_service_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/wx-pay/wxPay.service.ts");
-const customerAuthV4_service_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/customer-auth/customerAuthV4.service.ts");
-exports.orderSelect = db.Prisma.validator()({
-    id: true,
-    serial: true,
-    status: true,
-    customerId: true,
-    appId: true,
-    productSnapshots: {
-        select: {
-            id: true,
-            snapshotPrice: true,
-            productId: true,
-        },
-    },
-});
 let OrderV4Service = OrderV4Service_1 = class OrderV4Service {
-    constructor(wxPayService, prisma, flowdaTrpc, loggerFactory) {
-        this.wxPayService = wxPayService;
-        this.prisma = prisma;
+    constructor(flowdaTrpc, loggerFactory) {
         this.flowdaTrpc = flowdaTrpc;
         this.logger = loggerFactory(OrderV4Service_1.name);
     }
     query(orderId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const ret = yield this.prisma.order.findMany({
-                where: { id: orderId },
-                select: exports.orderSelect,
-            });
-            const userIds = _.unique(ret.map(i => Number(i.customerId)));
-            const usersRet = yield this.flowdaTrpc.user.findMany.query({ userIds: userIds });
-            return ret.map(item => {
-                const user = usersRet.find(c => String(c.id) === item.customerId);
-                return Object.assign(Object.assign({}, item), { customer: (0, customerAuthV4_service_1.mapUserToCustomer)(user) });
-            });
+            return this.flowdaTrpc.orderV4.query.query({ orderId });
         });
     }
     queryPay(tid, userId, orderId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            this.logger.log(`querying order, uid:${userId}, orderId:${orderId}`);
-            const userRet = yield this.flowdaTrpc.user.findUnique.query({
-                id: Number(userId),
-            });
-            const orderRet = yield this.prisma.order.findFirstOrThrow({
-                select: exports.orderSelect,
-                where: { id: orderId },
-            });
-            if (orderRet.customerId !== userId) {
-                throw new v1_flowda_types_1.OrderError.OrderCustomerIdNotMatch();
-            }
-            this.logger.log(`order found ${orderRet.id}, query request to wx`);
-            const payQueryRet = yield this.wxPayService.query(orderId);
-            this.logger.log(`order query response from wx ${payQueryRet === null || payQueryRet === void 0 ? void 0 : payQueryRet.trade_state}`);
-            if (payQueryRet.status !== 200 || payQueryRet.trade_state !== 'SUCCESS') {
-                throw new v1_flowda_types_1.OrderError.PayQueryStatusNotOk(payQueryRet);
-            }
-            this.logger.log(`order query success`);
-            // 创建支付关联订单
-            yield this.prisma.pay.upsert({
-                where: {
-                    orderId: orderId,
-                },
-                create: {
-                    tenantId: String(userRet.tenantId),
-                    status: db.PayStatus.PAIED,
-                    orderId: orderId,
-                    transactionId: payQueryRet.transaction_id,
-                },
-                update: {
-                    status: db.PayStatus.PAIED,
-                    transactionId: payQueryRet.transaction_id,
-                },
-            });
-            // todo: 后续重构成 productSnapshot 和 order 1-1，暂时先取第一个
-            const productId = orderRet.productSnapshots[0].productId;
-            const productRet = yield this.prisma.product.findUniqueOrThrow({
-                where: {
-                    id: productId,
-                },
-            });
-            // 更新用户 orderProfile
-            const userRet2 = yield this.flowdaTrpc.user.updatePaidProfile.mutate({
-                uid: Number(userId),
-                tid: tid,
-                product: _.pick(productRet, ['productType', 'plan', 'amount', 'validityPeriod']),
-            });
-            return {
-                order: orderRet,
-                payQueryRet,
-                customer: (0, customerAuthV4_service_1.mapUserToCustomer)(userRet2),
-            };
+            return this.flowdaTrpc.orderV4.queryPay.mutate({ tid, uid: userId, orderId });
         });
     }
     createNative(dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.createInner(dto, this.wxPayService.transactionsNative.bind(this.wxPayService));
+            return this.flowdaTrpc.orderV4.createNative.mutate(dto);
         });
     }
     createJSAPI(dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.createInner(dto, this.wxPayService.transactionsJSAPI.bind(this.wxPayService));
-        });
-    }
-    /*
-    直接用 callback 比 template method 简化不少代码也方便测试
-     */
-    createInner(dto, transactionCallback) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            this.logger.log(`creating order:tid:${dto.tid},uid:${dto.uid},productId:${dto.productId}`);
-            const productRet = yield this.prisma.product.findUniqueOrThrow({
-                where: {
-                    id: dto.productId,
-                },
-            });
-            if (productRet.restricted /*如果限购*/) {
-                const purchased = yield this.prisma.order.count({
-                    where: {
-                        appId: String(dto.tid),
-                        customerId: String(dto.uid),
-                        productSnapshots: {
-                            some: {
-                                productId: dto.productId,
-                            },
-                        },
-                    },
-                });
-                if (purchased > 0) {
-                    throw new common_1.ForbiddenException(`Product is restricted`, {
-                        description: `order history length: ${purchased}`,
-                    });
-                }
-            }
-            const lastRet = yield this.prisma.order.findFirst({
-                orderBy: [
-                    {
-                        createdAt: 'desc',
-                    },
-                ],
-            });
-            let serial;
-            if (lastRet == null || lastRet.serial >= flowda_shared_types_1.Serial_Max) {
-                serial = flowda_shared_types_1.Serial_Min;
-            }
-            else {
-                serial = lastRet.serial + 1;
-            }
-            if (productRet.price.toNumber() === 0 /*免费产品*/) {
-                const orderRet = yield this.prisma.order.create({
-                    data: {
-                        appId: String(dto.tid),
-                        customerId: String(dto.uid),
-                        status: db.OrderStatus.FREE_DEAL,
-                        serial: serial,
-                        productSnapshots: {
-                            create: {
-                                snapshotPrice: productRet.price,
-                                productId: productRet.id,
-                                tenantId: String(dto.tid),
-                            },
-                        },
-                    },
-                    select: exports.orderSelect,
-                });
-                const userRet = yield this.flowdaTrpc.user.updateFreeProfile.mutate({
-                    tid: dto.tid,
-                    uid: dto.uid,
-                    product: _.pick(productRet, ['productType', 'plan', 'amount', 'validityPeriod']),
-                });
-                this.logger.log(`order created: ${orderRet.id}`);
-                return {
-                    customer: (0, customerAuthV4_service_1.mapUserToCustomer)(userRet),
-                    order: orderRet,
-                    wxRet: null,
-                };
-            }
-            const userRet = yield this.flowdaTrpc.user.findUnique.query({
-                id: dto.uid,
-            });
-            // 付费产品
-            // 1. 创建订单
-            const orderRet = yield this.prisma.order.create({
-                data: {
-                    appId: String(dto.tid),
-                    customerId: String(dto.uid),
-                    status: db.OrderStatus.INITIALIZED,
-                    serial: serial,
-                    productSnapshots: {
-                        create: {
-                            snapshotPrice: productRet.price,
-                            productId: productRet.id,
-                            tenantId: String(dto.tid),
-                        },
-                    },
-                },
-                select: exports.orderSelect,
-            });
-            try {
-                // 2. 尝试发起微信支付 失败不影响订单
-                // todo 添加失败重试
-                const wxRet = yield transactionCallback({
-                    openid: dto.openid,
-                    orderId: orderRet.id,
-                    desc: productRet.name,
-                    total: productRet.price.toNumber(),
-                });
-                const orderRet2 = yield this.prisma.order.update({
-                    where: {
-                        id: orderRet.id,
-                    },
-                    data: {
-                        status: db.OrderStatus.PAY_ASSOCIATED,
-                    },
-                    select: exports.orderSelect,
-                });
-                return {
-                    customer: (0, customerAuthV4_service_1.mapUserToCustomer)(userRet),
-                    order: orderRet2,
-                    wxRet: wxRet,
-                };
-            }
-            catch (e) {
-                this.logger.error(e);
-                return {
-                    customer: (0, customerAuthV4_service_1.mapUserToCustomer)(userRet),
-                    order: orderRet,
-                    wxRet: {
-                        success: false,
-                    },
-                };
-            }
+            return this.flowdaTrpc.orderV4.createJSAPI.mutate(dto);
         });
     }
     createQuick(dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const userRet = yield this.flowdaTrpc.user.createQuick.mutate(dto);
-            return this.createNative({
-                tid: userRet.tenantId,
-                uid: userRet.id,
-                productId: dto.productId,
-            });
+            return this.flowdaTrpc.orderV4.createQuick.mutate(dto);
         });
     }
     queryPayQuick(tid, anonymousCustomerToken, orderId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const userRet = yield this.flowdaTrpc.user.findOrThrowByNameAndTenantId.query({
-                username: anonymousCustomerToken,
-                tid: tid,
-            });
-            this.logger.debug(`start queryPay`);
-            const ret = yield this.queryPay(tid, String(userRet.id), orderId);
-            this.logger.debug(`succeed queryPay`);
-            const openid = ret.payQueryRet.payer.openid;
-            const updateUserRet = yield this.flowdaTrpc.user.updateAnonymousToPayOpenId.mutate({
-                id: userRet.id,
-                openid: openid,
-            });
-            return Object.assign(Object.assign({}, ret), {
-                customer: (0, customerAuthV4_service_1.mapUserToCustomer)(updateUserRet),
+            return this.flowdaTrpc.orderV4.queryPayQuick.mutate({
+                tid,
+                anonymousCustomerToken,
+                orderId,
             });
         });
     }
@@ -7662,11 +7437,9 @@ let OrderV4Service = OrderV4Service_1 = class OrderV4Service {
 exports.OrderV4Service = OrderV4Service;
 exports.OrderV4Service = OrderV4Service = OrderV4Service_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
-    tslib_1.__param(0, (0, inversify_1.inject)(wxPay_service_1.WxPayService)),
-    tslib_1.__param(1, (0, inversify_1.inject)(flowda_shared_types_1.PrismaClientSymbol)),
-    tslib_1.__param(2, (0, inversify_1.inject)(flowda_shared_types_1.FlowdaTrpcClientSymbol)),
-    tslib_1.__param(3, (0, inversify_1.inject)('Factory<Logger>')),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof wxPay_service_1.WxPayService !== "undefined" && wxPay_service_1.WxPayService) === "function" ? _a : Object, typeof (_b = typeof db !== "undefined" && db.PrismaClient) === "function" ? _b : Object, typeof (_c = typeof client_1.CreateTRPCProxyClient !== "undefined" && client_1.CreateTRPCProxyClient) === "function" ? _c : Object, Function])
+    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_types_1.FlowdaTrpcClientSymbol)),
+    tslib_1.__param(1, (0, inversify_1.inject)('Factory<Logger>')),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof client_1.CreateTRPCProxyClient !== "undefined" && client_1.CreateTRPCProxyClient) === "function" ? _a : Object, Function])
 ], OrderV4Service);
 
 
@@ -7835,23 +7608,18 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProductV4Service = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
-const db = tslib_1.__importStar(__webpack_require__("@prisma/client-v1-flowda"));
 const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
+const client_1 = __webpack_require__("@trpc/client");
 let ProductV4Service = ProductV4Service_1 = class ProductV4Service {
-    constructor(prisma, loggerFactory) {
-        this.prisma = prisma;
+    constructor(flowdaTrpc, loggerFactory) {
+        this.flowdaTrpc = flowdaTrpc;
         this.logger = loggerFactory(ProductV4Service_1.name);
     }
     createManyProducts(appId, list) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const data = list.map(item => (Object.assign(Object.assign({}, item), { tenantId: String(appId), appId: String(appId), productType: item.productType, restricted: item.restricted || 0, amount: item.amount, 
-                // 以下是为了处理 prisma null
-                plan: item.plan === undefined ? null : item.plan, extendedDescriptionData: item.extendedDescriptionData, fileSize: item.fileSize === undefined ? null : item.fileSize, storeDuration: item.storeDuration === undefined ? null : item.storeDuration, hasAds: item.hasAds === undefined ? null : item.hasAds, tecSupport: item.tecSupport === undefined ? null : item.tecSupport, validityPeriod: null })));
-            yield this.prisma.product.createMany({ data });
-            return this.prisma.product.findMany({
-                where: {
-                    appId: String(appId),
-                },
+            return this.flowdaTrpc.productV4.createManyProducts.mutate({
+                tid: appId,
+                products: list,
             });
         });
     }
@@ -7859,9 +7627,9 @@ let ProductV4Service = ProductV4Service_1 = class ProductV4Service {
 exports.ProductV4Service = ProductV4Service;
 exports.ProductV4Service = ProductV4Service = ProductV4Service_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
-    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_types_1.PrismaClientSymbol)),
+    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_types_1.FlowdaTrpcClientSymbol)),
     tslib_1.__param(1, (0, inversify_1.inject)('Factory<Logger>')),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof db !== "undefined" && db.PrismaClient) === "function" ? _a : Object, Function])
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof client_1.CreateTRPCProxyClient !== "undefined" && client_1.CreateTRPCProxyClient) === "function" ? _a : Object, Function])
 ], ProductV4Service);
 
 
@@ -8247,10 +8015,10 @@ var WxPayService_1;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.WxPayService = void 0;
 const tslib_1 = __webpack_require__("tslib");
-const legacy_libs_1 = __webpack_require__("../../../libs/v1/flowda-services/src/legacy-libs.ts");
 const inversify_1 = __webpack_require__("inversify");
 const dayjs_1 = __webpack_require__("../../../libs/v1/flowda-services/src/utils/dayjs.ts");
 const v1_flowda_types_1 = __webpack_require__("../../../libs/v1/flowda-types/src/index.ts");
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
 let WxPayService = WxPayService_1 = class WxPayService {
     constructor(wechatPayNodeV3Factory, loggerFactory) {
         this.wechatPayNodeV3Factory = wechatPayNodeV3Factory;
@@ -8365,7 +8133,7 @@ let WxPayService = WxPayService_1 = class WxPayService {
 exports.WxPayService = WxPayService;
 exports.WxPayService = WxPayService = WxPayService_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
-    tslib_1.__param(0, (0, inversify_1.inject)(legacy_libs_1.WechatpayNodeV3FactorySymbol)),
+    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_types_1.WechatpayNodeV3FactorySymbol)),
     tslib_1.__param(1, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [Function, Function])
 ], WxPayService);
