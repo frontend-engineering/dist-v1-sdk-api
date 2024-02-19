@@ -6,18 +6,16 @@
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b;
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const v1_flowda_services_1 = __webpack_require__("../../../libs/v1/flowda-services/src/index.ts");
 const appLocalAuth_guard_1 = __webpack_require__("./src/app/appLocalAuth.guard.ts");
-const appLocalAuthV4_guard_1 = __webpack_require__("./src/app/appLocalAuthV4.guard.ts");
 let AppController = class AppController {
-    constructor(appAuth, appAuthV4) {
+    constructor(appAuth) {
         this.appAuth = appAuth;
-        this.appAuthV4 = appAuthV4;
     }
     create(dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
@@ -26,7 +24,7 @@ let AppController = class AppController {
     }
     createV4(dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.appAuthV4.create(dto);
+            throw new common_1.GoneException();
         });
     }
     verify(req) {
@@ -34,13 +32,13 @@ let AppController = class AppController {
         return req.user;
     }
     verifyV4(req) {
-        return req.user;
+        throw new common_1.GoneException();
     }
     refreshToken(rt) {
         return this.appAuth.appRefreshToken(rt);
     }
     refreshTokenV4(rt) {
-        return this.appAuthV4.refreshToken(rt);
+        throw new common_1.GoneException();
     }
 };
 exports.AppController = AppController;
@@ -72,7 +70,6 @@ tslib_1.__decorate([
 ], AppController.prototype, "verify", null);
 tslib_1.__decorate([
     (0, common_1.Version)('4'),
-    (0, common_1.UseGuards)(appLocalAuthV4_guard_1.AppLocalAuthV4Guard),
     (0, common_1.Post)('verify'),
     (0, common_1.HttpCode)(200),
     tslib_1.__param(0, (0, common_1.Req)()),
@@ -102,7 +99,7 @@ exports.AppController = AppController = tslib_1.__decorate([
     (0, common_1.Controller)({
         path: 'sdk/app',
     }),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_services_1.AppAuthService !== "undefined" && v1_flowda_services_1.AppAuthService) === "function" ? _a : Object, typeof (_b = typeof v1_flowda_services_1.AppAuthV4Service !== "undefined" && v1_flowda_services_1.AppAuthV4Service) === "function" ? _b : Object])
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_services_1.AppAuthService !== "undefined" && v1_flowda_services_1.AppAuthService) === "function" ? _a : Object])
 ], AppController);
 
 
@@ -160,67 +157,6 @@ exports.AppJwtAuthGuard = AppJwtAuthGuard;
 exports.AppJwtAuthGuard = AppJwtAuthGuard = tslib_1.__decorate([
     (0, common_1.Injectable)()
 ], AppJwtAuthGuard);
-
-
-/***/ }),
-
-/***/ "./src/app/appJwtAuthV4.guard.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AppJwtAuthV4Guard = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const passport_1 = __webpack_require__("@nestjs/passport");
-const common_1 = __webpack_require__("@nestjs/common");
-let AppJwtAuthV4Guard = class AppJwtAuthV4Guard extends (0, passport_1.AuthGuard)('appJwtV4') {
-};
-exports.AppJwtAuthV4Guard = AppJwtAuthV4Guard;
-exports.AppJwtAuthV4Guard = AppJwtAuthV4Guard = tslib_1.__decorate([
-    (0, common_1.Injectable)()
-], AppJwtAuthV4Guard);
-
-
-/***/ }),
-
-/***/ "./src/app/appJwtV4.strategy.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-var AppJwtV4Strategy_1;
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AppJwtV4Strategy = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const passport_1 = __webpack_require__("@nestjs/passport");
-const passport_jwt_1 = __webpack_require__("passport-jwt");
-const common_1 = __webpack_require__("@nestjs/common");
-const v1_flowda_services_1 = __webpack_require__("../../../libs/v1/flowda-services/src/index.ts");
-let AppJwtV4Strategy = AppJwtV4Strategy_1 = class AppJwtV4Strategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy, 'appJwtV4') {
-    constructor(service) {
-        const at = passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken();
-        super({
-            jwtFromRequest: at,
-            ignoreExpiration: false,
-            secretOrKey: service.getAccessTokenSecret(),
-        });
-        this.service = service;
-        this.logger = new common_1.Logger(AppJwtV4Strategy_1.name);
-    }
-    validate(payload) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            this.logger.debug(`[validate] payload, ${JSON.stringify(payload)}`);
-            const app = yield this.service.getApp(payload.tid);
-            this.logger.debug(`[validate] app, ${JSON.stringify(app)}`);
-            return app;
-        });
-    }
-};
-exports.AppJwtV4Strategy = AppJwtV4Strategy;
-exports.AppJwtV4Strategy = AppJwtV4Strategy = AppJwtV4Strategy_1 = tslib_1.__decorate([
-    (0, common_1.Injectable)(),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_services_1.AppAuthV4Service !== "undefined" && v1_flowda_services_1.AppAuthV4Service) === "function" ? _a : Object])
-], AppJwtV4Strategy);
 
 
 /***/ }),
@@ -287,72 +223,11 @@ exports.AppLocalAuthGuard = AppLocalAuthGuard = tslib_1.__decorate([
 
 /***/ }),
 
-/***/ "./src/app/appLocalAuthV4.guard.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AppLocalAuthV4Guard = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const passport_1 = __webpack_require__("@nestjs/passport");
-const common_1 = __webpack_require__("@nestjs/common");
-let AppLocalAuthV4Guard = class AppLocalAuthV4Guard extends (0, passport_1.AuthGuard)('appLocalV4') {
-};
-exports.AppLocalAuthV4Guard = AppLocalAuthV4Guard;
-exports.AppLocalAuthV4Guard = AppLocalAuthV4Guard = tslib_1.__decorate([
-    (0, common_1.Injectable)()
-], AppLocalAuthV4Guard);
-
-
-/***/ }),
-
-/***/ "./src/app/appLocalV4.strategy.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-var AppLocalAuthV4Strategy_1;
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AppLocalAuthV4Strategy = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const passport_1 = __webpack_require__("@nestjs/passport");
-const passport_local_1 = __webpack_require__("passport-local");
-const common_1 = __webpack_require__("@nestjs/common");
-const v1_flowda_services_1 = __webpack_require__("../../../libs/v1/flowda-services/src/index.ts");
-let AppLocalAuthV4Strategy = AppLocalAuthV4Strategy_1 = class AppLocalAuthV4Strategy extends (0, passport_1.PassportStrategy)(passport_local_1.Strategy, 'appLocalV4') {
-    constructor(authV4Service) {
-        super({
-            usernameField: 'appId',
-            passwordField: 'appToken',
-        });
-        this.authV4Service = authV4Service;
-        this.logger = new common_1.Logger(AppLocalAuthV4Strategy_1.name);
-    }
-    validate(appId, appToken) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            this.logger.debug(`validate appId ${appId}`);
-            const tokens = yield this.authV4Service.validate(appId, appToken);
-            if (!tokens) {
-                throw new common_1.UnauthorizedException();
-            }
-            return tokens;
-        });
-    }
-};
-exports.AppLocalAuthV4Strategy = AppLocalAuthV4Strategy;
-exports.AppLocalAuthV4Strategy = AppLocalAuthV4Strategy = AppLocalAuthV4Strategy_1 = tslib_1.__decorate([
-    (0, common_1.Injectable)(),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_services_1.AppAuthV4Service !== "undefined" && v1_flowda_services_1.AppAuthV4Service) === "function" ? _a : Object])
-], AppLocalAuthV4Strategy);
-
-
-/***/ }),
-
 /***/ "./src/customer/customer.controller.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CustomerController = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -363,16 +238,11 @@ const customerJwtAuth_guard_1 = __webpack_require__("./src/customer/customerJwtA
 const customerWeiXinAuth_guard_1 = __webpack_require__("./src/customer/customerWeiXinAuth.guard.ts");
 const fwhLoginSimple_guard_1 = __webpack_require__("./src/customer/fwhLoginSimple.guard.ts");
 const customerAppCombinedAuth_guard_1 = __webpack_require__("./src/customer/customerAppCombinedAuth.guard.ts");
-const appJwtAuthV4_guard_1 = __webpack_require__("./src/app/appJwtAuthV4.guard.ts");
-const customerWeiXinAuthV4_guard_1 = __webpack_require__("./src/customer/customerWeiXinAuthV4.guard.ts");
-const customerAppCombinedAuthV4_guard_1 = __webpack_require__("./src/customer/customerAppCombinedAuthV4.guard.ts");
-const customerJwtAuthV4_guard_1 = __webpack_require__("./src/customer/customerJwtAuthV4.guard.ts");
 const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
 let CustomerController = class CustomerController {
-    constructor(customerAuth, customerTx, customerAuthV4) {
+    constructor(customerAuth, customerTx) {
         this.customerAuth = customerAuth;
         this.customerTx = customerTx;
-        this.customerAuthV4 = customerAuthV4;
         this.logger = new common_1.Logger('CustomerController');
     }
     /**
@@ -387,25 +257,25 @@ let CustomerController = class CustomerController {
         });
     }
     preSignupV4(req, dto) {
-        return this.customerAuthV4.preSignup(req.user, dto);
+        throw new common_1.GoneException();
     }
     // todo 没看到 signup v1 但是 customerAuth.verifyAndSignup 逻辑再，应该是误删除了 暂时不恢复
     signupV4(req, dto) {
-        return this.customerAuthV4.verifyAndSignup(req.user, dto);
+        throw new common_1.GoneException();
     }
     login(req) {
         return req.user;
     }
     loginV4(req) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return req.user;
+            throw new common_1.GoneException();
         });
     }
     refreshToken(rt) {
         return this.customerAuth.refreshToken(rt);
     }
     refreshTokenV4(req, rt) {
-        return this.customerAuthV4.refreshToken(req.user, rt);
+        throw new common_1.GoneException();
     }
     logout(req) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
@@ -417,8 +287,7 @@ let CustomerController = class CustomerController {
     }
     logoutV4(req) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            yield this.customerAuthV4.logoutApi(req.user.tid, req.user.id);
-            return {};
+            throw new common_1.GoneException();
         });
     }
     generateRecoveryCode(req, dto) {
@@ -430,12 +299,7 @@ let CustomerController = class CustomerController {
     }
     generateRecoveryCodeV4(req, dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const appId = req.user.id;
-            this.logger.debug(`generateRecoveryCodeV4, appId:${appId}`);
-            return this.customerAuthV4.generateRecoveryCode({
-                email: dto.email,
-                appId,
-            });
+            throw new common_1.GoneException();
         });
     }
     resetPassword(req, dto) {
@@ -450,9 +314,7 @@ let CustomerController = class CustomerController {
     }
     resetPasswordV4(req, dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const appId = req.user.id;
-            yield this.customerAuthV4.resetPassword(Object.assign(Object.assign({}, dto), { appId }));
-            return {};
+            throw new common_1.GoneException();
         });
     }
     query(req) {
@@ -462,7 +324,7 @@ let CustomerController = class CustomerController {
     }
     queryV4(req) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return req.user;
+            throw new common_1.GoneException();
         });
     }
     updateAmount(req, dto) {
@@ -486,12 +348,7 @@ let CustomerController = class CustomerController {
     }
     updateAmountV4(req, dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.customerAuthV4.amountUpdate({
-                uid: Number(req.user.id),
-                tid: req.user.tid,
-                action: dto.action,
-                count: dto.count,
-            });
+            throw new common_1.GoneException();
         });
     }
     getWXAccessToken(req) {
@@ -501,7 +358,7 @@ let CustomerController = class CustomerController {
     }
     getWXAccessTokenV4(req) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return req.user;
+            throw new common_1.GoneException();
         });
     }
     getFwhAccessToken(req, dto) {
@@ -526,8 +383,7 @@ let CustomerController = class CustomerController {
      */
     fwhLoginV4(req, dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const tid = req.user.tid;
-            return this.customerAuthV4.fwhLogin(tid, dto.code);
+            throw new common_1.GoneException();
         });
     }
 };
@@ -539,27 +395,25 @@ tslib_1.__decorate([
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, typeof (_d = typeof Omit !== "undefined" && Omit) === "function" ? _d : Object]),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_c = typeof Omit !== "undefined" && Omit) === "function" ? _c : Object]),
     tslib_1.__metadata("design:returntype", void 0)
 ], CustomerController.prototype, "preSignup", null);
 tslib_1.__decorate([
     (0, common_1.Version)('4'),
-    (0, common_1.UseGuards)(appJwtAuthV4_guard_1.AppJwtAuthV4Guard),
     (0, common_1.Post)('preSignup'),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, typeof (_e = typeof flowda_shared_types_1.customerPreSignupSchemaDto !== "undefined" && flowda_shared_types_1.customerPreSignupSchemaDto) === "function" ? _e : Object]),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_d = typeof flowda_shared_types_1.customerPreSignupSchemaDto !== "undefined" && flowda_shared_types_1.customerPreSignupSchemaDto) === "function" ? _d : Object]),
     tslib_1.__metadata("design:returntype", void 0)
 ], CustomerController.prototype, "preSignupV4", null);
 tslib_1.__decorate([
     (0, common_1.Version)('4'),
-    (0, common_1.UseGuards)(appJwtAuthV4_guard_1.AppJwtAuthV4Guard),
     (0, common_1.Post)('signup'),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, typeof (_f = typeof flowda_shared_types_1.customerSignupSchemaDto !== "undefined" && flowda_shared_types_1.customerSignupSchemaDto) === "function" ? _f : Object]),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_e = typeof flowda_shared_types_1.customerSignupSchemaDto !== "undefined" && flowda_shared_types_1.customerSignupSchemaDto) === "function" ? _e : Object]),
     tslib_1.__metadata("design:returntype", void 0)
 ], CustomerController.prototype, "signupV4", null);
 tslib_1.__decorate([
@@ -574,7 +428,6 @@ tslib_1.__decorate([
 ], CustomerController.prototype, "login", null);
 tslib_1.__decorate([
     (0, common_1.Version)('4'),
-    (0, common_1.UseGuards)(appJwtAuthV4_guard_1.AppJwtAuthV4Guard, customerAppCombinedAuthV4_guard_1.CustomerAppCombinedAuthV4Guard),
     (0, common_1.Post)('login'),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__metadata("design:type", Function),
@@ -612,7 +465,6 @@ tslib_1.__decorate([
 ], CustomerController.prototype, "logout", null);
 tslib_1.__decorate([
     (0, common_1.Version)('4'),
-    (0, common_1.UseGuards)(customerJwtAuthV4_guard_1.CustomerJwtAuthV4Guard),
     (0, common_1.Post)('logout'),
     (0, common_1.HttpCode)(200),
     tslib_1.__param(0, (0, common_1.Request)()),
@@ -628,18 +480,17 @@ tslib_1.__decorate([
     tslib_1.__param(0, (0, common_1.Request)()),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, typeof (_g = typeof flowda_shared_types_1.generateRecoveryCodeSchemaDto !== "undefined" && flowda_shared_types_1.generateRecoveryCodeSchemaDto) === "function" ? _g : Object]),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_f = typeof flowda_shared_types_1.generateRecoveryCodeSchemaDto !== "undefined" && flowda_shared_types_1.generateRecoveryCodeSchemaDto) === "function" ? _f : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], CustomerController.prototype, "generateRecoveryCode", null);
 tslib_1.__decorate([
     (0, common_1.Version)('4'),
-    (0, common_1.UseGuards)(appJwtAuthV4_guard_1.AppJwtAuthV4Guard),
     (0, common_1.Post)('generateRecoveryCode'),
     (0, common_1.HttpCode)(200),
     tslib_1.__param(0, (0, common_1.Request)()),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, typeof (_h = typeof flowda_shared_types_1.generateRecoveryCodeSchemaDto !== "undefined" && flowda_shared_types_1.generateRecoveryCodeSchemaDto) === "function" ? _h : Object]),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_g = typeof flowda_shared_types_1.generateRecoveryCodeSchemaDto !== "undefined" && flowda_shared_types_1.generateRecoveryCodeSchemaDto) === "function" ? _g : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], CustomerController.prototype, "generateRecoveryCodeV4", null);
 tslib_1.__decorate([
@@ -650,18 +501,17 @@ tslib_1.__decorate([
     tslib_1.__param(0, (0, common_1.Request)()),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, typeof (_j = typeof Omit !== "undefined" && Omit) === "function" ? _j : Object]),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_h = typeof Omit !== "undefined" && Omit) === "function" ? _h : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], CustomerController.prototype, "resetPassword", null);
 tslib_1.__decorate([
     (0, common_1.Version)('4'),
-    (0, common_1.UseGuards)(appJwtAuthV4_guard_1.AppJwtAuthV4Guard),
     (0, common_1.Post)('resetPassword'),
     (0, common_1.HttpCode)(200),
     tslib_1.__param(0, (0, common_1.Request)()),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, typeof (_k = typeof flowda_shared_types_1.resetPasswordWithRecoveryCodeSchemaDto !== "undefined" && flowda_shared_types_1.resetPasswordWithRecoveryCodeSchemaDto) === "function" ? _k : Object]),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_j = typeof flowda_shared_types_1.resetPasswordWithRecoveryCodeSchemaDto !== "undefined" && flowda_shared_types_1.resetPasswordWithRecoveryCodeSchemaDto) === "function" ? _j : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], CustomerController.prototype, "resetPasswordV4", null);
 tslib_1.__decorate([
@@ -675,7 +525,6 @@ tslib_1.__decorate([
 ], CustomerController.prototype, "query", null);
 tslib_1.__decorate([
     (0, common_1.Version)('4'),
-    (0, common_1.UseGuards)(customerJwtAuthV4_guard_1.CustomerJwtAuthV4Guard),
     (0, common_1.Get)(),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__metadata("design:type", Function),
@@ -689,17 +538,16 @@ tslib_1.__decorate([
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, typeof (_l = typeof v1_flowda_services_1.CustomerUpdateAmountDto !== "undefined" && v1_flowda_services_1.CustomerUpdateAmountDto) === "function" ? _l : Object]),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_k = typeof v1_flowda_services_1.CustomerUpdateAmountDto !== "undefined" && v1_flowda_services_1.CustomerUpdateAmountDto) === "function" ? _k : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], CustomerController.prototype, "updateAmount", null);
 tslib_1.__decorate([
     (0, common_1.Version)('4'),
-    (0, common_1.UseGuards)(customerJwtAuthV4_guard_1.CustomerJwtAuthV4Guard),
     (0, common_1.Post)('amount'),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, typeof (_m = typeof flowda_shared_types_1.amountUpdateSchemaDto !== "undefined" && flowda_shared_types_1.amountUpdateSchemaDto) === "function" ? _m : Object]),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_l = typeof flowda_shared_types_1.amountUpdateSchemaDto !== "undefined" && flowda_shared_types_1.amountUpdateSchemaDto) === "function" ? _l : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], CustomerController.prototype, "updateAmountV4", null);
 tslib_1.__decorate([
@@ -713,7 +561,6 @@ tslib_1.__decorate([
 ], CustomerController.prototype, "getWXAccessToken", null);
 tslib_1.__decorate([
     (0, common_1.Version)('4'),
-    (0, common_1.UseGuards)(appJwtAuthV4_guard_1.AppJwtAuthV4Guard, customerWeiXinAuthV4_guard_1.CustomerWeiXinAuthV4Guard),
     (0, common_1.Post)('weixin/login'),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__metadata("design:type", Function),
@@ -742,7 +589,6 @@ tslib_1.__decorate([
 ], CustomerController.prototype, "fwhLogin", null);
 tslib_1.__decorate([
     (0, common_1.Version)('4'),
-    (0, common_1.UseGuards)(appJwtAuthV4_guard_1.AppJwtAuthV4Guard, fwhLoginSimple_guard_1.FwhLoginSimpleGuard),
     (0, common_1.Post)('weixin/fwhLogin'),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__param(1, (0, common_1.Body)()),
@@ -752,7 +598,7 @@ tslib_1.__decorate([
 ], CustomerController.prototype, "fwhLoginV4", null);
 exports.CustomerController = CustomerController = tslib_1.__decorate([
     (0, common_1.Controller)('sdk/customer'),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_services_1.CustomerAuthService !== "undefined" && v1_flowda_services_1.CustomerAuthService) === "function" ? _a : Object, typeof (_b = typeof v1_flowda_services_1.CustomerTx !== "undefined" && v1_flowda_services_1.CustomerTx) === "function" ? _b : Object, typeof (_c = typeof v1_flowda_services_1.CustomerAuthV4Service !== "undefined" && v1_flowda_services_1.CustomerAuthV4Service) === "function" ? _c : Object])
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_services_1.CustomerAuthService !== "undefined" && v1_flowda_services_1.CustomerAuthService) === "function" ? _a : Object, typeof (_b = typeof v1_flowda_services_1.CustomerTx !== "undefined" && v1_flowda_services_1.CustomerTx) === "function" ? _b : Object])
 ], CustomerController);
 
 
@@ -818,67 +664,6 @@ exports.CustomerAppCombinedAuthGuard = CustomerAppCombinedAuthGuard = tslib_1.__
 
 /***/ }),
 
-/***/ "./src/customer/customerAppCombinedAuthV4.guard.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CustomerAppCombinedAuthV4Guard = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const common_1 = __webpack_require__("@nestjs/common");
-const passport_1 = __webpack_require__("@nestjs/passport");
-let CustomerAppCombinedAuthV4Guard = class CustomerAppCombinedAuthV4Guard extends (0, passport_1.AuthGuard)('customerAppCombinedV4') {
-};
-exports.CustomerAppCombinedAuthV4Guard = CustomerAppCombinedAuthV4Guard;
-exports.CustomerAppCombinedAuthV4Guard = CustomerAppCombinedAuthV4Guard = tslib_1.__decorate([
-    (0, common_1.Injectable)()
-], CustomerAppCombinedAuthV4Guard);
-
-
-/***/ }),
-
-/***/ "./src/customer/customerAppCombinedV4.strategy.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-var CustomerAppCombinedV4Strategy_1;
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CustomerAppCombinedV4Strategy = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const passport_1 = __webpack_require__("@nestjs/passport");
-const passport_custom_1 = __webpack_require__("passport-custom");
-const common_1 = __webpack_require__("@nestjs/common");
-const v1_flowda_services_1 = __webpack_require__("../../../libs/v1/flowda-services/src/index.ts");
-let CustomerAppCombinedV4Strategy = CustomerAppCombinedV4Strategy_1 = class CustomerAppCombinedV4Strategy extends (0, passport_1.PassportStrategy)(passport_custom_1.Strategy, 'customerAppCombinedV4') {
-    constructor(customerAuthV4) {
-        super();
-        this.customerAuthV4 = customerAuthV4;
-        this.logger = new common_1.Logger(CustomerAppCombinedV4Strategy_1.name);
-    }
-    validate(request) {
-        var _a;
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            this.logger.log('Customer App Combined Strategy guard v4:', (_a = request.body) === null || _a === void 0 ? void 0 : _a.email, request.user);
-            const body = request.body;
-            const appId = request.user.id;
-            const user = yield this.customerAuthV4.validateUserReturnTokens(appId, body === null || body === void 0 ? void 0 : body.email, body === null || body === void 0 ? void 0 : body.password);
-            if (!user) {
-                throw new common_1.UnauthorizedException();
-            }
-            return user;
-        });
-    }
-};
-exports.CustomerAppCombinedV4Strategy = CustomerAppCombinedV4Strategy;
-exports.CustomerAppCombinedV4Strategy = CustomerAppCombinedV4Strategy = CustomerAppCombinedV4Strategy_1 = tslib_1.__decorate([
-    (0, common_1.Injectable)(),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_services_1.CustomerAuthV4Service !== "undefined" && v1_flowda_services_1.CustomerAuthV4Service) === "function" ? _a : Object])
-], CustomerAppCombinedV4Strategy);
-
-
-/***/ }),
-
 /***/ "./src/customer/customerJwt.strategy.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
@@ -930,61 +715,6 @@ exports.CustomerJwtAuthGuard = CustomerJwtAuthGuard;
 exports.CustomerJwtAuthGuard = CustomerJwtAuthGuard = tslib_1.__decorate([
     (0, common_1.Injectable)()
 ], CustomerJwtAuthGuard);
-
-
-/***/ }),
-
-/***/ "./src/customer/customerJwtAuthV4.guard.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CustomerJwtAuthV4Guard = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const passport_1 = __webpack_require__("@nestjs/passport");
-const common_1 = __webpack_require__("@nestjs/common");
-let CustomerJwtAuthV4Guard = class CustomerJwtAuthV4Guard extends (0, passport_1.AuthGuard)('customerJwtV4') {
-};
-exports.CustomerJwtAuthV4Guard = CustomerJwtAuthV4Guard;
-exports.CustomerJwtAuthV4Guard = CustomerJwtAuthV4Guard = tslib_1.__decorate([
-    (0, common_1.Injectable)()
-], CustomerJwtAuthV4Guard);
-
-
-/***/ }),
-
-/***/ "./src/customer/customerJwtV4.strategy.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CustomerJwtV4Strategy = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const passport_1 = __webpack_require__("@nestjs/passport");
-const passport_jwt_1 = __webpack_require__("passport-jwt");
-const common_1 = __webpack_require__("@nestjs/common");
-const v1_flowda_services_1 = __webpack_require__("../../../libs/v1/flowda-services/src/index.ts");
-let CustomerJwtV4Strategy = class CustomerJwtV4Strategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy, 'customerJwtV4') {
-    constructor(service) {
-        super({
-            jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
-            ignoreExpiration: false,
-            secretOrKey: service.getAccessTokenSecret(),
-        });
-        this.service = service;
-    }
-    validate(payload) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.service.getUser(payload.uid);
-        });
-    }
-};
-exports.CustomerJwtV4Strategy = CustomerJwtV4Strategy;
-exports.CustomerJwtV4Strategy = CustomerJwtV4Strategy = tslib_1.__decorate([
-    (0, common_1.Injectable)(),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_services_1.CustomerAuthV4Service !== "undefined" && v1_flowda_services_1.CustomerAuthV4Service) === "function" ? _a : Object])
-], CustomerJwtV4Strategy);
 
 
 /***/ }),
@@ -1087,67 +817,6 @@ exports.CustomerWeiXinAuthGuard = CustomerWeiXinAuthGuard = tslib_1.__decorate([
 
 /***/ }),
 
-/***/ "./src/customer/customerWeiXinAuthV4.guard.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CustomerWeiXinAuthV4Guard = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const passport_1 = __webpack_require__("@nestjs/passport");
-const common_1 = __webpack_require__("@nestjs/common");
-let CustomerWeiXinAuthV4Guard = class CustomerWeiXinAuthV4Guard extends (0, passport_1.AuthGuard)('customerWeiXinV4') {
-};
-exports.CustomerWeiXinAuthV4Guard = CustomerWeiXinAuthV4Guard;
-exports.CustomerWeiXinAuthV4Guard = CustomerWeiXinAuthV4Guard = tslib_1.__decorate([
-    (0, common_1.Injectable)()
-], CustomerWeiXinAuthV4Guard);
-
-
-/***/ }),
-
-/***/ "./src/customer/customerWeiXinV4.strategy.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-var CustomerWeiXinV4Strategy_1;
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CustomerWeiXinV4Strategy = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const passport_1 = __webpack_require__("@nestjs/passport");
-const passport_custom_1 = __webpack_require__("passport-custom");
-const common_1 = __webpack_require__("@nestjs/common");
-const v1_flowda_services_1 = __webpack_require__("../../../libs/v1/flowda-services/src/index.ts");
-let CustomerWeiXinV4Strategy = CustomerWeiXinV4Strategy_1 = class CustomerWeiXinV4Strategy extends (0, passport_1.PassportStrategy)(passport_custom_1.Strategy, 'customerWeiXinV4') {
-    constructor(customerAuthV4) {
-        super();
-        this.customerAuthV4 = customerAuthV4;
-        this.logger = new common_1.Logger(CustomerWeiXinV4Strategy_1.name);
-    }
-    validate(request) {
-        var _a;
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const body = request.body;
-            const appId = (_a = request.user) === null || _a === void 0 ? void 0 : _a.id;
-            this.logger.debug('weixin login strategy with app info: ', request.user);
-            const ret = yield this.customerAuthV4.wxValidateUser(appId, body.code);
-            if (!ret) {
-                throw new common_1.UnauthorizedException();
-            }
-            return ret;
-        });
-    }
-};
-exports.CustomerWeiXinV4Strategy = CustomerWeiXinV4Strategy;
-exports.CustomerWeiXinV4Strategy = CustomerWeiXinV4Strategy = CustomerWeiXinV4Strategy_1 = tslib_1.__decorate([
-    (0, common_1.Injectable)(),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_services_1.CustomerAuthV4Service !== "undefined" && v1_flowda_services_1.CustomerAuthV4Service) === "function" ? _a : Object])
-], CustomerWeiXinV4Strategy);
-
-
-/***/ }),
-
 /***/ "./src/customer/fwhLoginSimple.guard.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
@@ -1222,12 +891,10 @@ exports.loadModule = void 0;
 const v1_flowda_services_1 = __webpack_require__("../../../libs/v1/flowda-services/src/index.ts");
 const flowda_shared_1 = __webpack_require__("../../../libs/flowda-shared/src/index.ts");
 const flowda_shared_node_1 = __webpack_require__("../../../libs/flowda-shared-node/src/index.ts");
-const trpc_1 = __webpack_require__("./src/trpc/trpc.ts");
 console.log('---------- ENV --------------');
 console.log('FLOWDA_URL', process.env.FLOWDA_URL);
 console.log('---------- ENV --------------');
 function loadModule(container) {
-    container.bind(flowda_shared_1.FlowdaTrpcClientSymbol).toConstantValue(trpc_1.trpc);
     container.load(flowda_shared_1.flowdaSharedModule);
     container.load(flowda_shared_node_1.flowdaSharedNodeModule);
     container.load(v1_flowda_services_1.prismaClientFlowdaModule);
@@ -1243,7 +910,7 @@ exports.loadModule = loadModule;
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+var _a, _b, _c, _d, _e, _f, _g, _h;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OrderController = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -1251,14 +918,11 @@ const common_1 = __webpack_require__("@nestjs/common");
 const v1_flowda_services_1 = __webpack_require__("../../../libs/v1/flowda-services/src/index.ts");
 const customerJwtAuth_guard_1 = __webpack_require__("./src/customer/customerJwtAuth.guard.ts");
 const appJwtAuth_guard_1 = __webpack_require__("./src/app/appJwtAuth.guard.ts");
-const customerJwtAuthV4_guard_1 = __webpack_require__("./src/customer/customerJwtAuthV4.guard.ts");
-const appJwtAuthV4_guard_1 = __webpack_require__("./src/app/appJwtAuthV4.guard.ts");
 const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
 let OrderController = class OrderController {
-    constructor(orderQuery, orderTx, orderV4) {
+    constructor(orderQuery, orderTx) {
         this.orderQuery = orderQuery;
         this.orderTx = orderTx;
-        this.orderV4 = orderV4;
         this.logger = new common_1.Logger('CustomerController');
     }
     create(req, dto) {
@@ -1270,12 +934,7 @@ let OrderController = class OrderController {
     }
     createV4(req, dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const user = req.user;
-            return this.orderV4.createNative({
-                tid: user.tid,
-                uid: Number(user.id),
-                productId: dto.productId,
-            });
+            throw new common_1.GoneException();
         });
     }
     createJSAPI(req, dto) {
@@ -1286,12 +945,7 @@ let OrderController = class OrderController {
     }
     createJSAPIV4(req, dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const user = req.user;
-            return this.orderV4.createJSAPI({
-                tid: user.tid,
-                uid: Number(user.id),
-                productId: dto.productId,
-            });
+            throw new common_1.GoneException();
         });
     }
     quick(req, dto) {
@@ -1302,30 +956,26 @@ let OrderController = class OrderController {
     }
     quickV4(req, dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.orderV4.createQuick({
-                tid: req.user.id,
-                productId: dto.productId,
-                anonymousCustomerToken: dto.anonymousCustomerToken,
-            });
+            throw new common_1.GoneException();
         });
     }
     query(orderId) {
         return this.orderQuery.query(orderId);
     }
     queryV4(orderId) {
-        return this.orderV4.query(Number(orderId));
+        throw new common_1.GoneException();
     }
     queryPayQuick(req, anonymousCustomerToken, orderId) {
         return this.orderTx.queryPayQuick(anonymousCustomerToken, orderId);
     }
     queryPayQuickV4(req, anonymousCustomerToken, orderId) {
-        return this.orderV4.queryPayQuick(req.user.id, anonymousCustomerToken, Number(orderId));
+        throw new common_1.GoneException();
     }
     queryPay(req, orderId) {
         return this.orderTx.queryPay(req.user.id, orderId);
     }
     queryPayV4(req, orderId) {
-        return this.orderV4.queryPay(req.user.tid, req.user.id, Number(orderId));
+        throw new common_1.GoneException();
     }
 };
 exports.OrderController = OrderController;
@@ -1336,17 +986,16 @@ tslib_1.__decorate([
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, typeof (_d = typeof flowda_shared_types_1.SdkCreateOrderDto !== "undefined" && flowda_shared_types_1.SdkCreateOrderDto) === "function" ? _d : Object]),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_c = typeof flowda_shared_types_1.SdkCreateOrderDto !== "undefined" && flowda_shared_types_1.SdkCreateOrderDto) === "function" ? _c : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], OrderController.prototype, "create", null);
 tslib_1.__decorate([
     (0, common_1.Version)('4'),
-    (0, common_1.UseGuards)(customerJwtAuthV4_guard_1.CustomerJwtAuthV4Guard),
     (0, common_1.Post)(),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, typeof (_e = typeof flowda_shared_types_1.SdkCreateOrderDto !== "undefined" && flowda_shared_types_1.SdkCreateOrderDto) === "function" ? _e : Object]),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_d = typeof flowda_shared_types_1.SdkCreateOrderDto !== "undefined" && flowda_shared_types_1.SdkCreateOrderDto) === "function" ? _d : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], OrderController.prototype, "createV4", null);
 tslib_1.__decorate([
@@ -1356,17 +1005,16 @@ tslib_1.__decorate([
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, typeof (_f = typeof flowda_shared_types_1.SdkCreateOrderInJSAPIDto !== "undefined" && flowda_shared_types_1.SdkCreateOrderInJSAPIDto) === "function" ? _f : Object]),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_e = typeof flowda_shared_types_1.SdkCreateOrderInJSAPIDto !== "undefined" && flowda_shared_types_1.SdkCreateOrderInJSAPIDto) === "function" ? _e : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], OrderController.prototype, "createJSAPI", null);
 tslib_1.__decorate([
     (0, common_1.Version)('4'),
-    (0, common_1.UseGuards)(customerJwtAuthV4_guard_1.CustomerJwtAuthV4Guard),
     (0, common_1.Post)('createJSAPI'),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, typeof (_g = typeof flowda_shared_types_1.SdkCreateOrderInJSAPIDto !== "undefined" && flowda_shared_types_1.SdkCreateOrderInJSAPIDto) === "function" ? _g : Object]),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_f = typeof flowda_shared_types_1.SdkCreateOrderInJSAPIDto !== "undefined" && flowda_shared_types_1.SdkCreateOrderInJSAPIDto) === "function" ? _f : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], OrderController.prototype, "createJSAPIV4", null);
 tslib_1.__decorate([
@@ -1376,17 +1024,16 @@ tslib_1.__decorate([
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, typeof (_h = typeof flowda_shared_types_1.SdkCreateQuickOrderDto !== "undefined" && flowda_shared_types_1.SdkCreateQuickOrderDto) === "function" ? _h : Object]),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_g = typeof flowda_shared_types_1.SdkCreateQuickOrderDto !== "undefined" && flowda_shared_types_1.SdkCreateQuickOrderDto) === "function" ? _g : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], OrderController.prototype, "quick", null);
 tslib_1.__decorate([
     (0, common_1.Version)('4'),
-    (0, common_1.UseGuards)(appJwtAuthV4_guard_1.AppJwtAuthV4Guard),
     (0, common_1.Post)('quick'),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, typeof (_j = typeof flowda_shared_types_1.SdkCreateQuickOrderDto !== "undefined" && flowda_shared_types_1.SdkCreateQuickOrderDto) === "function" ? _j : Object]),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_h = typeof flowda_shared_types_1.SdkCreateQuickOrderDto !== "undefined" && flowda_shared_types_1.SdkCreateQuickOrderDto) === "function" ? _h : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], OrderController.prototype, "quickV4", null);
 tslib_1.__decorate([
@@ -1400,7 +1047,6 @@ tslib_1.__decorate([
 ], OrderController.prototype, "query", null);
 tslib_1.__decorate([
     (0, common_1.Version)('4'),
-    (0, common_1.UseGuards)(customerJwtAuthV4_guard_1.CustomerJwtAuthV4Guard),
     (0, common_1.Get)(),
     tslib_1.__param(0, (0, common_1.Query)('orderId')),
     tslib_1.__metadata("design:type", Function),
@@ -1420,7 +1066,6 @@ tslib_1.__decorate([
 ], OrderController.prototype, "queryPayQuick", null);
 tslib_1.__decorate([
     (0, common_1.Version)('4'),
-    (0, common_1.UseGuards)(appJwtAuthV4_guard_1.AppJwtAuthV4Guard),
     (0, common_1.Get)('quick/queryPay'),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__param(1, (0, common_1.Query)('anonymousCustomerToken')),
@@ -1441,7 +1086,6 @@ tslib_1.__decorate([
 ], OrderController.prototype, "queryPay", null);
 tslib_1.__decorate([
     (0, common_1.Version)('4'),
-    (0, common_1.UseGuards)(customerJwtAuthV4_guard_1.CustomerJwtAuthV4Guard),
     (0, common_1.Get)('queryPay'),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__param(1, (0, common_1.Query)('orderId')),
@@ -1451,7 +1095,7 @@ tslib_1.__decorate([
 ], OrderController.prototype, "queryPayV4", null);
 exports.OrderController = OrderController = tslib_1.__decorate([
     (0, common_1.Controller)('sdk/order'),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_services_1.OrderQuery !== "undefined" && v1_flowda_services_1.OrderQuery) === "function" ? _a : Object, typeof (_b = typeof v1_flowda_services_1.OrderTx !== "undefined" && v1_flowda_services_1.OrderTx) === "function" ? _b : Object, typeof (_c = typeof v1_flowda_services_1.OrderV4Service !== "undefined" && v1_flowda_services_1.OrderV4Service) === "function" ? _c : Object])
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_services_1.OrderQuery !== "undefined" && v1_flowda_services_1.OrderQuery) === "function" ? _a : Object, typeof (_b = typeof v1_flowda_services_1.OrderTx !== "undefined" && v1_flowda_services_1.OrderTx) === "function" ? _b : Object])
 ], OrderController);
 
 
@@ -1461,19 +1105,17 @@ exports.OrderController = OrderController = tslib_1.__decorate([
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b, _c;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProductController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const v1_flowda_services_1 = __webpack_require__("../../../libs/v1/flowda-services/src/index.ts");
 const appJwtAuth_guard_1 = __webpack_require__("./src/app/appJwtAuth.guard.ts");
-const appJwtAuthV4_guard_1 = __webpack_require__("./src/app/appJwtAuthV4.guard.ts");
 let ProductController = class ProductController {
-    constructor(query, tx, productV4) {
+    constructor(query, tx) {
         this.query = query;
         this.tx = tx;
-        this.productV4 = productV4;
     }
     /**
      * todo: 删除，放到后台
@@ -1490,11 +1132,7 @@ let ProductController = class ProductController {
     // todo: 仅集成测试暴露给 postman
     createManyV4(req, dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const user = req.user;
-            const products = yield this.productV4.createManyProducts(user.id, dto);
-            return {
-                products,
-            };
+            throw new common_1.GoneException();
         });
     }
     queryAll(req) {
@@ -1505,8 +1143,7 @@ let ProductController = class ProductController {
     }
     queryAllV4(req) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const user = req.user;
-            return this.query.findAll(user.id);
+            throw new common_1.GoneException();
         });
     }
     /**
@@ -1531,7 +1168,6 @@ tslib_1.__decorate([
 ], ProductController.prototype, "createMany", null);
 tslib_1.__decorate([
     (0, common_1.Version)('4'),
-    (0, common_1.UseGuards)(appJwtAuthV4_guard_1.AppJwtAuthV4Guard),
     (0, common_1.Post)('createMany'),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__param(1, (0, common_1.Body)()),
@@ -1550,7 +1186,6 @@ tslib_1.__decorate([
 ], ProductController.prototype, "queryAll", null);
 tslib_1.__decorate([
     (0, common_1.Version)('4'),
-    (0, common_1.UseGuards)(appJwtAuthV4_guard_1.AppJwtAuthV4Guard),
     (0, common_1.Get)('findAll'),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__metadata("design:type", Function),
@@ -1567,7 +1202,7 @@ tslib_1.__decorate([
 ], ProductController.prototype, "queryAllByAppId", null);
 exports.ProductController = ProductController = tslib_1.__decorate([
     (0, common_1.Controller)('sdk/product'),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_services_1.ProductQuery !== "undefined" && v1_flowda_services_1.ProductQuery) === "function" ? _a : Object, typeof (_b = typeof v1_flowda_services_1.ProductTx !== "undefined" && v1_flowda_services_1.ProductTx) === "function" ? _b : Object, typeof (_c = typeof v1_flowda_services_1.ProductV4Service !== "undefined" && v1_flowda_services_1.ProductV4Service) === "function" ? _c : Object])
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_services_1.ProductQuery !== "undefined" && v1_flowda_services_1.ProductQuery) === "function" ? _a : Object, typeof (_b = typeof v1_flowda_services_1.ProductTx !== "undefined" && v1_flowda_services_1.ProductTx) === "function" ? _b : Object])
 ], ProductController);
 
 
@@ -1595,11 +1230,6 @@ const product_controller_1 = __webpack_require__("./src/product/product.controll
 const customerWeiXin_strategy_1 = __webpack_require__("./src/customer/customerWeiXin.strategy.ts");
 const fwhLoginSimple_strategy_1 = __webpack_require__("./src/customer/fwhLoginSimple.strategy.ts");
 const customerAppCombined_strategy_1 = __webpack_require__("./src/customer/customerAppCombined.strategy.ts");
-const appLocalV4_strategy_1 = __webpack_require__("./src/app/appLocalV4.strategy.ts");
-const appJwtV4_strategy_1 = __webpack_require__("./src/app/appJwtV4.strategy.ts");
-const customerWeiXinV4_strategy_1 = __webpack_require__("./src/customer/customerWeiXinV4.strategy.ts");
-const customerAppCombinedV4_strategy_1 = __webpack_require__("./src/customer/customerAppCombinedV4.strategy.ts");
-const customerJwtV4_strategy_1 = __webpack_require__("./src/customer/customerJwtV4.strategy.ts");
 exports.sdkModuleControllers = [app_controller_1.AppController, customer_controller_1.CustomerController, order_controller_1.OrderController, product_controller_1.ProductController];
 exports.sdkModuleProviders = [
     {
@@ -1611,17 +1241,12 @@ exports.sdkModuleProviders = [
         useClass: common_1.ValidationPipe,
     },
     appLocal_strategy_1.AppLocalAuthStrategy,
-    appLocalV4_strategy_1.AppLocalAuthV4Strategy,
     appJwt_strategy_1.AppJwtStrategy,
-    appJwtV4_strategy_1.AppJwtV4Strategy,
     customerLocal_strategy_1.CustomerLocalStrategy,
     customerJwt_strategy_1.CustomerJwtStrategy,
-    customerJwtV4_strategy_1.CustomerJwtV4Strategy,
     customerWeiXin_strategy_1.CustomerWeiXinStrategy,
-    customerWeiXinV4_strategy_1.CustomerWeiXinV4Strategy,
     fwhLoginSimple_strategy_1.FwhLoginSimpleStrategy,
     customerAppCombined_strategy_1.CustomerAppCombinedStrategy,
-    customerAppCombinedV4_strategy_1.CustomerAppCombinedV4Strategy,
 ];
 let SdkModule = class SdkModule {
 };
@@ -1711,46 +1336,6 @@ function setupNestApp(app) {
     });
 }
 exports.setupNestApp = setupNestApp;
-
-
-/***/ }),
-
-/***/ "./src/trpc/trpc.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.trpc = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const client_1 = __webpack_require__("@trpc/client");
-exports.trpc = (0, client_1.createTRPCProxyClient)({
-    links: [
-        (0, client_1.httpLink)({
-            url: `${process.env.FLOWDA_URL}/flowda-api/trpc`,
-            headers() {
-                return tslib_1.__awaiter(this, void 0, void 0, function* () {
-                    return {
-                        'x-from': 'v1-sdk-api',
-                    };
-                });
-            },
-        }),
-    ],
-    transformer: {
-        input: {
-            // on client
-            serialize: object => object,
-            // on server -> resolver
-            deserialize: object => object,
-        },
-        output: {
-            // on server -> client
-            serialize: object => object,
-            // on client
-            deserialize: object => object,
-        },
-    },
-});
 
 
 /***/ }),
@@ -1847,6 +1432,7 @@ tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared-node/src/f
 tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared-node/src/filters/appExceptionFilter.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared-node/src/services/table-filter.service.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared-node/src/services/audit.service.ts"), exports);
+tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared-node/src/trpc/trpc-utils.ts"), exports);
 
 
 /***/ }),
@@ -1991,6 +1577,177 @@ exports.TableFilterService = TableFilterService = TableFilterService_1 = tslib_1
     tslib_1.__param(1, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [Object, Function])
 ], TableFilterService);
+
+
+/***/ }),
+
+/***/ "../../../libs/flowda-shared-node/src/trpc/trpc-utils.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+/// <reference types="@types/express-serve-static-core" />
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.transformer = exports.errorFormatter = exports.transformHttpException = exports.logErrorEnd = exports.logErrorStart = exports.getErrorCodeFromKey = exports.getStatusKeyFromStatus = exports.logContext = exports.logOutputSerialize = exports.logInputSerialize = exports.ERROR_END = exports.REQ_END = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const consola_1 = tslib_1.__importDefault(__webpack_require__("consola"));
+const _ = tslib_1.__importStar(__webpack_require__("radash"));
+const common_1 = __webpack_require__("@nestjs/common");
+exports.REQ_END = '================================================ End ================================================\n';
+exports.ERROR_END = '***************************************** ERROR END *****************************************';
+function logInputSerialize(object) {
+    consola_1.default.info('request args  :');
+    console.log(object);
+    console.log();
+}
+exports.logInputSerialize = logInputSerialize;
+function logOutputSerialize(object) {
+    console.log();
+    if ((object === null || object === void 0 ? void 0 : object.code) < 0) {
+        consola_1.default.info('response error:');
+        console.log(Object.assign(Object.assign({}, object), { message: '<...>', data: Object.assign(Object.assign({}, object.data), { stack: '<...>' }) }));
+    }
+    else {
+        consola_1.default.info('response data :');
+        console.log(object);
+    }
+    console.log(exports.REQ_END);
+}
+exports.logOutputSerialize = logOutputSerialize;
+function logContext(opts) {
+    const req = opts.req;
+    console.log('=============================================== Start ===============================================');
+    consola_1.default.info('url           :', req.url.split('?')[0]);
+    consola_1.default.info('from          :', req.headers['x-from']);
+}
+exports.logContext = logContext;
+function getStatusKeyFromStatus(status) {
+    var _a;
+    return (_a = JSONRPC2_TO_HTTP_STATUS[status]) !== null && _a !== void 0 ? _a : 'INTERNAL_SERVER_ERROR';
+}
+exports.getStatusKeyFromStatus = getStatusKeyFromStatus;
+function getErrorCodeFromKey(key) {
+    var _a;
+    return (_a = TRPC_ERROR_CODES_BY_KEY[key]) !== null && _a !== void 0 ? _a : -32603;
+}
+exports.getErrorCodeFromKey = getErrorCodeFromKey;
+const JSONRPC2_TO_HTTP_CODE = {
+    PARSE_ERROR: 400,
+    BAD_REQUEST: 400,
+    UNAUTHORIZED: 401,
+    NOT_FOUND: 404,
+    FORBIDDEN: 403,
+    METHOD_NOT_SUPPORTED: 405,
+    TIMEOUT: 408,
+    CONFLICT: 409,
+    PRECONDITION_FAILED: 412,
+    PAYLOAD_TOO_LARGE: 413,
+    UNPROCESSABLE_CONTENT: 422,
+    TOO_MANY_REQUESTS: 429,
+    CLIENT_CLOSED_REQUEST: 499,
+    INTERNAL_SERVER_ERROR: 500,
+    NOT_IMPLEMENTED: 501,
+};
+const JSONRPC2_TO_HTTP_STATUS = _.invert(JSONRPC2_TO_HTTP_CODE);
+const TRPC_ERROR_CODES_BY_KEY = {
+    /**
+     * Invalid JSON was received by the server.
+     * An error occurred on the server while parsing the JSON text.
+     */
+    PARSE_ERROR: -32700,
+    /**
+     * The JSON sent is not a valid Request object.
+     */
+    BAD_REQUEST: -32600, // 400
+    // Internal JSON-RPC error
+    INTERNAL_SERVER_ERROR: -32603,
+    NOT_IMPLEMENTED: -32603,
+    // Implementation specific errors
+    UNAUTHORIZED: -32001, // 401
+    FORBIDDEN: -32003, // 403
+    NOT_FOUND: -32004, // 404
+    METHOD_NOT_SUPPORTED: -32005, // 405
+    TIMEOUT: -32008, // 408
+    CONFLICT: -32009, // 409
+    PRECONDITION_FAILED: -32012, // 412
+    PAYLOAD_TOO_LARGE: -32013, // 413
+    UNPROCESSABLE_CONTENT: -32022, // 422
+    TOO_MANY_REQUESTS: -32029, // 429
+    CLIENT_CLOSED_REQUEST: -32099, // 499
+};
+function logErrorStart(opts) {
+    consola_1.default.error('**************************************** ERROR START ****************************************');
+    consola_1.default.info(`procedure    :`, `${opts.path}.${opts.type}`);
+    consola_1.default.info(`input        :`);
+    console.log(opts.input);
+}
+exports.logErrorStart = logErrorStart;
+function logErrorEnd(opts) {
+    consola_1.default.info(`message      :`, opts.error.message);
+    consola_1.default.info(`stack        :`, opts.error.stack);
+    consola_1.default.error(exports.ERROR_END);
+}
+exports.logErrorEnd = logErrorEnd;
+function transformHttpException(opts, cause, stack) {
+    const shape = opts.shape;
+    const message = cause.getResponse()['message'];
+    const error = cause.getResponse()['error'];
+    const key = getStatusKeyFromStatus(cause.getStatus());
+    const code = getErrorCodeFromKey(key);
+    consola_1.default.info(`cause`);
+    console.log(`    status     :`, cause.getStatus());
+    console.log(`    message    :`, message);
+    console.log(`    error      :`, error);
+    consola_1.default.info(`stack        :`, stack);
+    consola_1.default.error(exports.ERROR_END);
+    return Object.assign(Object.assign({}, shape), { code, 
+        // message // message 无需替代 throw new ConflictException('<message>') 第一个参数已经替代了 https://docs.nestjs.com/exception-filters#built-in-http-exceptions
+        data: Object.assign(Object.assign({}, shape.data), {
+            code: key, // 替换成 HttpException 对应的 短字符
+            httpStatus: cause.getStatus(), // 替换成 http status code
+            description: {
+                // 详情
+                procedure: `${opts.path}.${opts.type}`,
+                input: opts.input,
+                error,
+            },
+        }) });
+}
+exports.transformHttpException = transformHttpException;
+function errorFormatter(opts) {
+    logErrorStart(opts);
+    // 如果是 nestjs HttpException
+    if (opts.error.cause instanceof common_1.HttpException) {
+        const ret = transformHttpException(opts, opts.error.cause, opts.error.stack);
+        return ret;
+    }
+    else {
+        logErrorEnd(opts);
+        return opts.shape;
+    }
+}
+exports.errorFormatter = errorFormatter;
+// object => object 是默认值
+// https://github.com/trpc/trpc/blob/next/packages/client/src/internals/transformer.ts#L57
+exports.transformer = {
+    input: {
+        // on client
+        serialize: (object) => object,
+        // on server -> resolver
+        deserialize: (object) => {
+            logInputSerialize(object);
+            return object;
+        },
+    },
+    output: {
+        // on server -> client
+        serialize: (object) => {
+            logOutputSerialize(object);
+            return object;
+        },
+        // on client
+        deserialize: (object) => object,
+    },
+};
 
 
 /***/ }),
@@ -4860,14 +4617,13 @@ const authentication_service_1 = __webpack_require__("../../../libs/v1/flowda-se
 const keymachine_1 = tslib_1.__importDefault(__webpack_require__("keymachine"));
 const bcrypt = tslib_1.__importStar(__webpack_require__("bcrypt"));
 let AppAuthService = class AppAuthService extends authentication_service_1.AuthenticationService {
-    constructor(identityProvider, jwt, config, mailService, prisma, flowdaTrpc) {
+    constructor(identityProvider, jwt, config, mailService, prisma) {
         super(identityProvider, jwt, config, mailService);
         this.identityProvider = identityProvider;
         this.jwt = jwt;
         this.config = config;
         this.mailService = mailService;
         this.prisma = prisma;
-        this.flowdaTrpc = flowdaTrpc;
     }
     postConstruct() {
         this.setOptions({
@@ -4908,19 +4664,6 @@ let AppAuthService = class AppAuthService extends authentication_service_1.Authe
                 app: tokens.user,
             };
         });
-    }
-    /**
-     *
-     * @param tenant
-     * @private
-     */
-    v4ConvertTo(tenant) {
-        return {
-            id: tenant.id,
-            name: tenant.name,
-            displayName: tenant.name,
-            description: tenant.name,
-        };
     }
     appRefreshToken(rt) {
         const _super = Object.create(null, {
@@ -4971,84 +4714,8 @@ exports.AppAuthService = AppAuthService = tslib_1.__decorate([
     tslib_1.__param(2, (0, inversify_1.inject)(infra_1.IConfigService)),
     tslib_1.__param(3, (0, inversify_1.inject)(infra_1.IMailService)),
     tslib_1.__param(4, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
-    tslib_1.__param(5, (0, inversify_1.inject)(flowda_shared_1.FlowdaTrpcClientSymbol)),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_types_1.IIdentityProviderService !== "undefined" && v1_flowda_types_1.IIdentityProviderService) === "function" ? _a : Object, typeof (_b = typeof jwt_service_1.JwtService !== "undefined" && jwt_service_1.JwtService) === "function" ? _b : Object, typeof (_c = typeof infra_1.IConfigService !== "undefined" && infra_1.IConfigService) === "function" ? _c : Object, typeof (_d = typeof infra_1.IMailService !== "undefined" && infra_1.IMailService) === "function" ? _d : Object, typeof (_e = typeof client_v1_flowda_1.PrismaClient !== "undefined" && client_v1_flowda_1.PrismaClient) === "function" ? _e : Object, Object])
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_types_1.IIdentityProviderService !== "undefined" && v1_flowda_types_1.IIdentityProviderService) === "function" ? _a : Object, typeof (_b = typeof jwt_service_1.JwtService !== "undefined" && jwt_service_1.JwtService) === "function" ? _b : Object, typeof (_c = typeof infra_1.IConfigService !== "undefined" && infra_1.IConfigService) === "function" ? _c : Object, typeof (_d = typeof infra_1.IMailService !== "undefined" && infra_1.IMailService) === "function" ? _d : Object, typeof (_e = typeof client_v1_flowda_1.PrismaClient !== "undefined" && client_v1_flowda_1.PrismaClient) === "function" ? _e : Object])
 ], AppAuthService);
-
-
-/***/ }),
-
-/***/ "../../../libs/v1/flowda-services/src/services/app/appAuthV4.service.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-var AppAuthV4Service_1;
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AppAuthV4Service = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const inversify_1 = __webpack_require__("inversify");
-const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
-const infra_1 = __webpack_require__("../../../libs/v1/flowda-services/src/infra/index.ts");
-/*
-和账户相关的，目前仅仅作为委托和 input output map（保持 v1 接口）
-等后续 db 迁移到 flowda 之后，再直接调用 service
- */
-let AppAuthV4Service = AppAuthV4Service_1 = class AppAuthV4Service {
-    constructor(flowdaTrpc, config, loggerFactory) {
-        this.flowdaTrpc = flowdaTrpc;
-        this.config = config;
-        this.logger = loggerFactory(AppAuthV4Service_1.name);
-    }
-    create(dto) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.flowdaTrpc.appAuthV4.create.mutate({
-                displayName: dto.displayName,
-            });
-        });
-    }
-    validate(appId, appToken) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.flowdaTrpc.appAuthV4.validate.mutate({
-                appId: appId,
-                appToken: appToken,
-            });
-        });
-    }
-    refreshToken(rt) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.flowdaTrpc.appAuthV4.refreshToken.mutate({ rt });
-        });
-    }
-    getApp(tid) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.flowdaTrpc.appAuthV4.getApp.query({
-                tid: Number(tid),
-            });
-        });
-    }
-    getAccessTokenSecret() {
-        const ret = this.config.getEnv('tenant_access_token_secret');
-        return ret;
-    }
-};
-exports.AppAuthV4Service = AppAuthV4Service;
-exports.AppAuthV4Service = AppAuthV4Service = AppAuthV4Service_1 = tslib_1.__decorate([
-    (0, inversify_1.injectable)(),
-    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_types_1.FlowdaTrpcClientSymbol)),
-    tslib_1.__param(1, (0, inversify_1.inject)(infra_1.IConfigService)),
-    tslib_1.__param(2, (0, inversify_1.inject)('Factory<Logger>')),
-    tslib_1.__metadata("design:paramtypes", [Object, typeof (_a = typeof infra_1.IConfigService !== "undefined" && infra_1.IConfigService) === "function" ? _a : Object, Function])
-], AppAuthV4Service);
-// 映射 tenant -> 和原来的 app 表
-function mapTenantToApp(tenant) {
-    return {
-        id: tenant.id,
-        appId: tenant.name,
-        displayName: tenant.displayName,
-        description: '',
-    };
-}
 
 
 /***/ }),
@@ -5557,51 +5224,6 @@ exports.SuperAdminAuthenticationTx = SuperAdminAuthenticationTx = SuperAdminAuth
 
 /***/ }),
 
-/***/ "../../../libs/v1/flowda-services/src/services/customer-auth/customAuthV4.helper.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-var CustomAuthV4Helper_1;
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CustomAuthV4Helper = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const inversify_1 = __webpack_require__("inversify");
-const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
-const client_1 = __webpack_require__("@trpc/client");
-let CustomAuthV4Helper = CustomAuthV4Helper_1 = class CustomAuthV4Helper {
-    constructor(flowdaTrpc, loggerFactory) {
-        this.flowdaTrpc = flowdaTrpc;
-        this.logger = loggerFactory(CustomAuthV4Helper_1.name);
-    }
-    wxValidateUser(tid, code) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.flowdaTrpc.user.wxValidateUser.mutate({
-                tid: tid,
-                code: code,
-            });
-        });
-    }
-    fwhLogin(tid, code) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.flowdaTrpc.user.fwhLogin.mutate({
-                tid: tid,
-                code: code,
-            });
-        });
-    }
-};
-exports.CustomAuthV4Helper = CustomAuthV4Helper;
-exports.CustomAuthV4Helper = CustomAuthV4Helper = CustomAuthV4Helper_1 = tslib_1.__decorate([
-    (0, inversify_1.injectable)(),
-    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_types_1.FlowdaTrpcClientSymbol)),
-    tslib_1.__param(1, (0, inversify_1.inject)('Factory<Logger>')),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof client_1.CreateTRPCProxyClient !== "undefined" && client_1.CreateTRPCProxyClient) === "function" ? _a : Object, Function])
-], CustomAuthV4Helper);
-
-
-/***/ }),
-
 /***/ "../../../libs/v1/flowda-services/src/services/customer-auth/customerAuth.service.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
@@ -5923,121 +5545,6 @@ exports.CustomerAuthService = CustomerAuthService = tslib_1.__decorate([
     tslib_1.__param(6, (0, inversify_1.inject)(wxFwhLogin_service_1.WxFwhLoginService)),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_types_1.IIdentityProviderService !== "undefined" && v1_flowda_types_1.IIdentityProviderService) === "function" ? _a : Object, typeof (_b = typeof jwt_service_1.JwtService !== "undefined" && jwt_service_1.JwtService) === "function" ? _b : Object, typeof (_c = typeof infra_1.IConfigService !== "undefined" && infra_1.IConfigService) === "function" ? _c : Object, typeof (_d = typeof infra_1.IMailService !== "undefined" && infra_1.IMailService) === "function" ? _d : Object, typeof (_e = typeof client_v1_flowda_1.PrismaClient !== "undefined" && client_v1_flowda_1.PrismaClient) === "function" ? _e : Object, typeof (_f = typeof wxLogin_service_1.WxLoginService !== "undefined" && wxLogin_service_1.WxLoginService) === "function" ? _f : Object, typeof (_g = typeof wxFwhLogin_service_1.WxFwhLoginService !== "undefined" && wxFwhLogin_service_1.WxFwhLoginService) === "function" ? _g : Object])
 ], CustomerAuthService);
-
-
-/***/ }),
-
-/***/ "../../../libs/v1/flowda-services/src/services/customer-auth/customerAuthV4.service.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-var CustomerAuthV4Service_1;
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.mapUserToCustomer = exports.CustomerAuthV4Service = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const inversify_1 = __webpack_require__("inversify");
-const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
-const infra_1 = __webpack_require__("../../../libs/v1/flowda-services/src/infra/index.ts");
-let CustomerAuthV4Service = CustomerAuthV4Service_1 = class CustomerAuthV4Service {
-    constructor(flowdaTrpc, config, loggerFactory) {
-        this.flowdaTrpc = flowdaTrpc;
-        this.config = config;
-        this.logger = loggerFactory(CustomerAuthV4Service_1.name);
-    }
-    preSignup(reqApp, dto) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.flowdaTrpc.customerAuthV4.preSignup.mutate({
-                tid: reqApp.id,
-                email: dto.email,
-            });
-        });
-    }
-    verifyAndSignup(reqApp, dto) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.flowdaTrpc.customerAuthV4.verifyAndSignup.mutate(Object.assign({ tid: reqApp.id }, dto));
-        });
-    }
-    validateUserReturnTokens(appId, name, password) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.flowdaTrpc.customerAuthV4.validateUserReturnTokens.mutate({
-                tid: Number(appId),
-                name: name,
-                password: password,
-            });
-        });
-    }
-    wxValidateUser(tid, code) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.flowdaTrpc.customerAuthV4.wxValidateUser.mutate({ tid, code });
-        });
-    }
-    refreshToken(reqApp, rt) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.flowdaTrpc.customerAuthV4.refreshToken.mutate({
-                rt: rt,
-            });
-        });
-    }
-    getUser(userId) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.flowdaTrpc.customerAuthV4.getUser.query({ userId: Number(userId) });
-        });
-    }
-    getAccessTokenSecret() {
-        const ret = this.config.getEnv('customer_access_token_secret');
-        return ret;
-    }
-    logoutApi(tid, uid) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            yield this.flowdaTrpc.customerAuthV4.logoutApi.mutate({
-                tid: Number(tid),
-                uid: Number(uid),
-            });
-        });
-    }
-    generateRecoveryCode(dto) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.flowdaTrpc.customerAuthV4.generateRecoveryCode.mutate(dto);
-        });
-    }
-    resetPassword(dto) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.flowdaTrpc.customerAuthV4.resetPassword.mutate(dto);
-        });
-    }
-    fwhLogin(tid, code) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.flowdaTrpc.customerAuthV4.fwhLogin.mutate({ tid, code });
-        });
-    }
-    amountUpdate(dto) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.flowdaTrpc.customerAuthV4.amountUpdate.mutate(dto);
-        });
-    }
-};
-exports.CustomerAuthV4Service = CustomerAuthV4Service;
-exports.CustomerAuthV4Service = CustomerAuthV4Service = CustomerAuthV4Service_1 = tslib_1.__decorate([
-    (0, inversify_1.injectable)(),
-    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_types_1.FlowdaTrpcClientSymbol)),
-    tslib_1.__param(1, (0, inversify_1.inject)(infra_1.IConfigService)),
-    tslib_1.__param(2, (0, inversify_1.inject)('Factory<Logger>')),
-    tslib_1.__metadata("design:paramtypes", [Object, typeof (_a = typeof infra_1.IConfigService !== "undefined" && infra_1.IConfigService) === "function" ? _a : Object, Function])
-], CustomerAuthV4Service);
-function mapUserToCustomer(user) {
-    return {
-        id: String(user.id),
-        appId: user.tenant.name,
-        tid: user.tenantId,
-        name: user.username,
-        email: user.email,
-        image: user.image,
-        weixinProfile: user.weixinProfile,
-        profile: user.orderProfile,
-    };
-}
-exports.mapUserToCustomer = mapUserToCustomer;
 
 
 /***/ }),
@@ -6430,11 +5937,6 @@ const superAdminAuthentication_query_1 = __webpack_require__("../../../libs/v1/f
 const superAdminAuthentication_service_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/authentication/superAdminAuthentication.service.ts");
 const tenant_query_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/tenant/tenant.query.ts");
 const schema = tslib_1.__importStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/schema/schema.ts"));
-const appAuthV4_service_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/app/appAuthV4.service.ts");
-const customerAuthV4_service_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/customer-auth/customerAuthV4.service.ts");
-const productV4_service_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/product/productV4.service.ts");
-const orderV4_service_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/order/orderV4.service.ts");
-const customAuthV4_helper_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/customer-auth/customAuthV4.helper.ts");
 exports.flowdaServicesModule = new inversify_1.ContainerModule((bind) => {
     // const schema = generateSchema()
     bind(flowda_shared_1.PrismaZodSchemaSymbol).toConstantValue(v1_prisma_flowda_1.zt);
@@ -6444,22 +5946,17 @@ exports.flowdaServicesModule = new inversify_1.ContainerModule((bind) => {
     bind(jwt_service_1.JwtService).toSelf().inSingletonScope();
     bind(wxLogin_service_1.WxLoginService).toSelf().inSingletonScope();
     bind(wxFwhLogin_service_1.WxFwhLoginService).toSelf().inSingletonScope();
-    bind(customAuthV4_helper_1.CustomAuthV4Helper).toSelf().inSingletonScope();
     (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, tenantAuth_service_1.TenantAuthService);
     (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, app_service_1.AppService);
     // sdk
     (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, appAuth_service_1.AppAuthService);
-    (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, appAuthV4_service_1.AppAuthV4Service);
     (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, customerAuth_service_1.CustomerAuthService);
-    (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, customerAuthV4_service_1.CustomerAuthV4Service);
     (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, order_service_1.OrderService);
-    (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, orderV4_service_1.OrderV4Service);
     (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, order_tx_1.OrderTx);
     (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, order_query_1.OrderQuery);
     (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, customer_service_1.CustomerService);
     (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, customer_tx_1.CustomerTx);
     (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, product_service_1.ProductService);
-    (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, productV4_service_1.ProductV4Service);
     (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, product_query_1.ProductQuery);
     (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, product_tx_1.ProductTx);
     bind(superAdminAuthentication_service_1.SuperAdminAuthenticationService).toSelf().inSingletonScope();
@@ -6738,16 +6235,12 @@ tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/s
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/identity-provider/appIdentityProvider.service.ts"), exports);
 // sdk
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/app/appAuth.service.ts"), exports);
-tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/app/appAuthV4.service.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/customer-auth/customerAuth.service.ts"), exports);
-tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/customer-auth/customerAuthV4.service.ts"), exports);
-tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/customer-auth/customAuthV4.helper.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/app/dto/appRegisterRes.dto.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/customer-auth/dto/customerPreSignup.dto.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/customer-auth/dto/customerSignup.dto.ts"), exports);
 // sdk order
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/order/order.service.ts"), exports);
-tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/order/orderV4.service.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/order/order.tx.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/order/order.query.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/order/dto/sdkCreateOrderInJSAPIRes.dto.ts"), exports);
@@ -6757,7 +6250,6 @@ tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/s
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/customer/dto/customerUpdateAmount.dto.ts"), exports);
 // sdk product
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/product/product.service.ts"), exports);
-tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/product/productV4.service.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/product/product.query.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/product/product.tx.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/wx-login/wxLogin.service.ts"), exports);
@@ -7382,69 +6874,6 @@ exports.OrderTx = OrderTx = OrderTx_1 = tslib_1.__decorate([
 
 /***/ }),
 
-/***/ "../../../libs/v1/flowda-services/src/services/order/orderV4.service.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-var OrderV4Service_1;
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.OrderV4Service = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const inversify_1 = __webpack_require__("inversify");
-const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
-const client_1 = __webpack_require__("@trpc/client");
-let OrderV4Service = OrderV4Service_1 = class OrderV4Service {
-    constructor(flowdaTrpc, loggerFactory) {
-        this.flowdaTrpc = flowdaTrpc;
-        this.logger = loggerFactory(OrderV4Service_1.name);
-    }
-    query(orderId) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.flowdaTrpc.orderV4.query.query({ orderId });
-        });
-    }
-    queryPay(tid, userId, orderId) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.flowdaTrpc.orderV4.queryPay.mutate({ tid, uid: userId, orderId });
-        });
-    }
-    createNative(dto) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.flowdaTrpc.orderV4.createNative.mutate(dto);
-        });
-    }
-    createJSAPI(dto) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.flowdaTrpc.orderV4.createJSAPI.mutate(dto);
-        });
-    }
-    createQuick(dto) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.flowdaTrpc.orderV4.createQuick.mutate(dto);
-        });
-    }
-    queryPayQuick(tid, anonymousCustomerToken, orderId) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.flowdaTrpc.orderV4.queryPayQuick.mutate({
-                tid,
-                anonymousCustomerToken,
-                orderId,
-            });
-        });
-    }
-};
-exports.OrderV4Service = OrderV4Service;
-exports.OrderV4Service = OrderV4Service = OrderV4Service_1 = tslib_1.__decorate([
-    (0, inversify_1.injectable)(),
-    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_types_1.FlowdaTrpcClientSymbol)),
-    tslib_1.__param(1, (0, inversify_1.inject)('Factory<Logger>')),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof client_1.CreateTRPCProxyClient !== "undefined" && client_1.CreateTRPCProxyClient) === "function" ? _a : Object, Function])
-], OrderV4Service);
-
-
-/***/ }),
-
 /***/ "../../../libs/v1/flowda-services/src/services/product/product.query.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
@@ -7594,43 +7023,6 @@ exports.ProductTx = ProductTx = ProductTx_1 = tslib_1.__decorate([
     tslib_1.__param(2, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof db !== "undefined" && db.PrismaClient) === "function" ? _a : Object, typeof (_b = typeof product_service_1.ProductService !== "undefined" && product_service_1.ProductService) === "function" ? _b : Object, Function])
 ], ProductTx);
-
-
-/***/ }),
-
-/***/ "../../../libs/v1/flowda-services/src/services/product/productV4.service.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-var ProductV4Service_1;
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ProductV4Service = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const inversify_1 = __webpack_require__("inversify");
-const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
-const client_1 = __webpack_require__("@trpc/client");
-let ProductV4Service = ProductV4Service_1 = class ProductV4Service {
-    constructor(flowdaTrpc, loggerFactory) {
-        this.flowdaTrpc = flowdaTrpc;
-        this.logger = loggerFactory(ProductV4Service_1.name);
-    }
-    createManyProducts(appId, list) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.flowdaTrpc.productV4.createManyProducts.mutate({
-                tid: appId,
-                products: list,
-            });
-        });
-    }
-};
-exports.ProductV4Service = ProductV4Service;
-exports.ProductV4Service = ProductV4Service = ProductV4Service_1 = tslib_1.__decorate([
-    (0, inversify_1.injectable)(),
-    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_types_1.FlowdaTrpcClientSymbol)),
-    tslib_1.__param(1, (0, inversify_1.inject)('Factory<Logger>')),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof client_1.CreateTRPCProxyClient !== "undefined" && client_1.CreateTRPCProxyClient) === "function" ? _a : Object, Function])
-], ProductV4Service);
 
 
 /***/ }),
@@ -8612,7 +8004,7 @@ exports.JsonValue = zod_1.z.union([
 exports.NullableJsonValue = zod_1.z
     .union([exports.JsonValue, zod_1.z.literal('DbNull'), zod_1.z.literal('JsonNull')])
     .nullable()
-    .transform((v) => (0, exports.transformJsonNull)(v));
+    .transform(v => (0, exports.transformJsonNull)(v));
 exports.InputJsonValue = zod_1.z.union([
     zod_1.z.string(),
     zod_1.z.number(),
@@ -8622,8 +8014,15 @@ exports.InputJsonValue = zod_1.z.union([
 ]);
 // DECIMAL
 //------------------------------------------------------
-exports.DecimalJSLikeSchema = zod_1.z.object({ d: zod_1.z.array(zod_1.z.number()), e: zod_1.z.number(), s: zod_1.z.number(), toFixed: zod_1.z.function().args().returns(zod_1.z.string()), });
-exports.DecimalJSLikeListSchema = zod_1.z.object({ d: zod_1.z.array(zod_1.z.number()), e: zod_1.z.number(), s: zod_1.z.number(), toFixed: zod_1.z.function().args().returns(zod_1.z.string()), }).array();
+exports.DecimalJSLikeSchema = zod_1.z.object({
+    d: zod_1.z.array(zod_1.z.number()),
+    e: zod_1.z.number(),
+    s: zod_1.z.number(),
+    toFixed: zod_1.z.function().args().returns(zod_1.z.string()),
+});
+exports.DecimalJSLikeListSchema = zod_1.z
+    .object({ d: zod_1.z.array(zod_1.z.number()), e: zod_1.z.number(), s: zod_1.z.number(), toFixed: zod_1.z.function().args().returns(zod_1.z.string()) })
+    .array();
 exports.DECIMAL_STRING_REGEX = /^[0-9.,e+-bxffo_cp]+$|Infinity|NaN/;
 const isValidDecimalInput = (v) => {
     if (v === undefined || v === null)
@@ -8636,27 +8035,169 @@ exports.isValidDecimalInput = isValidDecimalInput;
 /////////////////////////////////////////
 // ENUMS
 /////////////////////////////////////////
-exports.TransactionIsolationLevelSchema = zod_1.z.enum(['ReadUncommitted', 'ReadCommitted', 'RepeatableRead', 'Serializable']);
-exports.AppScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'name', 'hashedAppToken', 'hashedPassword', 'hashedRefreshToken', 'recoveryCode', 'recoveryToken', 'displayName', 'description', 'isDeleted', 'tenantId']);
-exports.TenantScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'name', 'email', 'hashedPassword', 'hashedRefreshToken', 'recoveryCode', 'recoveryToken', 'role']);
+exports.TransactionIsolationLevelSchema = zod_1.z.enum([
+    'ReadUncommitted',
+    'ReadCommitted',
+    'RepeatableRead',
+    'Serializable',
+]);
+exports.AppScalarFieldEnumSchema = zod_1.z.enum([
+    'id',
+    'createdAt',
+    'updatedAt',
+    'name',
+    'hashedAppToken',
+    'hashedPassword',
+    'hashedRefreshToken',
+    'recoveryCode',
+    'recoveryToken',
+    'displayName',
+    'description',
+    'isDeleted',
+    'tenantId',
+]);
+exports.TenantScalarFieldEnumSchema = zod_1.z.enum([
+    'id',
+    'createdAt',
+    'updatedAt',
+    'name',
+    'email',
+    'hashedPassword',
+    'hashedRefreshToken',
+    'recoveryCode',
+    'recoveryToken',
+    'role',
+]);
 exports.TenantPreSignupScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'email', 'verifyCode']);
-exports.QuestionScalarFieldEnumSchema = zod_1.z.enum(['id', 'uid', 'question', 'answer', 'success', 'createdAt', 'updatedAt']);
+exports.QuestionScalarFieldEnumSchema = zod_1.z.enum([
+    'id',
+    'uid',
+    'question',
+    'answer',
+    'success',
+    'createdAt',
+    'updatedAt',
+]);
 exports.JYProfileScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'userId']);
 exports.JYFreeCountScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'cycle', 'count', 'profileId']);
-exports.ArticleScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'link', 'source', 'title', 'image', 'excerpt', 'profileId']);
-exports.ProductScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'name', 'price', 'productType', 'plan', 'amount', 'extendedDescriptionData', 'fileSize', 'storeDuration', 'hasAds', 'tecSupport', 'validityPeriod', 'appId', 'isDeleted', 'tenantId', 'restricted']);
-exports.PayScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'status', 'orderId', 'transactionId', 'tenantId']);
-exports.CustomerScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'name', 'appId', 'email', 'hashedPassword', 'hashedRefreshToken', 'recoveryCode', 'recoveryToken', 'isDeleted', 'tenantId']);
-exports.WeixinProfileScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'unionid', 'loginOpenid', 'headimgurl', 'nickname', 'sex', 'customerId', 'tenantId']);
-exports.ProfileScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'customerId', 'productType', 'plan', 'amount', 'expireAt', 'tenantId']);
-exports.CustomerPreSignupScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'email', 'verifyCode', 'appId', 'tenantId']);
-exports.LegacyProfileScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'customerId', 'license', 'refreshToken']);
-exports.ProductSnapshotScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'snapshotPrice', 'orderId', 'productId', 'tenantId']);
-exports.OrderScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'serial', 'status', 'customerId', 'appId', 'isDeleted', 'tenantId']);
+exports.ArticleScalarFieldEnumSchema = zod_1.z.enum([
+    'id',
+    'createdAt',
+    'updatedAt',
+    'link',
+    'source',
+    'title',
+    'image',
+    'excerpt',
+    'profileId',
+]);
+exports.ProductScalarFieldEnumSchema = zod_1.z.enum([
+    'id',
+    'createdAt',
+    'updatedAt',
+    'name',
+    'price',
+    'productType',
+    'plan',
+    'amount',
+    'extendedDescriptionData',
+    'fileSize',
+    'storeDuration',
+    'hasAds',
+    'tecSupport',
+    'validityPeriod',
+    'appId',
+    'isDeleted',
+    'tenantId',
+    'restricted',
+]);
+exports.PayScalarFieldEnumSchema = zod_1.z.enum([
+    'id',
+    'createdAt',
+    'updatedAt',
+    'status',
+    'orderId',
+    'transactionId',
+    'tenantId',
+]);
+exports.CustomerScalarFieldEnumSchema = zod_1.z.enum([
+    'id',
+    'createdAt',
+    'updatedAt',
+    'name',
+    'appId',
+    'email',
+    'hashedPassword',
+    'hashedRefreshToken',
+    'recoveryCode',
+    'recoveryToken',
+    'isDeleted',
+    'tenantId',
+]);
+exports.WeixinProfileScalarFieldEnumSchema = zod_1.z.enum([
+    'id',
+    'createdAt',
+    'updatedAt',
+    'unionid',
+    'loginOpenid',
+    'headimgurl',
+    'nickname',
+    'sex',
+    'customerId',
+    'tenantId',
+]);
+exports.ProfileScalarFieldEnumSchema = zod_1.z.enum([
+    'id',
+    'createdAt',
+    'updatedAt',
+    'customerId',
+    'productType',
+    'plan',
+    'amount',
+    'expireAt',
+    'tenantId',
+]);
+exports.CustomerPreSignupScalarFieldEnumSchema = zod_1.z.enum([
+    'id',
+    'createdAt',
+    'updatedAt',
+    'email',
+    'verifyCode',
+    'appId',
+    'tenantId',
+]);
+exports.LegacyProfileScalarFieldEnumSchema = zod_1.z.enum([
+    'id',
+    'createdAt',
+    'updatedAt',
+    'customerId',
+    'license',
+    'refreshToken',
+]);
+exports.ProductSnapshotScalarFieldEnumSchema = zod_1.z.enum([
+    'id',
+    'createdAt',
+    'updatedAt',
+    'snapshotPrice',
+    'orderId',
+    'productId',
+    'tenantId',
+]);
+exports.OrderScalarFieldEnumSchema = zod_1.z.enum([
+    'id',
+    'createdAt',
+    'updatedAt',
+    'serial',
+    'status',
+    'customerId',
+    'appId',
+    'isDeleted',
+    'tenantId',
+]);
 exports.SortOrderSchema = zod_1.z.enum(['asc', 'desc']);
-exports.NullableJsonNullValueInputSchema = zod_1.z.enum(['DbNull', 'JsonNull',]).transform((v) => (0, exports.transformJsonNull)(v));
+exports.NullableJsonNullValueInputSchema = zod_1.z.enum(['DbNull', 'JsonNull']).transform(v => (0, exports.transformJsonNull)(v));
 exports.NullsOrderSchema = zod_1.z.enum(['first', 'last']);
-exports.JsonNullValueFilterSchema = zod_1.z.enum(['DbNull', 'JsonNull', 'AnyNull',]);
+exports.JsonNullValueFilterSchema = zod_1.z.enum(['DbNull', 'JsonNull', 'AnyNull']);
 exports.OrderStatusSchema = zod_1.z.enum(['INITIALIZED', 'PAY_ASSOCIATED', 'FREE_DEAL', 'CANCELED']);
 exports.PayStatusSchema = zod_1.z.enum(['UNPAIED', 'PAIED', 'REFUND']);
 exports.ProductTypeSchema = zod_1.z.enum(['AMOUNT', 'PLAN']);
@@ -8666,27 +8207,38 @@ exports.ProductTypeSchema = zod_1.z.enum(['AMOUNT', 'PLAN']);
 /////////////////////////////////////////
 // APP SCHEMA
 /////////////////////////////////////////
-exports.AppSchema = zod_1.z.object({
+exports.AppSchema = zod_1.z
+    .object({
     id: zod_1.z.string().cuid(),
     createdAt: zod_1.z.date(),
     updatedAt: zod_1.z.date(),
-    name: zod_1.z.string().openapi({ "title": "应用id", "access_type": "read_only" }),
+    name: zod_1.z.string().openapi({ title: '应用id', access_type: 'read_only' }),
     hashedAppToken: zod_1.z.string().nullable(),
     hashedPassword: zod_1.z.string(),
     hashedRefreshToken: zod_1.z.string().nullable(),
     recoveryCode: zod_1.z.string().nullable(),
     recoveryToken: zod_1.z.string().nullable(),
-    displayName: zod_1.z.string().openapi({ "title": "应用名" }),
-    description: zod_1.z.string().nullable().openapi({ "title": "应用描述" }),
+    displayName: zod_1.z.string().openapi({ title: '应用名' }),
+    description: zod_1.z.string().nullable().openapi({ title: '应用描述' }),
     isDeleted: zod_1.z.boolean().nullable(),
     /**
      * @schema.model_name Order
      * @schema.foreign_key appId
      */
-    tenantId: zod_1.z.string().openapi({ "model_name": "Order", "foreign_key": "appId", "primary_key": "id", "title": "Orders" }),
-}).openapi({ "primary_key": "id", "searchable_columns": "name,displayName,description", "display_column": "displayName", "display_name": "应用", "display_primary_key": "true" });
+    tenantId: zod_1.z.string().openapi({ model_name: 'Order', foreign_key: 'appId', primary_key: 'id', title: 'Orders' }),
+})
+    .openapi({
+    primary_key: 'id',
+    searchable_columns: 'name,displayName,description',
+    display_column: 'displayName',
+    display_name: '应用',
+    display_primary_key: 'true',
+});
 exports.AppWithRelationsSchema = exports.AppSchema.merge(zod_1.z.object({
-    customers: zod_1.z.lazy(() => exports.CustomerWithRelationsSchema).array().openapi({ "model_name": "Customer", "foreign_key": "appId", "primary_key": "id", "title": "Customers" }),
+    customers: zod_1.z
+        .lazy(() => exports.CustomerWithRelationsSchema)
+        .array()
+        .openapi({ model_name: 'Customer', foreign_key: 'appId', primary_key: 'id', title: 'Customers' }),
 }));
 /////////////////////////////////////////
 // TENANT SCHEMA
@@ -8772,35 +8324,45 @@ exports.ArticleWithRelationsSchema = exports.ArticleSchema.merge(zod_1.z.object(
 /////////////////////////////////////////
 // PRODUCT SCHEMA
 /////////////////////////////////////////
-exports.ProductSchema = zod_1.z.object({
+exports.ProductSchema = zod_1.z
+    .object({
     productType: exports.ProductTypeSchema,
     id: zod_1.z.string().cuid(),
     createdAt: zod_1.z.date(),
     updatedAt: zod_1.z.date(),
-    name: zod_1.z.string().openapi({ "title": "产品名" }),
+    name: zod_1.z.string().openapi({ title: '产品名' }),
     /**
      * @schema.override_type integer
      */
-    price: zod_1.z.union([zod_1.z.number(), zod_1.z.string(), exports.DecimalJSLikeSchema,]).refine((v) => (0, exports.isValidDecimalInput)(v), { message: "Field 'price' must be a Decimal. Location: ['Models', 'Product']", }).openapi({ "title": "价格", "override_type": "integer" }),
+    price: zod_1.z
+        .union([zod_1.z.number(), zod_1.z.string(), exports.DecimalJSLikeSchema])
+        .refine(v => (0, exports.isValidDecimalInput)(v), {
+        message: "Field 'price' must be a Decimal. Location: ['Models', 'Product']",
+    })
+        .openapi({ title: '价格', override_type: 'integer' }),
     plan: zod_1.z.number().int().nullable(),
-    amount: zod_1.z.number().int().openapi({ "title": "额度" }),
+    amount: zod_1.z.number().int().openapi({ title: '额度' }),
     extendedDescriptionData: exports.NullableJsonValue.optional(),
     fileSize: zod_1.z.string().nullable(),
     storeDuration: zod_1.z.number().int().nullable(),
-    hasAds: zod_1.z.string().nullable().openapi({ "title": "广告" }),
-    tecSupport: zod_1.z.string().nullable().openapi({ "title": "技术支持" }),
-    validityPeriod: zod_1.z.number().int().nullable().openapi({ "title": "有效期/天" }),
+    hasAds: zod_1.z.string().nullable().openapi({ title: '广告' }),
+    tecSupport: zod_1.z.string().nullable().openapi({ title: '技术支持' }),
+    validityPeriod: zod_1.z.number().int().nullable().openapi({ title: '有效期/天' }),
     /**
      * @schema.model_name App
      * @schema.foreign_key appId
      */
-    appId: zod_1.z.string().openapi({ "model_name": "App", "foreign_key": "appId", "primary_key": "id", "access_type": "read_only" }),
+    appId: zod_1.z.string().openapi({ model_name: 'App', foreign_key: 'appId', primary_key: 'id', access_type: 'read_only' }),
     isDeleted: zod_1.z.boolean().nullable(),
     tenantId: zod_1.z.string(),
     restricted: zod_1.z.number().int(),
-}).openapi({ "primary_key": "id", "searchable_columns": "id,name", "display_name": "产品", "display_column": "name" });
+})
+    .openapi({ primary_key: 'id', searchable_columns: 'id,name', display_name: '产品', display_column: 'name' });
 exports.ProductWithRelationsSchema = exports.ProductSchema.merge(zod_1.z.object({
-    productSnapshots: zod_1.z.lazy(() => exports.ProductSnapshotWithRelationsSchema).array().openapi({ "model_name": "ProductSnapshot", "foreign_key": "productId", "primary_key": "id" }),
+    productSnapshots: zod_1.z
+        .lazy(() => exports.ProductSnapshotWithRelationsSchema)
+        .array()
+        .openapi({ model_name: 'ProductSnapshot', foreign_key: 'productId', primary_key: 'id' }),
 }));
 /////////////////////////////////////////
 // PAY SCHEMA
@@ -8820,30 +8382,42 @@ exports.PayWithRelationsSchema = exports.PaySchema.merge(zod_1.z.object({
 /////////////////////////////////////////
 // CUSTOMER SCHEMA
 /////////////////////////////////////////
-exports.CustomerSchema = zod_1.z.object({
+exports.CustomerSchema = zod_1.z
+    .object({
     id: zod_1.z.string().cuid(),
     createdAt: zod_1.z.date(),
     updatedAt: zod_1.z.date(),
-    name: zod_1.z.string().openapi({ "title": "用户名" }),
-    appId: zod_1.z.string().openapi({ "access_type": "read_only" }),
-    email: zod_1.z.string().nullable().openapi({ "title": "邮箱" }),
+    name: zod_1.z.string().openapi({ title: '用户名' }),
+    appId: zod_1.z.string().openapi({ access_type: 'read_only' }),
+    email: zod_1.z.string().nullable().openapi({ title: '邮箱' }),
     hashedPassword: zod_1.z.string().nullable(),
     hashedRefreshToken: zod_1.z.string().nullable(),
     recoveryCode: zod_1.z.string().nullable(),
     recoveryToken: zod_1.z.string().nullable(),
     isDeleted: zod_1.z.boolean().nullable(),
     tenantId: zod_1.z.string(),
-}).openapi({ "primary_key": "id", "display_name": "用户", "display_column": "name" });
+})
+    .openapi({ primary_key: 'id', display_name: '用户', display_column: 'name' });
 exports.CustomerWithRelationsSchema = exports.CustomerSchema.merge(zod_1.z.object({
     app: zod_1.z.lazy(() => exports.AppWithRelationsSchema),
-    legacyProfile: zod_1.z.lazy(() => exports.LegacyProfileWithRelationsSchema).nullable().openapi({ "model_name": "Order", "foreign_key": "customerId", "primary_key": "id", "title": "Orders" }),
-    profile: zod_1.z.lazy(() => exports.ProfileWithRelationsSchema).nullable().openapi({ "reference": "Profile" }),
-    weixinProfile: zod_1.z.lazy(() => exports.WeixinProfileWithRelationsSchema).nullable().openapi({ "reference": "WeixinProfile" }),
+    legacyProfile: zod_1.z
+        .lazy(() => exports.LegacyProfileWithRelationsSchema)
+        .nullable()
+        .openapi({ model_name: 'Order', foreign_key: 'customerId', primary_key: 'id', title: 'Orders' }),
+    profile: zod_1.z
+        .lazy(() => exports.ProfileWithRelationsSchema)
+        .nullable()
+        .openapi({ reference: 'Profile' }),
+    weixinProfile: zod_1.z
+        .lazy(() => exports.WeixinProfileWithRelationsSchema)
+        .nullable()
+        .openapi({ reference: 'WeixinProfile' }),
 }));
 /////////////////////////////////////////
 // WEIXIN PROFILE SCHEMA
 /////////////////////////////////////////
-exports.WeixinProfileSchema = zod_1.z.object({
+exports.WeixinProfileSchema = zod_1.z
+    .object({
     id: zod_1.z.string().cuid(),
     createdAt: zod_1.z.date(),
     updatedAt: zod_1.z.date(),
@@ -8854,14 +8428,16 @@ exports.WeixinProfileSchema = zod_1.z.object({
     sex: zod_1.z.number().int(),
     customerId: zod_1.z.string().nullable(),
     tenantId: zod_1.z.string(),
-}).openapi({ "primary_key": "id", "display_name": "微信用户信息", "display_column": "nickname" });
+})
+    .openapi({ primary_key: 'id', display_name: '微信用户信息', display_column: 'nickname' });
 exports.WeixinProfileWithRelationsSchema = exports.WeixinProfileSchema.merge(zod_1.z.object({
     customer: zod_1.z.lazy(() => exports.CustomerWithRelationsSchema).nullable(),
 }));
 /////////////////////////////////////////
 // PROFILE SCHEMA
 /////////////////////////////////////////
-exports.ProfileSchema = zod_1.z.object({
+exports.ProfileSchema = zod_1.z
+    .object({
     productType: exports.ProductTypeSchema,
     id: zod_1.z.string().cuid(),
     createdAt: zod_1.z.date(),
@@ -8871,7 +8447,8 @@ exports.ProfileSchema = zod_1.z.object({
     amount: zod_1.z.number().int().nullable(),
     expireAt: zod_1.z.date().nullable(),
     tenantId: zod_1.z.string(),
-}).openapi({ "primary_key": "id", "display_name": "用户信息", "display_column": "productType" });
+})
+    .openapi({ primary_key: 'id', display_name: '用户信息', display_column: 'productType' });
 exports.ProfileWithRelationsSchema = exports.ProfileSchema.merge(zod_1.z.object({
     customer: zod_1.z.lazy(() => exports.CustomerWithRelationsSchema),
 }));
@@ -8908,7 +8485,11 @@ exports.ProductSnapshotSchema = zod_1.z.object({
     id: zod_1.z.string().cuid(),
     createdAt: zod_1.z.date(),
     updatedAt: zod_1.z.date(),
-    snapshotPrice: zod_1.z.union([zod_1.z.number(), zod_1.z.string(), exports.DecimalJSLikeSchema,]).refine((v) => (0, exports.isValidDecimalInput)(v), { message: "Field 'snapshotPrice' must be a Decimal. Location: ['Models', 'ProductSnapshot']", }),
+    snapshotPrice: zod_1.z
+        .union([zod_1.z.number(), zod_1.z.string(), exports.DecimalJSLikeSchema])
+        .refine(v => (0, exports.isValidDecimalInput)(v), {
+        message: "Field 'snapshotPrice' must be a Decimal. Location: ['Models', 'ProductSnapshot']",
+    }),
     orderId: zod_1.z.string(),
     productId: zod_1.z.string(),
     tenantId: zod_1.z.string(),
@@ -8920,17 +8501,19 @@ exports.ProductSnapshotWithRelationsSchema = exports.ProductSnapshotSchema.merge
 /////////////////////////////////////////
 // ORDER SCHEMA
 /////////////////////////////////////////
-exports.OrderSchema = zod_1.z.object({
+exports.OrderSchema = zod_1.z
+    .object({
     status: exports.OrderStatusSchema,
     id: zod_1.z.string().cuid(),
     createdAt: zod_1.z.date(),
     updatedAt: zod_1.z.date(),
     serial: zod_1.z.number().int(),
-    customerId: zod_1.z.string().openapi({ "reference": "Customer" }),
+    customerId: zod_1.z.string().openapi({ reference: 'Customer' }),
     appId: zod_1.z.string(),
     isDeleted: zod_1.z.boolean().nullable(),
     tenantId: zod_1.z.string(),
-}).openapi({ "primary_key": "id", "display_name": "订单", "display_primary_key": "true" });
+})
+    .openapi({ primary_key: 'id', display_name: '订单', display_primary_key: 'true' });
 exports.OrderWithRelationsSchema = exports.OrderSchema.merge(zod_1.z.object({
     pay: zod_1.z.lazy(() => exports.PayWithRelationsSchema).nullable(),
     productSnapshots: zod_1.z.lazy(() => exports.ProductSnapshotWithRelationsSchema).array(),
@@ -9013,6 +8596,13 @@ module.exports = require("class-validator");
 /***/ ((module) => {
 
 module.exports = require("class-validator-jsonschema");
+
+/***/ }),
+
+/***/ "consola":
+/***/ ((module) => {
+
+module.exports = require("consola");
 
 /***/ }),
 
