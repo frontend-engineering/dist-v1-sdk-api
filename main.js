@@ -1716,9 +1716,9 @@ function transformHttpException(opts, cause, stack) {
 exports.transformHttpException = transformHttpException;
 function errorFormatter(opts) {
     logErrorStart(opts);
-    if (Array.isArray(opts.ctx._trace) && opts.ctx._trace.length > 0) {
+    if (Array.isArray(opts.ctx._diagnosis) && opts.ctx._diagnosis.length > 0) {
         consola_1.default.info(`trace:`);
-        const msg = opts.ctx._trace
+        const msg = opts.ctx._diagnosis
             .map((m) => {
             const indent = (0, lodash_1.repeat)(' ', 4);
             const msg = m.map(i => (typeof i === 'string' ? i : JSON.stringify(i))).join(', ');
@@ -1767,7 +1767,7 @@ function createContext(opts) {
         return {
             req: opts.req,
             res: opts.res,
-            _trace: [],
+            _diagnosis: [],
         };
     });
 }
@@ -1776,7 +1776,7 @@ exports.createContext = createContext;
  * 一个简单的基于 trpc ctx 的 诊断工具 报错之后会记录手动埋的路径，方便排查错误
  */
 function diag(ctx, ...message) {
-    (ctx === null || ctx === void 0 ? void 0 : ctx._trace) != null && ctx._trace.push(message);
+    (ctx === null || ctx === void 0 ? void 0 : ctx._diagnosis) != null && ctx._diagnosis.push(message);
 }
 exports.diag = diag;
 
@@ -2231,17 +2231,17 @@ class _resetTenantPasswordSchemaDto extends (0, zod_utils_1.createZodDto)(export
 exports._resetTenantPasswordSchemaDto = _resetTenantPasswordSchemaDto;
 exports.customerExtendDataSchema = zod_1.z
     .object({
-    raw_kanzhun: zod_1.z.any(),
     biz: zod_1.z.string(),
     icp: zod_1.z.string().nullable(),
-    contact: zod_1.z.object({
+    contact: zod_1.z
+        .object({
         email: zod_1.z.string(),
         phone: zod_1.z.string(),
         address: zod_1.z.string(),
-    }),
+    })
+        .partial(),
     companyName: zod_1.z.string(),
     description: zod_1.z.string(),
-    _prev: zod_1.z.any(),
 })
     .partial();
 class customerExtendDataSchemaDto extends (0, zod_utils_1.createZodDto)(exports.customerExtendDataSchema) {
