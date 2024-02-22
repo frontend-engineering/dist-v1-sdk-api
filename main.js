@@ -1587,7 +1587,7 @@ exports.TableFilterService = TableFilterService = TableFilterService_1 = tslib_1
 
 /// <reference types="@types/express-serve-static-core" />
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.trace = exports.createContext = exports.transformer = exports.errorFormatter = exports.transformHttpException = exports.logErrorEnd = exports.logErrorStart = exports.getErrorCodeFromKey = exports.getStatusKeyFromStatus = exports.logContext = exports.logOutputSerialize = exports.logInputSerialize = exports.ERROR_END = exports.REQ_END = void 0;
+exports.diag = exports.createContext = exports.transformer = exports.errorFormatter = exports.transformHttpException = exports.logErrorEnd = exports.logErrorStart = exports.getErrorCodeFromKey = exports.getStatusKeyFromStatus = exports.logContext = exports.logOutputSerialize = exports.logInputSerialize = exports.ERROR_END = exports.REQ_END = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const consola_1 = tslib_1.__importDefault(__webpack_require__("consola"));
 const _ = tslib_1.__importStar(__webpack_require__("radash"));
@@ -1772,10 +1772,13 @@ function createContext(opts) {
     });
 }
 exports.createContext = createContext;
-function trace(ctx, ...message) {
+/**
+ * 一个简单的基于 trpc ctx 的 诊断工具 报错之后会记录手动埋的路径，方便排查错误
+ */
+function diag(ctx, ...message) {
     (ctx === null || ctx === void 0 ? void 0 : ctx._trace) != null && ctx._trace.push(message);
 }
-exports.trace = trace;
+exports.diag = diag;
 
 
 /***/ }),
@@ -1874,8 +1877,8 @@ exports.createZodDto = createZodDto;
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.updateFreeProfileSchema = exports.updatePaidProfileSchema = exports.SdkProductCreateManyItemDto = exports.productCreateManyItemSchema = exports.ResetPasswordDto = exports.resetPasswordWithRecoveryCodeTenantJwtSchemaDto = exports.resetPasswordWithRecoveryCodeSchemaDto = exports.resetPasswordWithRecoveryCodeSchema = exports.GenerateRecoveryCodeDto = exports.generateRecoveryCodeTenantJwtSchemaDto = exports.generateRecoveryCodeSchemaDto = exports.generateRecoveryCodeSchema = exports.wxValidateUserTenantJwtPayloadSchemaDto = exports.wxValidateUserSchema = exports.wxGetUserRes = exports.wxGetAccessTokenRes = exports.customerSignupTenantJwtPayloadSchemaDto = exports.customerSignupSchemaDto = exports.customerSignupSchema = exports.customerPreSignupTenantJwtPayloadSchemaDto = exports.customerPreSignupSchemaDto = exports.customerPreSignupSchema = exports.userJwtPayloadSchemaDto = exports.userJwtPayloadSchema = exports.tenantJwtPayloadSchema = exports.verifyMobileSchemaDto = exports.verifyMobileSchema = exports.resetPasswordSchemaDto = exports.resetPasswordSchema = exports.RegisterByUnionIdSchemaDto = exports.registerByUnionIdSchema = exports.FindByUnionIdAndTenantIdSchemaDto = exports.findByUnionIdAndTenantIdSchema = exports.GetTenantByNameSchemaDto = exports.getTenantByNameSchema = exports.AccountExistsSchemaDto = exports.accountExistsSchema = exports.RegisterDto = exports.registerSchema = exports.prismaFilterSchema = exports.agSortSchema = exports.agFilterSchema = exports.agFilter2Schema = exports.agFilter1Schema = exports.agFilterInner2Schema = exports.agFilterInnerSchema = exports.resourceSchema = exports.resourceColumnSchema = exports.resourceAssociationSchema = exports.selectOptionSchema = void 0;
-exports._resetTenantPasswordSchemaDto = exports._resetTenantPasswordSchema = exports.validateByEmailSchemaDto = exports.validateByEmailSchema = exports.validateTenantSchemaDto = exports.validateTenantSchema = exports.appCreateV4SchemaDto = exports.appCreateV4Schema = exports.createQuickOrderTenantJWTPayloadSchemaDto = exports.SdkCreateQuickOrderDto = exports.createQuickOrderSchema = exports.SdkCreateOrderInJSAPIDto = exports.createOrderJSAPISchema = exports.transactionsNativeSchemaDto = exports.transactionsNativeSchema = exports.createOrderUserJwtPayloadSchemaDto = exports.SdkCreateOrderDto = exports.createOrderSchema = exports.amountUpdateUserJwtPayloadSchemaDto = exports.amountUpdateSchemaDto = exports.amountUpdateSchema = exports.fwhLoginTenantJwtPayloadSchemaDto = exports.fwhLoginSchema = exports.wxPayQuerySchema = void 0;
+exports.SdkProductCreateManyItemDto = exports.productCreateManyItemSchema = exports.ResetPasswordDto = exports.resetPasswordWithRecoveryCodeTenantJwtSchemaDto = exports.resetPasswordWithRecoveryCodeSchemaDto = exports.resetPasswordWithRecoveryCodeSchema = exports.GenerateRecoveryCodeDto = exports.generateRecoveryCodeTenantJwtSchemaDto = exports.generateRecoveryCodeSchemaDto = exports.generateRecoveryCodeSchema = exports.wxValidateUserTenantJwtPayloadSchemaDto = exports.wxValidateUserSchema = exports.wxGetUserRes = exports.wxGetAccessTokenRes = exports.customerSignupTenantJwtPayloadSchemaDto = exports.customerSignupSchemaDto = exports.customerSignupSchema = exports.customerPreSignupTenantJwtPayloadSchemaDto = exports.customerPreSignupSchemaDto = exports.customerPreSignupSchema = exports.userJwtPayloadSchemaDto = exports.userJwtPayloadSchema = exports.tenantJwtPayloadSchema = exports.verifyMobileSchemaDto = exports.verifyMobileSchema = exports.resetPasswordSchemaDto = exports.resetPasswordSchema = exports.RegisterByUnionIdSchemaDto = exports.registerByUnionIdSchema = exports.FindByUnionIdAndTenantIdSchemaDto = exports.findByUnionIdAndTenantIdSchema = exports.GetTenantByNameSchemaDto = exports.getTenantByNameSchema = exports.validateSchemaDto = exports.validateSchema = exports.AccountExistsSchemaDto = exports.accountExistsSchema = exports.RegisterDto = exports.registerSchema = exports.prismaFilterSchema = exports.agSortSchema = exports.agFilterSchema = exports.agFilter2Schema = exports.agFilter1Schema = exports.agFilterInner2Schema = exports.agFilterInnerSchema = exports.resourceSchema = exports.resourceColumnSchema = exports.resourceAssociationSchema = exports.selectOptionSchema = void 0;
+exports.refreshTokenSchemaDto = exports.refreshTokenSchema = exports.sendSmsVerifyCodeSchemaDto = exports.sendSmsVerifyCodeSchema = exports.kanzhunDataSchema = exports.kanzhunItemSchemaDto = exports.kanzhunItemSchema = exports.kanzhunDetailSchemaDto = exports.kanzhunDetailSchema = exports.customerExtendDataSchemaDto = exports.customerExtendDataSchema = exports._resetTenantPasswordSchemaDto = exports._resetTenantPasswordSchema = exports.validateByEmailSchemaDto = exports.validateByEmailSchema = exports.validateTenantSchemaDto = exports.validateTenantSchema = exports.appCreateV4SchemaDto = exports.appCreateV4Schema = exports.createQuickOrderTenantJWTPayloadSchemaDto = exports.SdkCreateQuickOrderDto = exports.createQuickOrderSchema = exports.SdkCreateOrderInJSAPIDto = exports.createOrderJSAPISchema = exports.transactionsNativeSchemaDto = exports.transactionsNativeSchema = exports.createOrderUserJwtPayloadSchemaDto = exports.SdkCreateOrderDto = exports.createOrderSchema = exports.amountUpdateUserJwtPayloadSchemaDto = exports.amountUpdateSchemaDto = exports.amountUpdateSchema = exports.fwhLoginTenantJwtPayloadSchemaDto = exports.fwhLoginSchema = exports.wxPayQuerySchema = exports.updateFreeProfileSchema = exports.updatePaidProfileSchema = void 0;
 const zod_1 = __webpack_require__("zod");
 const zod_utils_1 = __webpack_require__("../../../libs/flowda-shared-types/src/zod-utils.ts");
 exports.selectOptionSchema = zod_1.z.object({
@@ -1979,6 +1982,13 @@ exports.accountExistsSchema = zod_1.z.object({
 class AccountExistsSchemaDto extends (0, zod_utils_1.createZodDto)(exports.accountExistsSchema) {
 }
 exports.AccountExistsSchemaDto = AccountExistsSchemaDto;
+exports.validateSchema = zod_1.z.object({
+    username: zod_1.z.string(),
+    password: zod_1.z.string(),
+});
+class validateSchemaDto extends (0, zod_utils_1.createZodDto)(exports.validateSchema) {
+}
+exports.validateSchemaDto = validateSchemaDto;
 exports.getTenantByNameSchema = zod_1.z.object({
     tenantName: zod_1.z.string(),
 });
@@ -2219,6 +2229,59 @@ exports._resetTenantPasswordSchema = zod_1.z.object({
 class _resetTenantPasswordSchemaDto extends (0, zod_utils_1.createZodDto)(exports._resetTenantPasswordSchema) {
 }
 exports._resetTenantPasswordSchemaDto = _resetTenantPasswordSchemaDto;
+exports.customerExtendDataSchema = zod_1.z
+    .object({
+    raw_kanzhun: zod_1.z.any(),
+    biz: zod_1.z.string(),
+    icp: zod_1.z.string().nullable(),
+    contact: zod_1.z.object({
+        email: zod_1.z.string(),
+        phone: zod_1.z.string(),
+        address: zod_1.z.string(),
+    }),
+    companyName: zod_1.z.string(),
+    description: zod_1.z.string(),
+    _prev: zod_1.z.any(),
+})
+    .partial();
+class customerExtendDataSchemaDto extends (0, zod_utils_1.createZodDto)(exports.customerExtendDataSchema) {
+}
+exports.customerExtendDataSchemaDto = customerExtendDataSchemaDto;
+exports.kanzhunDetailSchema = zod_1.z
+    .object({
+    公司全称: zod_1.z.string(),
+    联系方式: zod_1.z.array(zod_1.z.string()),
+    地址: zod_1.z.string(),
+    简介: zod_1.z.string(),
+})
+    .partial();
+class kanzhunDetailSchemaDto extends (0, zod_utils_1.createZodDto)(exports.kanzhunDetailSchema) {
+}
+exports.kanzhunDetailSchemaDto = kanzhunDetailSchemaDto;
+exports.kanzhunItemSchema = zod_1.z
+    .object({
+    id: zod_1.z.number(),
+    name: zod_1.z.string(),
+    detail: exports.kanzhunDetailSchema,
+})
+    .partial();
+class kanzhunItemSchemaDto extends (0, zod_utils_1.createZodDto)(exports.kanzhunItemSchema) {
+}
+exports.kanzhunItemSchemaDto = kanzhunItemSchemaDto;
+exports.kanzhunDataSchema = zod_1.z
+    .object({
+    date: zod_1.z.string(),
+    data: zod_1.z.array(exports.kanzhunItemSchema),
+})
+    .partial();
+exports.sendSmsVerifyCodeSchema = zod_1.z.object({ mobile: zod_1.z.string() });
+class sendSmsVerifyCodeSchemaDto extends (0, zod_utils_1.createZodDto)(exports.sendSmsVerifyCodeSchema) {
+}
+exports.sendSmsVerifyCodeSchemaDto = sendSmsVerifyCodeSchemaDto;
+exports.refreshTokenSchema = zod_1.z.object({ rt: zod_1.z.string() });
+class refreshTokenSchemaDto extends (0, zod_utils_1.createZodDto)(exports.refreshTokenSchema) {
+}
+exports.refreshTokenSchemaDto = refreshTokenSchemaDto;
 
 
 /***/ }),
