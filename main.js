@@ -3706,7 +3706,8 @@ const tslib_1 = __webpack_require__("tslib");
 const plur = tslib_1.__importStar(__webpack_require__("pluralize"));
 const _ = tslib_1.__importStar(__webpack_require__("lodash"));
 plur.addSingularRule(/data/i, 'data');
-plur.addSingularRule(/defs/i, 'def');
+plur.addSingularRule(/data/i, 'data');
+plur.addSingularRule(/sms/i, 'sms');
 // s* equipment 不可数
 const REG = /(([a-z_]+s*)\/?([A-Za-z0-9-_:]+)?)+/g;
 const NUM_REG = /^-?\d+(\.\d+)?$/;
