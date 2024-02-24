@@ -1748,7 +1748,7 @@ function errorFormatter(opts, handlers) {
         };
         json = Object.assign(json, json2);
         const ret = transformHttpException(opts, json2);
-        if (typeof handlers.log === 'function') {
+        if (typeof (handlers === null || handlers === void 0 ? void 0 : handlers.log) === 'function') {
             handlers.log({
                 requestId,
                 tenantId,
@@ -1764,7 +1764,7 @@ function errorFormatter(opts, handlers) {
             message: opts.error.message,
             stack: opts.error.stack,
         });
-        if (typeof handlers.log === 'function') {
+        if (typeof (handlers === null || handlers === void 0 ? void 0 : handlers.log) === 'function') {
             handlers.log({
                 requestId,
                 tenantId,
