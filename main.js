@@ -22,15 +22,28 @@ let AppController = class AppController {
             return this.appAuth.create(dto);
         });
     }
+    createV4(dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            throw new common_1.GoneException();
+        });
+    }
     verify(req) {
         // 返回 at rt，客户端负责存储策略
         return req.user;
     }
+    verifyV4(req) {
+        throw new common_1.GoneException();
+    }
     refreshToken(rt) {
         return this.appAuth.appRefreshToken(rt);
     }
+    refreshTokenV4(rt) {
+        throw new common_1.GoneException();
+    }
 };
+exports.AppController = AppController;
 tslib_1.__decorate([
+    (0, common_1.Version)([common_1.VERSION_NEUTRAL, '1']),
     (0, common_1.Post)('create'),
     tslib_1.__param(0, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
@@ -38,6 +51,15 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", Promise)
 ], AppController.prototype, "create", null);
 tslib_1.__decorate([
+    (0, common_1.Version)('4'),
+    (0, common_1.Post)('create'),
+    tslib_1.__param(0, (0, common_1.Body)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], AppController.prototype, "createV4", null);
+tslib_1.__decorate([
+    (0, common_1.Version)([common_1.VERSION_NEUTRAL, '1']),
     (0, common_1.UseGuards)(appLocalAuth_guard_1.AppLocalAuthGuard),
     (0, common_1.Post)('verify'),
     (0, common_1.HttpCode)(200),
@@ -47,6 +69,16 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", void 0)
 ], AppController.prototype, "verify", null);
 tslib_1.__decorate([
+    (0, common_1.Version)('4'),
+    (0, common_1.Post)('verify'),
+    (0, common_1.HttpCode)(200),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object]),
+    tslib_1.__metadata("design:returntype", void 0)
+], AppController.prototype, "verifyV4", null);
+tslib_1.__decorate([
+    (0, common_1.Version)([common_1.VERSION_NEUTRAL, '1']),
     (0, common_1.Post)('refreshToken'),
     (0, common_1.HttpCode)(200),
     tslib_1.__param(0, (0, common_1.Headers)('Refresh')),
@@ -54,11 +86,21 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", [String]),
     tslib_1.__metadata("design:returntype", void 0)
 ], AppController.prototype, "refreshToken", null);
-AppController = tslib_1.__decorate([
-    (0, common_1.Controller)('sdk/app'),
+tslib_1.__decorate([
+    (0, common_1.Version)('4'),
+    (0, common_1.Post)('refreshToken'),
+    (0, common_1.HttpCode)(200),
+    tslib_1.__param(0, (0, common_1.Headers)('Refresh')),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [String]),
+    tslib_1.__metadata("design:returntype", void 0)
+], AppController.prototype, "refreshTokenV4", null);
+exports.AppController = AppController = tslib_1.__decorate([
+    (0, common_1.Controller)({
+        path: 'sdk/app',
+    }),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_services_1.AppAuthService !== "undefined" && v1_flowda_services_1.AppAuthService) === "function" ? _a : Object])
 ], AppController);
-exports.AppController = AppController;
 
 
 /***/ }),
@@ -91,11 +133,11 @@ let AppJwtStrategy = class AppJwtStrategy extends (0, passport_1.PassportStrateg
         });
     }
 };
-AppJwtStrategy = tslib_1.__decorate([
+exports.AppJwtStrategy = AppJwtStrategy;
+exports.AppJwtStrategy = AppJwtStrategy = tslib_1.__decorate([
     (0, common_1.Injectable)(),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_services_1.AppAuthService !== "undefined" && v1_flowda_services_1.AppAuthService) === "function" ? _a : Object])
 ], AppJwtStrategy);
-exports.AppJwtStrategy = AppJwtStrategy;
 
 
 /***/ }),
@@ -111,10 +153,10 @@ const passport_1 = __webpack_require__("@nestjs/passport");
 const common_1 = __webpack_require__("@nestjs/common");
 let AppJwtAuthGuard = class AppJwtAuthGuard extends (0, passport_1.AuthGuard)('appJwt') {
 };
-AppJwtAuthGuard = tslib_1.__decorate([
+exports.AppJwtAuthGuard = AppJwtAuthGuard;
+exports.AppJwtAuthGuard = AppJwtAuthGuard = tslib_1.__decorate([
     (0, common_1.Injectable)()
 ], AppJwtAuthGuard);
-exports.AppJwtAuthGuard = AppJwtAuthGuard;
 
 
 /***/ }),
@@ -123,6 +165,7 @@ exports.AppJwtAuthGuard = AppJwtAuthGuard;
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
+var AppLocalAuthStrategy_1;
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppLocalAuthStrategy = void 0;
@@ -131,17 +174,19 @@ const passport_1 = __webpack_require__("@nestjs/passport");
 const passport_local_1 = __webpack_require__("passport-local");
 const common_1 = __webpack_require__("@nestjs/common");
 const v1_flowda_services_1 = __webpack_require__("../../../libs/v1/flowda-services/src/index.ts");
-let AppLocalAuthStrategy = class AppLocalAuthStrategy extends (0, passport_1.PassportStrategy)(passport_local_1.Strategy, 'appLocal') {
+let AppLocalAuthStrategy = AppLocalAuthStrategy_1 = class AppLocalAuthStrategy extends (0, passport_1.PassportStrategy)(passport_local_1.Strategy, 'appLocal') {
     constructor(authService) {
         super({
             usernameField: 'appId',
             passwordField: 'appToken',
         });
         this.authService = authService;
+        this.logger = new common_1.Logger(AppLocalAuthStrategy_1.name);
     }
     // username,password 也是默认从 request 里取
     validate(appId, appToken) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            this.logger.debug('validate');
             const tokens = yield this.authService.validate(appId, appToken);
             if (!tokens) {
                 throw new common_1.UnauthorizedException();
@@ -150,11 +195,11 @@ let AppLocalAuthStrategy = class AppLocalAuthStrategy extends (0, passport_1.Pas
         });
     }
 };
-AppLocalAuthStrategy = tslib_1.__decorate([
+exports.AppLocalAuthStrategy = AppLocalAuthStrategy;
+exports.AppLocalAuthStrategy = AppLocalAuthStrategy = AppLocalAuthStrategy_1 = tslib_1.__decorate([
     (0, common_1.Injectable)(),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_services_1.AppAuthService !== "undefined" && v1_flowda_services_1.AppAuthService) === "function" ? _a : Object])
 ], AppLocalAuthStrategy);
-exports.AppLocalAuthStrategy = AppLocalAuthStrategy;
 
 
 /***/ }),
@@ -170,10 +215,10 @@ const passport_1 = __webpack_require__("@nestjs/passport");
 const common_1 = __webpack_require__("@nestjs/common");
 let AppLocalAuthGuard = class AppLocalAuthGuard extends (0, passport_1.AuthGuard)('appLocal') {
 };
-AppLocalAuthGuard = tslib_1.__decorate([
+exports.AppLocalAuthGuard = AppLocalAuthGuard;
+exports.AppLocalAuthGuard = AppLocalAuthGuard = tslib_1.__decorate([
     (0, common_1.Injectable)()
 ], AppLocalAuthGuard);
-exports.AppLocalAuthGuard = AppLocalAuthGuard;
 
 
 /***/ }),
@@ -182,7 +227,7 @@ exports.AppLocalAuthGuard = AppLocalAuthGuard;
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b, _c, _d, _e, _f, _g;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CustomerController = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -193,6 +238,7 @@ const customerJwtAuth_guard_1 = __webpack_require__("./src/customer/customerJwtA
 const customerWeiXinAuth_guard_1 = __webpack_require__("./src/customer/customerWeiXinAuth.guard.ts");
 const fwhLoginSimple_guard_1 = __webpack_require__("./src/customer/fwhLoginSimple.guard.ts");
 const customerAppCombinedAuth_guard_1 = __webpack_require__("./src/customer/customerAppCombinedAuth.guard.ts");
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
 let CustomerController = class CustomerController {
     constructor(customerAuth, customerTx) {
         this.customerAuth = customerAuth;
@@ -210,15 +256,26 @@ let CustomerController = class CustomerController {
             appId: req.user.id,
         });
     }
-    signup(req, dto) {
-        this.logger.log('sign up: ', dto);
-        return this.customerAuth.verifyAndSignup(Object.assign(Object.assign({}, dto), { appId: req.user.id }));
+    preSignupV4(req, dto) {
+        throw new common_1.GoneException();
+    }
+    // todo 没看到 signup v1 但是 customerAuth.verifyAndSignup 逻辑再，应该是误删除了 暂时不恢复
+    signupV4(req, dto) {
+        throw new common_1.GoneException();
     }
     login(req) {
         return req.user;
     }
+    loginV4(req) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            throw new common_1.GoneException();
+        });
+    }
     refreshToken(rt) {
         return this.customerAuth.refreshToken(rt);
+    }
+    refreshTokenV4(req, rt) {
+        throw new common_1.GoneException();
     }
     logout(req) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
@@ -228,11 +285,21 @@ let CustomerController = class CustomerController {
             };
         });
     }
+    logoutV4(req) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            throw new common_1.GoneException();
+        });
+    }
     generateRecoveryCode(req, dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const appId = req.user.id;
             this.logger.debug('get appId from request after guard: ', appId);
             return this.customerAuth.generateRecoveryCode(Object.assign(Object.assign({}, dto), { appId }));
+        });
+    }
+    generateRecoveryCodeV4(req, dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            throw new common_1.GoneException();
         });
     }
     resetPassword(req, dto) {
@@ -245,9 +312,19 @@ let CustomerController = class CustomerController {
             };
         });
     }
+    resetPasswordV4(req, dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            throw new common_1.GoneException();
+        });
+    }
     query(req) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return req.user;
+        });
+    }
+    queryV4(req) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            throw new common_1.GoneException();
         });
     }
     updateAmount(req, dto) {
@@ -269,9 +346,19 @@ let CustomerController = class CustomerController {
             }
         });
     }
+    updateAmountV4(req, dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            throw new common_1.GoneException();
+        });
+    }
     getWXAccessToken(req) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return req.user;
+        });
+    }
+    getWXAccessTokenV4(req) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            throw new common_1.GoneException();
         });
     }
     getFwhAccessToken(req, dto) {
@@ -291,8 +378,18 @@ let CustomerController = class CustomerController {
             return this.customerAuth.fwhLogin(dto.code, appId);
         });
     }
+    /*
+    https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx16aa373d85f92806&redirect_uri=https%3A%2F%2Fpay.freecharger.cn%2Fwx-h5-login-debug&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect
+     */
+    fwhLoginV4(req, dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            throw new common_1.GoneException();
+        });
+    }
 };
+exports.CustomerController = CustomerController;
 tslib_1.__decorate([
+    (0, common_1.Version)([common_1.VERSION_NEUTRAL, '1']),
     (0, common_1.UseGuards)(appJwtAuth_guard_1.AppJwtAuthGuard),
     (0, common_1.Post)('preSignup'),
     tslib_1.__param(0, (0, common_1.Req)()),
@@ -302,15 +399,25 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", void 0)
 ], CustomerController.prototype, "preSignup", null);
 tslib_1.__decorate([
-    (0, common_1.UseGuards)(appJwtAuth_guard_1.AppJwtAuthGuard),
+    (0, common_1.Version)('4'),
+    (0, common_1.Post)('preSignup'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Body)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_d = typeof flowda_shared_types_1.customerPreSignupSchemaDto !== "undefined" && flowda_shared_types_1.customerPreSignupSchemaDto) === "function" ? _d : Object]),
+    tslib_1.__metadata("design:returntype", void 0)
+], CustomerController.prototype, "preSignupV4", null);
+tslib_1.__decorate([
+    (0, common_1.Version)('4'),
     (0, common_1.Post)('signup'),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, typeof (_d = typeof Omit !== "undefined" && Omit) === "function" ? _d : Object]),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_e = typeof flowda_shared_types_1.customerSignupSchemaDto !== "undefined" && flowda_shared_types_1.customerSignupSchemaDto) === "function" ? _e : Object]),
     tslib_1.__metadata("design:returntype", void 0)
-], CustomerController.prototype, "signup", null);
+], CustomerController.prototype, "signupV4", null);
 tslib_1.__decorate([
+    (0, common_1.Version)([common_1.VERSION_NEUTRAL, '1']),
     (0, common_1.UseGuards)(appJwtAuth_guard_1.AppJwtAuthGuard, customerAppCombinedAuth_guard_1.CustomerAppCombinedAuthGuard),
     (0, common_1.Post)('login'),
     (0, common_1.HttpCode)(200),
@@ -320,6 +427,15 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", void 0)
 ], CustomerController.prototype, "login", null);
 tslib_1.__decorate([
+    (0, common_1.Version)('4'),
+    (0, common_1.Post)('login'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], CustomerController.prototype, "loginV4", null);
+tslib_1.__decorate([
+    (0, common_1.Version)([common_1.VERSION_NEUTRAL, '1']),
     (0, common_1.Post)('refreshToken'),
     (0, common_1.HttpCode)(200),
     tslib_1.__param(0, (0, common_1.Headers)('Refresh')),
@@ -328,6 +444,17 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", void 0)
 ], CustomerController.prototype, "refreshToken", null);
 tslib_1.__decorate([
+    (0, common_1.Version)('4'),
+    (0, common_1.Post)('refreshToken'),
+    (0, common_1.HttpCode)(200),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Headers)('Refresh')),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object, String]),
+    tslib_1.__metadata("design:returntype", void 0)
+], CustomerController.prototype, "refreshTokenV4", null);
+tslib_1.__decorate([
+    (0, common_1.Version)([common_1.VERSION_NEUTRAL, '1']),
     (0, common_1.UseGuards)(customerJwtAuth_guard_1.CustomerJwtAuthGuard),
     (0, common_1.Post)('logout'),
     (0, common_1.HttpCode)(200),
@@ -337,26 +464,58 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", Promise)
 ], CustomerController.prototype, "logout", null);
 tslib_1.__decorate([
+    (0, common_1.Version)('4'),
+    (0, common_1.Post)('logout'),
+    (0, common_1.HttpCode)(200),
+    tslib_1.__param(0, (0, common_1.Request)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], CustomerController.prototype, "logoutV4", null);
+tslib_1.__decorate([
+    (0, common_1.Version)([common_1.VERSION_NEUTRAL, '1']),
     (0, common_1.UseGuards)(appJwtAuth_guard_1.AppJwtAuthGuard),
     (0, common_1.Post)('generateRecoveryCode'),
     (0, common_1.HttpCode)(200),
     tslib_1.__param(0, (0, common_1.Request)()),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, typeof (_e = typeof Omit !== "undefined" && Omit) === "function" ? _e : Object]),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_f = typeof flowda_shared_types_1.generateRecoveryCodeSchemaDto !== "undefined" && flowda_shared_types_1.generateRecoveryCodeSchemaDto) === "function" ? _f : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], CustomerController.prototype, "generateRecoveryCode", null);
 tslib_1.__decorate([
+    (0, common_1.Version)('4'),
+    (0, common_1.Post)('generateRecoveryCode'),
+    (0, common_1.HttpCode)(200),
+    tslib_1.__param(0, (0, common_1.Request)()),
+    tslib_1.__param(1, (0, common_1.Body)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_g = typeof flowda_shared_types_1.generateRecoveryCodeSchemaDto !== "undefined" && flowda_shared_types_1.generateRecoveryCodeSchemaDto) === "function" ? _g : Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], CustomerController.prototype, "generateRecoveryCodeV4", null);
+tslib_1.__decorate([
+    (0, common_1.Version)([common_1.VERSION_NEUTRAL, '1']),
     (0, common_1.UseGuards)(appJwtAuth_guard_1.AppJwtAuthGuard),
     (0, common_1.Post)('resetPassword'),
     (0, common_1.HttpCode)(200),
     tslib_1.__param(0, (0, common_1.Request)()),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, typeof (_f = typeof Omit !== "undefined" && Omit) === "function" ? _f : Object]),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_h = typeof Omit !== "undefined" && Omit) === "function" ? _h : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], CustomerController.prototype, "resetPassword", null);
 tslib_1.__decorate([
+    (0, common_1.Version)('4'),
+    (0, common_1.Post)('resetPassword'),
+    (0, common_1.HttpCode)(200),
+    tslib_1.__param(0, (0, common_1.Request)()),
+    tslib_1.__param(1, (0, common_1.Body)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_j = typeof flowda_shared_types_1.resetPasswordWithRecoveryCodeSchemaDto !== "undefined" && flowda_shared_types_1.resetPasswordWithRecoveryCodeSchemaDto) === "function" ? _j : Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], CustomerController.prototype, "resetPasswordV4", null);
+tslib_1.__decorate([
+    (0, common_1.Version)([common_1.VERSION_NEUTRAL, '1']),
     (0, common_1.UseGuards)(customerJwtAuth_guard_1.CustomerJwtAuthGuard),
     (0, common_1.Get)(),
     tslib_1.__param(0, (0, common_1.Req)()),
@@ -365,15 +524,34 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", Promise)
 ], CustomerController.prototype, "query", null);
 tslib_1.__decorate([
+    (0, common_1.Version)('4'),
+    (0, common_1.Get)(),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], CustomerController.prototype, "queryV4", null);
+tslib_1.__decorate([
+    (0, common_1.Version)([common_1.VERSION_NEUTRAL, '1']),
     (0, common_1.UseGuards)(customerJwtAuth_guard_1.CustomerJwtAuthGuard),
     (0, common_1.Post)('amount'),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, typeof (_g = typeof v1_flowda_services_1.CustomerUpdateAmountDto !== "undefined" && v1_flowda_services_1.CustomerUpdateAmountDto) === "function" ? _g : Object]),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_k = typeof v1_flowda_services_1.CustomerUpdateAmountDto !== "undefined" && v1_flowda_services_1.CustomerUpdateAmountDto) === "function" ? _k : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], CustomerController.prototype, "updateAmount", null);
 tslib_1.__decorate([
+    (0, common_1.Version)('4'),
+    (0, common_1.Post)('amount'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Body)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_l = typeof flowda_shared_types_1.amountUpdateSchemaDto !== "undefined" && flowda_shared_types_1.amountUpdateSchemaDto) === "function" ? _l : Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], CustomerController.prototype, "updateAmountV4", null);
+tslib_1.__decorate([
+    (0, common_1.Version)([common_1.VERSION_NEUTRAL, '1']),
     (0, common_1.UseGuards)(appJwtAuth_guard_1.AppJwtAuthGuard, customerWeiXinAuth_guard_1.CustomerWeiXinAuthGuard),
     (0, common_1.Post)('weixin/login'),
     tslib_1.__param(0, (0, common_1.Req)()),
@@ -382,6 +560,15 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", Promise)
 ], CustomerController.prototype, "getWXAccessToken", null);
 tslib_1.__decorate([
+    (0, common_1.Version)('4'),
+    (0, common_1.Post)('weixin/login'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], CustomerController.prototype, "getWXAccessTokenV4", null);
+tslib_1.__decorate([
+    (0, common_1.Version)(common_1.VERSION_NEUTRAL),
     (0, common_1.UseGuards)(appJwtAuth_guard_1.AppJwtAuthGuard, fwhLoginSimple_guard_1.FwhLoginSimpleGuard),
     (0, common_1.Post)('weixin/fwhLoginMerge'),
     tslib_1.__param(0, (0, common_1.Req)()),
@@ -391,6 +578,7 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", Promise)
 ], CustomerController.prototype, "getFwhAccessToken", null);
 tslib_1.__decorate([
+    (0, common_1.Version)([common_1.VERSION_NEUTRAL, '1']),
     (0, common_1.UseGuards)(appJwtAuth_guard_1.AppJwtAuthGuard, fwhLoginSimple_guard_1.FwhLoginSimpleGuard),
     (0, common_1.Post)('weixin/fwhLogin'),
     tslib_1.__param(0, (0, common_1.Req)()),
@@ -399,11 +587,19 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", [Object, Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], CustomerController.prototype, "fwhLogin", null);
-CustomerController = tslib_1.__decorate([
+tslib_1.__decorate([
+    (0, common_1.Version)('4'),
+    (0, common_1.Post)('weixin/fwhLogin'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Body)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object, Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], CustomerController.prototype, "fwhLoginV4", null);
+exports.CustomerController = CustomerController = tslib_1.__decorate([
     (0, common_1.Controller)('sdk/customer'),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_services_1.CustomerAuthService !== "undefined" && v1_flowda_services_1.CustomerAuthService) === "function" ? _a : Object, typeof (_b = typeof v1_flowda_services_1.CustomerTx !== "undefined" && v1_flowda_services_1.CustomerTx) === "function" ? _b : Object])
 ], CustomerController);
-exports.CustomerController = CustomerController;
 
 
 /***/ }),
@@ -440,11 +636,11 @@ let CustomerAppCombinedStrategy = class CustomerAppCombinedStrategy extends (0, 
         });
     }
 };
-CustomerAppCombinedStrategy = tslib_1.__decorate([
+exports.CustomerAppCombinedStrategy = CustomerAppCombinedStrategy;
+exports.CustomerAppCombinedStrategy = CustomerAppCombinedStrategy = tslib_1.__decorate([
     (0, common_1.Injectable)(),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_services_1.CustomerAuthService !== "undefined" && v1_flowda_services_1.CustomerAuthService) === "function" ? _a : Object])
 ], CustomerAppCombinedStrategy);
-exports.CustomerAppCombinedStrategy = CustomerAppCombinedStrategy;
 
 
 /***/ }),
@@ -460,10 +656,10 @@ const common_1 = __webpack_require__("@nestjs/common");
 const passport_1 = __webpack_require__("@nestjs/passport");
 let CustomerAppCombinedAuthGuard = class CustomerAppCombinedAuthGuard extends (0, passport_1.AuthGuard)('customerAppCombined') {
 };
-CustomerAppCombinedAuthGuard = tslib_1.__decorate([
+exports.CustomerAppCombinedAuthGuard = CustomerAppCombinedAuthGuard;
+exports.CustomerAppCombinedAuthGuard = CustomerAppCombinedAuthGuard = tslib_1.__decorate([
     (0, common_1.Injectable)()
 ], CustomerAppCombinedAuthGuard);
-exports.CustomerAppCombinedAuthGuard = CustomerAppCombinedAuthGuard;
 
 
 /***/ }),
@@ -495,11 +691,11 @@ let CustomerJwtStrategy = class CustomerJwtStrategy extends (0, passport_1.Passp
         });
     }
 };
-CustomerJwtStrategy = tslib_1.__decorate([
+exports.CustomerJwtStrategy = CustomerJwtStrategy;
+exports.CustomerJwtStrategy = CustomerJwtStrategy = tslib_1.__decorate([
     (0, common_1.Injectable)(),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_services_1.CustomerAuthService !== "undefined" && v1_flowda_services_1.CustomerAuthService) === "function" ? _a : Object])
 ], CustomerJwtStrategy);
-exports.CustomerJwtStrategy = CustomerJwtStrategy;
 
 
 /***/ }),
@@ -515,10 +711,10 @@ const passport_1 = __webpack_require__("@nestjs/passport");
 const common_1 = __webpack_require__("@nestjs/common");
 let CustomerJwtAuthGuard = class CustomerJwtAuthGuard extends (0, passport_1.AuthGuard)('customerJwt') {
 };
-CustomerJwtAuthGuard = tslib_1.__decorate([
+exports.CustomerJwtAuthGuard = CustomerJwtAuthGuard;
+exports.CustomerJwtAuthGuard = CustomerJwtAuthGuard = tslib_1.__decorate([
     (0, common_1.Injectable)()
 ], CustomerJwtAuthGuard);
-exports.CustomerJwtAuthGuard = CustomerJwtAuthGuard;
 
 
 /***/ }),
@@ -552,11 +748,11 @@ let CustomerLocalStrategy = class CustomerLocalStrategy extends (0, passport_1.P
         });
     }
 };
-CustomerLocalStrategy = tslib_1.__decorate([
+exports.CustomerLocalStrategy = CustomerLocalStrategy;
+exports.CustomerLocalStrategy = CustomerLocalStrategy = tslib_1.__decorate([
     (0, common_1.Injectable)(),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_services_1.CustomerAuthService !== "undefined" && v1_flowda_services_1.CustomerAuthService) === "function" ? _a : Object])
 ], CustomerLocalStrategy);
-exports.CustomerLocalStrategy = CustomerLocalStrategy;
 
 
 /***/ }),
@@ -593,11 +789,11 @@ let CustomerWeiXinStrategy = class CustomerWeiXinStrategy extends (0, passport_1
         });
     }
 };
-CustomerWeiXinStrategy = tslib_1.__decorate([
+exports.CustomerWeiXinStrategy = CustomerWeiXinStrategy;
+exports.CustomerWeiXinStrategy = CustomerWeiXinStrategy = tslib_1.__decorate([
     (0, common_1.Injectable)(),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_services_1.CustomerAuthService !== "undefined" && v1_flowda_services_1.CustomerAuthService) === "function" ? _a : Object])
 ], CustomerWeiXinStrategy);
-exports.CustomerWeiXinStrategy = CustomerWeiXinStrategy;
 
 
 /***/ }),
@@ -613,10 +809,10 @@ const passport_1 = __webpack_require__("@nestjs/passport");
 const common_1 = __webpack_require__("@nestjs/common");
 let CustomerWeiXinAuthGuard = class CustomerWeiXinAuthGuard extends (0, passport_1.AuthGuard)('customerWeiXin') {
 };
-CustomerWeiXinAuthGuard = tslib_1.__decorate([
+exports.CustomerWeiXinAuthGuard = CustomerWeiXinAuthGuard;
+exports.CustomerWeiXinAuthGuard = CustomerWeiXinAuthGuard = tslib_1.__decorate([
     (0, common_1.Injectable)()
 ], CustomerWeiXinAuthGuard);
-exports.CustomerWeiXinAuthGuard = CustomerWeiXinAuthGuard;
 
 
 /***/ }),
@@ -632,10 +828,10 @@ const passport_1 = __webpack_require__("@nestjs/passport");
 const common_1 = __webpack_require__("@nestjs/common");
 let FwhLoginSimpleGuard = class FwhLoginSimpleGuard extends (0, passport_1.AuthGuard)('fwhLoginSimple') {
 };
-FwhLoginSimpleGuard = tslib_1.__decorate([
+exports.FwhLoginSimpleGuard = FwhLoginSimpleGuard;
+exports.FwhLoginSimpleGuard = FwhLoginSimpleGuard = tslib_1.__decorate([
     (0, common_1.Injectable)()
 ], FwhLoginSimpleGuard);
-exports.FwhLoginSimpleGuard = FwhLoginSimpleGuard;
 
 
 /***/ }),
@@ -677,11 +873,11 @@ let FwhLoginSimpleStrategy = class FwhLoginSimpleStrategy extends (0, passport_1
         });
     }
 };
-FwhLoginSimpleStrategy = tslib_1.__decorate([
+exports.FwhLoginSimpleStrategy = FwhLoginSimpleStrategy;
+exports.FwhLoginSimpleStrategy = FwhLoginSimpleStrategy = tslib_1.__decorate([
     (0, common_1.Injectable)(),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_services_1.CustomerAuthService !== "undefined" && v1_flowda_services_1.CustomerAuthService) === "function" ? _a : Object])
 ], FwhLoginSimpleStrategy);
-exports.FwhLoginSimpleStrategy = FwhLoginSimpleStrategy;
 
 
 /***/ }),
@@ -695,6 +891,9 @@ exports.loadModule = void 0;
 const v1_flowda_services_1 = __webpack_require__("../../../libs/v1/flowda-services/src/index.ts");
 const flowda_shared_1 = __webpack_require__("../../../libs/flowda-shared/src/index.ts");
 const flowda_shared_node_1 = __webpack_require__("../../../libs/flowda-shared-node/src/index.ts");
+console.log('---------- ENV --------------');
+console.log('FLOWDA_URL', process.env.FLOWDA_URL);
+console.log('---------- ENV --------------');
 function loadModule(container) {
     container.load(flowda_shared_1.flowdaSharedModule);
     container.load(flowda_shared_node_1.flowdaSharedNodeModule);
@@ -707,47 +906,11 @@ exports.loadModule = loadModule;
 
 /***/ }),
 
-/***/ "./src/main.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-/**
- * This is not a production server yet!
- * This is only a minimal backend to get started.
- */
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.setupNestApp = exports.globalPrefix = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const common_1 = __webpack_require__("@nestjs/common");
-const core_1 = __webpack_require__("@nestjs/core");
-const sdk_module_1 = __webpack_require__("./src/sdk/sdk.module.ts");
-const transform_interceptor_1 = __webpack_require__("./src/sdk/transform.interceptor.ts");
-exports.globalPrefix = 'api';
-function setupNestApp(app) {
-    app.setGlobalPrefix(exports.globalPrefix);
-    app.useGlobalInterceptors(new transform_interceptor_1.TransformInterceptor());
-}
-exports.setupNestApp = setupNestApp;
-function bootstrap() {
-    return tslib_1.__awaiter(this, void 0, void 0, function* () {
-        const app = yield core_1.NestFactory.create(sdk_module_1.SdkModule, { cors: true });
-        setupNestApp(app);
-        const port = process.env.PORT || 3333;
-        app.enableCors();
-        yield app.listen(port);
-        common_1.Logger.log(`🚀 Application is running on: http://localhost:${port}/${exports.globalPrefix}`);
-    });
-}
-bootstrap();
-
-
-/***/ }),
-
 /***/ "./src/order/order.controller.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b, _c, _d, _e;
+var _a, _b, _c, _d, _e, _f, _g, _h;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OrderController = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -755,15 +918,23 @@ const common_1 = __webpack_require__("@nestjs/common");
 const v1_flowda_services_1 = __webpack_require__("../../../libs/v1/flowda-services/src/index.ts");
 const customerJwtAuth_guard_1 = __webpack_require__("./src/customer/customerJwtAuth.guard.ts");
 const appJwtAuth_guard_1 = __webpack_require__("./src/app/appJwtAuth.guard.ts");
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
 let OrderController = class OrderController {
     constructor(orderQuery, orderTx) {
         this.orderQuery = orderQuery;
         this.orderTx = orderTx;
+        this.logger = new common_1.Logger('CustomerController');
     }
     create(req, dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const user = req.user;
+            this.logger.log(`creating order controller ${dto.productId} from user: ${JSON.stringify(user)}`);
             return this.orderTx.create(user, dto);
+        });
+    }
+    createV4(req, dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            throw new common_1.GoneException();
         });
     }
     createJSAPI(req, dto) {
@@ -772,50 +943,101 @@ let OrderController = class OrderController {
             return this.orderTx.createJSAPI(user, dto);
         });
     }
+    createJSAPIV4(req, dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            throw new common_1.GoneException();
+        });
+    }
     quick(req, dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const appId = req.user.id;
             return this.orderTx.createQuick(appId, dto);
         });
     }
+    quickV4(req, dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            throw new common_1.GoneException();
+        });
+    }
     query(orderId) {
         return this.orderQuery.query(orderId);
+    }
+    queryV4(orderId) {
+        throw new common_1.GoneException();
     }
     queryPayQuick(req, anonymousCustomerToken, orderId) {
         return this.orderTx.queryPayQuick(anonymousCustomerToken, orderId);
     }
+    queryPayQuickV4(req, anonymousCustomerToken, orderId) {
+        throw new common_1.GoneException();
+    }
     queryPay(req, orderId) {
         return this.orderTx.queryPay(req.user.id, orderId);
     }
+    queryPayV4(req, orderId) {
+        throw new common_1.GoneException();
+    }
 };
+exports.OrderController = OrderController;
 tslib_1.__decorate([
+    (0, common_1.Version)([common_1.VERSION_NEUTRAL, '1']),
     (0, common_1.UseGuards)(customerJwtAuth_guard_1.CustomerJwtAuthGuard),
     (0, common_1.Post)(),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, typeof (_c = typeof v1_flowda_services_1.SdkCreateOrderDto !== "undefined" && v1_flowda_services_1.SdkCreateOrderDto) === "function" ? _c : Object]),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_c = typeof flowda_shared_types_1.SdkCreateOrderDto !== "undefined" && flowda_shared_types_1.SdkCreateOrderDto) === "function" ? _c : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], OrderController.prototype, "create", null);
 tslib_1.__decorate([
+    (0, common_1.Version)('4'),
+    (0, common_1.Post)(),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Body)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_d = typeof flowda_shared_types_1.SdkCreateOrderDto !== "undefined" && flowda_shared_types_1.SdkCreateOrderDto) === "function" ? _d : Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], OrderController.prototype, "createV4", null);
+tslib_1.__decorate([
+    (0, common_1.Version)([common_1.VERSION_NEUTRAL, '1']),
     (0, common_1.UseGuards)(customerJwtAuth_guard_1.CustomerJwtAuthGuard),
     (0, common_1.Post)('createJSAPI'),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, typeof (_d = typeof v1_flowda_services_1.SdkCreateOrderInJSAPIDto !== "undefined" && v1_flowda_services_1.SdkCreateOrderInJSAPIDto) === "function" ? _d : Object]),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_e = typeof flowda_shared_types_1.SdkCreateOrderInJSAPIDto !== "undefined" && flowda_shared_types_1.SdkCreateOrderInJSAPIDto) === "function" ? _e : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], OrderController.prototype, "createJSAPI", null);
 tslib_1.__decorate([
+    (0, common_1.Version)('4'),
+    (0, common_1.Post)('createJSAPI'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Body)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_f = typeof flowda_shared_types_1.SdkCreateOrderInJSAPIDto !== "undefined" && flowda_shared_types_1.SdkCreateOrderInJSAPIDto) === "function" ? _f : Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], OrderController.prototype, "createJSAPIV4", null);
+tslib_1.__decorate([
+    (0, common_1.Version)([common_1.VERSION_NEUTRAL, '1']),
     (0, common_1.UseGuards)(appJwtAuth_guard_1.AppJwtAuthGuard),
     (0, common_1.Post)('quick'),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, typeof (_e = typeof v1_flowda_services_1.SdkCreateQuickOrderDto !== "undefined" && v1_flowda_services_1.SdkCreateQuickOrderDto) === "function" ? _e : Object]),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_g = typeof flowda_shared_types_1.SdkCreateQuickOrderDto !== "undefined" && flowda_shared_types_1.SdkCreateQuickOrderDto) === "function" ? _g : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], OrderController.prototype, "quick", null);
 tslib_1.__decorate([
+    (0, common_1.Version)('4'),
+    (0, common_1.Post)('quick'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Body)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_h = typeof flowda_shared_types_1.SdkCreateQuickOrderDto !== "undefined" && flowda_shared_types_1.SdkCreateQuickOrderDto) === "function" ? _h : Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], OrderController.prototype, "quickV4", null);
+tslib_1.__decorate([
+    (0, common_1.Version)([common_1.VERSION_NEUTRAL, '1']),
     (0, common_1.UseGuards)(customerJwtAuth_guard_1.CustomerJwtAuthGuard),
     (0, common_1.Get)(),
     tslib_1.__param(0, (0, common_1.Query)('orderId')),
@@ -824,6 +1046,15 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", void 0)
 ], OrderController.prototype, "query", null);
 tslib_1.__decorate([
+    (0, common_1.Version)('4'),
+    (0, common_1.Get)(),
+    tslib_1.__param(0, (0, common_1.Query)('orderId')),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [String]),
+    tslib_1.__metadata("design:returntype", void 0)
+], OrderController.prototype, "queryV4", null);
+tslib_1.__decorate([
+    (0, common_1.Version)([common_1.VERSION_NEUTRAL, '1']),
     (0, common_1.UseGuards)(appJwtAuth_guard_1.AppJwtAuthGuard),
     (0, common_1.Get)('quick/queryPay'),
     tslib_1.__param(0, (0, common_1.Req)()),
@@ -834,6 +1065,17 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", void 0)
 ], OrderController.prototype, "queryPayQuick", null);
 tslib_1.__decorate([
+    (0, common_1.Version)('4'),
+    (0, common_1.Get)('quick/queryPay'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Query)('anonymousCustomerToken')),
+    tslib_1.__param(2, (0, common_1.Query)('orderId')),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object, String, String]),
+    tslib_1.__metadata("design:returntype", void 0)
+], OrderController.prototype, "queryPayQuickV4", null);
+tslib_1.__decorate([
+    (0, common_1.Version)([common_1.VERSION_NEUTRAL, '1']),
     (0, common_1.UseGuards)(customerJwtAuth_guard_1.CustomerJwtAuthGuard),
     (0, common_1.Get)('queryPay'),
     tslib_1.__param(0, (0, common_1.Req)()),
@@ -842,11 +1084,19 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", [Object, String]),
     tslib_1.__metadata("design:returntype", void 0)
 ], OrderController.prototype, "queryPay", null);
-OrderController = tslib_1.__decorate([
+tslib_1.__decorate([
+    (0, common_1.Version)('4'),
+    (0, common_1.Get)('queryPay'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Query)('orderId')),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object, String]),
+    tslib_1.__metadata("design:returntype", void 0)
+], OrderController.prototype, "queryPayV4", null);
+exports.OrderController = OrderController = tslib_1.__decorate([
     (0, common_1.Controller)('sdk/order'),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_services_1.OrderQuery !== "undefined" && v1_flowda_services_1.OrderQuery) === "function" ? _a : Object, typeof (_b = typeof v1_flowda_services_1.OrderTx !== "undefined" && v1_flowda_services_1.OrderTx) === "function" ? _b : Object])
 ], OrderController);
-exports.OrderController = OrderController;
 
 
 /***/ }),
@@ -879,10 +1129,21 @@ let ProductController = class ProductController {
             };
         });
     }
+    // todo: 仅集成测试暴露给 postman
+    createManyV4(req, dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            throw new common_1.GoneException();
+        });
+    }
     queryAll(req) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const user = req.user;
             return this.query.findAll(user.id);
+        });
+    }
+    queryAllV4(req) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            throw new common_1.GoneException();
         });
     }
     /**
@@ -894,7 +1155,9 @@ let ProductController = class ProductController {
         });
     }
 };
+exports.ProductController = ProductController;
 tslib_1.__decorate([
+    (0, common_1.Version)([common_1.VERSION_NEUTRAL, '1']),
     (0, common_1.UseGuards)(appJwtAuth_guard_1.AppJwtAuthGuard),
     (0, common_1.Post)('createMany'),
     tslib_1.__param(0, (0, common_1.Req)()),
@@ -904,6 +1167,16 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", Promise)
 ], ProductController.prototype, "createMany", null);
 tslib_1.__decorate([
+    (0, common_1.Version)('4'),
+    (0, common_1.Post)('createMany'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Body)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object, Array]),
+    tslib_1.__metadata("design:returntype", Promise)
+], ProductController.prototype, "createManyV4", null);
+tslib_1.__decorate([
+    (0, common_1.Version)([common_1.VERSION_NEUTRAL, '1']),
     (0, common_1.UseGuards)(appJwtAuth_guard_1.AppJwtAuthGuard),
     (0, common_1.Get)('findAll'),
     tslib_1.__param(0, (0, common_1.Req)()),
@@ -912,17 +1185,25 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", Promise)
 ], ProductController.prototype, "queryAll", null);
 tslib_1.__decorate([
+    (0, common_1.Version)('4'),
+    (0, common_1.Get)('findAll'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], ProductController.prototype, "queryAllV4", null);
+tslib_1.__decorate([
+    (0, common_1.Version)(common_1.VERSION_NEUTRAL),
     (0, common_1.Get)('findAllByAppId'),
     tslib_1.__param(0, (0, common_1.Query)('appId')),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [String]),
     tslib_1.__metadata("design:returntype", Promise)
 ], ProductController.prototype, "queryAllByAppId", null);
-ProductController = tslib_1.__decorate([
+exports.ProductController = ProductController = tslib_1.__decorate([
     (0, common_1.Controller)('sdk/product'),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_services_1.ProductQuery !== "undefined" && v1_flowda_services_1.ProductQuery) === "function" ? _a : Object, typeof (_b = typeof v1_flowda_services_1.ProductTx !== "undefined" && v1_flowda_services_1.ProductTx) === "function" ? _b : Object])
 ], ProductController);
-exports.ProductController = ProductController;
 
 
 /***/ }),
@@ -969,14 +1250,14 @@ exports.sdkModuleProviders = [
 ];
 let SdkModule = class SdkModule {
 };
-SdkModule = tslib_1.__decorate([
+exports.SdkModule = SdkModule;
+exports.SdkModule = SdkModule = tslib_1.__decorate([
     (0, common_1.Module)({
         imports: [services_module_1.ServicesModule],
         controllers: exports.sdkModuleControllers,
         providers: exports.sdkModuleProviders,
     })
 ], SdkModule);
-exports.SdkModule = SdkModule;
 
 
 /***/ }),
@@ -998,10 +1279,10 @@ let TransformInterceptor = class TransformInterceptor {
         })));
     }
 };
-TransformInterceptor = tslib_1.__decorate([
+exports.TransformInterceptor = TransformInterceptor;
+exports.TransformInterceptor = TransformInterceptor = tslib_1.__decorate([
     (0, common_1.Injectable)()
 ], TransformInterceptor);
-exports.TransformInterceptor = TransformInterceptor;
 
 
 /***/ }),
@@ -1023,7 +1304,8 @@ const services = (0, flowda_shared_1.getServices)(exports.servicesContainer);
 let ServicesModule = class ServicesModule {
     constructor() { }
 };
-ServicesModule = tslib_1.__decorate([
+exports.ServicesModule = ServicesModule;
+exports.ServicesModule = ServicesModule = tslib_1.__decorate([
     (0, common_1.Global)(),
     (0, common_1.Module)({
         providers: services,
@@ -1031,153 +1313,29 @@ ServicesModule = tslib_1.__decorate([
     }),
     tslib_1.__metadata("design:paramtypes", [])
 ], ServicesModule);
-exports.ServicesModule = ServicesModule;
 
 
 /***/ }),
 
-/***/ "../../../libs/flowda-shared-node/src/assist/audit.service.ts":
+/***/ "./src/setup.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var AuditService_1;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AuditService = exports.QueryAuditSchemaDto = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const inversify_1 = __webpack_require__("inversify");
-// import * as db from '@prisma/client-wms'
-const nestjs_zod_1 = __webpack_require__("nestjs-zod");
-const flowda_shared_1 = __webpack_require__("../../../libs/flowda-shared/src/index.ts");
-const z = __webpack_require__("zod");
-const QueryAuditSchema = z.object({
-    auditType: z.string(),
-    auditId: z.number(),
-    pageSize: z.number(),
-    current: z.number(),
-});
-class QueryAuditSchemaDto extends (0, nestjs_zod_1.createZodDto)(QueryAuditSchema) {
+exports.setupNestApp = exports.globalPrefix = void 0;
+const common_1 = __webpack_require__("@nestjs/common");
+const transform_interceptor_1 = __webpack_require__("./src/sdk/transform.interceptor.ts");
+exports.globalPrefix = 'v1-sdk-api';
+function setupNestApp(app) {
+    app.setGlobalPrefix(exports.globalPrefix);
+    app.useGlobalInterceptors(new transform_interceptor_1.TransformInterceptor());
+    app.enableCors();
+    app.enableVersioning({
+        type: common_1.VersioningType.HEADER,
+        header: 'X-Version',
+    });
 }
-exports.QueryAuditSchemaDto = QueryAuditSchemaDto;
-let AuditService = AuditService_1 = class AuditService {
-    constructor(prisma, loggerFactory) {
-        this.prisma = prisma;
-        this.logger = loggerFactory(AuditService_1.name);
-    }
-    queryAudit(dto) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const [data, count] = yield this.prisma.$transaction([
-                this.prisma.audits.findMany({
-                    skip: dto.pageSize * (dto.current - 1),
-                    take: dto.pageSize,
-                    where: {
-                        auditType: dto.auditType,
-                        auditId: dto.auditId,
-                    },
-                    orderBy: {
-                        createdAt: 'desc',
-                    },
-                }),
-                this.prisma.audits.count({
-                    where: {
-                        auditType: dto.auditType,
-                        auditId: dto.auditId,
-                    },
-                }),
-            ]);
-            return {
-                total: count,
-                data,
-            };
-        });
-    }
-};
-AuditService = AuditService_1 = tslib_1.__decorate([
-    (0, inversify_1.injectable)(),
-    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
-    tslib_1.__param(1, (0, inversify_1.inject)('Factory<Logger>')),
-    tslib_1.__metadata("design:paramtypes", [Object, Function])
-], AuditService);
-exports.AuditService = AuditService;
-
-
-/***/ }),
-
-/***/ "../../../libs/flowda-shared-node/src/assist/table-filter.service.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-var TableFilterService_1;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TableFilterService = exports.RemoveTableFilterSchemaDto = exports.QueryTableFilterSchemaDto = exports.TableFilterSchema = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const inversify_1 = __webpack_require__("inversify");
-// import * as db from '@prisma/client-wms'
-const nestjs_zod_1 = __webpack_require__("nestjs-zod");
-// import { TableFilterSchema } from '@flowda-projects/prisma-wms'
-const flowda_shared_1 = __webpack_require__("../../../libs/flowda-shared/src/index.ts");
-const zod_1 = __webpack_require__("zod");
-// todo @flowda-projects/prisma-wms
-// 不能有关联关系，先手动 copy 出来
-exports.TableFilterSchema = zod_1.z.object({
-    id: zod_1.z.number().int(),
-    createdAt: zod_1.z.date(),
-    updatedAt: zod_1.z.date(),
-    isDeleted: zod_1.z.boolean(),
-    path: zod_1.z.string(),
-    name: zod_1.z.string(),
-    filterJSON: zod_1.z.string(),
-});
-const QueryTableFilterSchema = exports.TableFilterSchema.pick({
-    path: true,
-});
-const RemoveTableFilterSchema = exports.TableFilterSchema.pick({
-    id: true,
-});
-class QueryTableFilterSchemaDto extends (0, nestjs_zod_1.createZodDto)(QueryTableFilterSchema) {
-}
-exports.QueryTableFilterSchemaDto = QueryTableFilterSchemaDto;
-class RemoveTableFilterSchemaDto extends (0, nestjs_zod_1.createZodDto)(RemoveTableFilterSchema) {
-}
-exports.RemoveTableFilterSchemaDto = RemoveTableFilterSchemaDto;
-let TableFilterService = TableFilterService_1 = class TableFilterService {
-    constructor(
-    // todo: 暂时先强类型，后续应该做成服务
-    prisma, loggerFactory) {
-        this.prisma = prisma;
-        this.logger = loggerFactory(TableFilterService_1.name);
-    }
-    save(dto) {
-        return this.prisma.tableFilter.create({
-            data: dto,
-        });
-    }
-    remove(dto) {
-        return this.prisma.tableFilter.delete({
-            where: { id: dto.id },
-        });
-    }
-    query(dto) {
-        return this.prisma.tableFilter.findMany({
-            where: {
-                isDeleted: false,
-                path: dto.path,
-            },
-            select: {
-                id: true,
-                path: true,
-                name: true,
-                filterJSON: true,
-            },
-        });
-    }
-};
-TableFilterService = TableFilterService_1 = tslib_1.__decorate([
-    (0, inversify_1.injectable)(),
-    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
-    tslib_1.__param(1, (0, inversify_1.inject)('Factory<Logger>')),
-    tslib_1.__metadata("design:paramtypes", [Object, Function])
-], TableFilterService);
-exports.TableFilterService = TableFilterService;
+exports.setupNestApp = setupNestApp;
 
 
 /***/ }),
@@ -1230,11 +1388,11 @@ let AppExceptionFilter = AppExceptionFilter_1 = class AppExceptionFilter {
         }
     }
 };
-AppExceptionFilter = AppExceptionFilter_1 = tslib_1.__decorate([
+exports.AppExceptionFilter = AppExceptionFilter;
+exports.AppExceptionFilter = AppExceptionFilter = AppExceptionFilter_1 = tslib_1.__decorate([
     (0, common_1.Catch)(),
     tslib_1.__metadata("design:paramtypes", [])
 ], AppExceptionFilter);
-exports.AppExceptionFilter = AppExceptionFilter;
 
 
 /***/ }),
@@ -1248,11 +1406,12 @@ exports.flowdaSharedNodeModule = void 0;
 const inversify_1 = __webpack_require__("inversify");
 const common_1 = __webpack_require__("@nestjs/common");
 const flowda_shared_1 = __webpack_require__("../../../libs/flowda-shared/src/index.ts");
-const table_filter_service_1 = __webpack_require__("../../../libs/flowda-shared-node/src/assist/table-filter.service.ts");
-const audit_service_1 = __webpack_require__("../../../libs/flowda-shared-node/src/assist/audit.service.ts");
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
+const table_filter_service_1 = __webpack_require__("../../../libs/flowda-shared-node/src/services/table-filter.service.ts");
+const audit_service_1 = __webpack_require__("../../../libs/flowda-shared-node/src/services/audit.service.ts");
 exports.flowdaSharedNodeModule = new inversify_1.ContainerModule((bind) => {
-    (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, table_filter_service_1.TableFilterService);
-    (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, audit_service_1.AuditService);
+    (0, flowda_shared_1.bindService)(bind, flowda_shared_types_1.ServiceSymbol, table_filter_service_1.TableFilterService);
+    (0, flowda_shared_1.bindService)(bind, flowda_shared_types_1.ServiceSymbol, audit_service_1.AuditService);
     bind('Factory<Logger>').toFactory(context => {
         return name => {
             return new common_1.Logger(name);
@@ -1271,8 +1430,924 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const tslib_1 = __webpack_require__("tslib");
 tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared-node/src/flowdaSharedNode.module.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared-node/src/filters/appExceptionFilter.ts"), exports);
-tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared-node/src/assist/table-filter.service.ts"), exports);
-tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared-node/src/assist/audit.service.ts"), exports);
+tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared-node/src/services/table-filter.service.ts"), exports);
+tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared-node/src/services/audit.service.ts"), exports);
+tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared-node/src/trpc/trpc-utils.ts"), exports);
+
+
+/***/ }),
+
+/***/ "../../../libs/flowda-shared-node/src/services/audit.service.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+var AuditService_1;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AuditService = exports.QueryAuditSchemaDto = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const inversify_1 = __webpack_require__("inversify");
+// import * as db from '@prisma/client-wms'
+const nestjs_zod_1 = __webpack_require__("nestjs-zod");
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
+const z = tslib_1.__importStar(__webpack_require__("zod"));
+const QueryAuditSchema = z.object({
+    auditType: z.string(),
+    auditId: z.number(),
+    pageSize: z.number(),
+    current: z.number(),
+});
+class QueryAuditSchemaDto extends (0, nestjs_zod_1.createZodDto)(QueryAuditSchema) {
+}
+exports.QueryAuditSchemaDto = QueryAuditSchemaDto;
+let AuditService = AuditService_1 = class AuditService {
+    constructor(prisma, loggerFactory) {
+        this.prisma = prisma;
+        this.logger = loggerFactory(AuditService_1.name);
+    }
+    queryAudit(dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const [data, count] = yield this.prisma.$transaction([
+                this.prisma.audits.findMany({
+                    skip: dto.pageSize * (dto.current - 1),
+                    take: dto.pageSize,
+                    where: {
+                        auditType: dto.auditType,
+                        auditId: dto.auditId,
+                    },
+                    orderBy: {
+                        createdAt: 'desc',
+                    },
+                }),
+                this.prisma.audits.count({
+                    where: {
+                        auditType: dto.auditType,
+                        auditId: dto.auditId,
+                    },
+                }),
+            ]);
+            return {
+                total: count,
+                data,
+            };
+        });
+    }
+};
+exports.AuditService = AuditService;
+exports.AuditService = AuditService = AuditService_1 = tslib_1.__decorate([
+    (0, inversify_1.injectable)(),
+    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_types_1.PrismaClientSymbol)),
+    tslib_1.__param(1, (0, inversify_1.inject)('Factory<Logger>')),
+    tslib_1.__metadata("design:paramtypes", [Object, Function])
+], AuditService);
+
+
+/***/ }),
+
+/***/ "../../../libs/flowda-shared-node/src/services/table-filter.service.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+var TableFilterService_1;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TableFilterService = exports.RemoveTableFilterSchemaDto = exports.QueryTableFilterSchemaDto = exports.TableFilterSchema = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const inversify_1 = __webpack_require__("inversify");
+// import * as db from '@prisma/client-wms'
+const nestjs_zod_1 = __webpack_require__("nestjs-zod");
+// import { TableFilterSchema } from '@flowda-projects/prisma-wms'
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
+const zod_1 = __webpack_require__("zod");
+// todo @flowda-projects/prisma-wms
+// 不能有关联关系，先手动 copy 出来
+exports.TableFilterSchema = zod_1.z.object({
+    id: zod_1.z.number().int(),
+    createdAt: zod_1.z.date(),
+    updatedAt: zod_1.z.date(),
+    isDeleted: zod_1.z.boolean(),
+    path: zod_1.z.string(),
+    name: zod_1.z.string(),
+    filterJSON: zod_1.z.string(),
+});
+const QueryTableFilterSchema = exports.TableFilterSchema.pick({
+    path: true,
+});
+const RemoveTableFilterSchema = exports.TableFilterSchema.pick({
+    id: true,
+});
+class QueryTableFilterSchemaDto extends (0, nestjs_zod_1.createZodDto)(QueryTableFilterSchema) {
+}
+exports.QueryTableFilterSchemaDto = QueryTableFilterSchemaDto;
+class RemoveTableFilterSchemaDto extends (0, nestjs_zod_1.createZodDto)(RemoveTableFilterSchema) {
+}
+exports.RemoveTableFilterSchemaDto = RemoveTableFilterSchemaDto;
+let TableFilterService = TableFilterService_1 = class TableFilterService {
+    constructor(prisma, loggerFactory) {
+        this.prisma = prisma;
+        this.logger = loggerFactory(TableFilterService_1.name);
+    }
+    save(dto) {
+        return this.prisma.tableFilter.create({
+            data: dto,
+        });
+    }
+    remove(dto) {
+        return this.prisma.tableFilter.delete({
+            where: { id: dto.id },
+        });
+    }
+    query(dto) {
+        return this.prisma.tableFilter.findMany({
+            where: {
+                isDeleted: false,
+                path: dto.path,
+            },
+            select: {
+                id: true,
+                path: true,
+                name: true,
+                filterJSON: true,
+            },
+        });
+    }
+};
+exports.TableFilterService = TableFilterService;
+exports.TableFilterService = TableFilterService = TableFilterService_1 = tslib_1.__decorate([
+    (0, inversify_1.injectable)(),
+    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_types_1.PrismaClientSymbol)),
+    tslib_1.__param(1, (0, inversify_1.inject)('Factory<Logger>')),
+    tslib_1.__metadata("design:paramtypes", [Object, Function])
+], TableFilterService);
+
+
+/***/ }),
+
+/***/ "../../../libs/flowda-shared-node/src/trpc/trpc-utils.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+/// <reference types="@types/express-serve-static-core" />
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.diag = exports.createContext = exports.transformer = exports.errorFormatter = exports.transformHttpException = exports.logErrorEnd = exports.logErrorStart = exports.getErrorCodeFromKey = exports.getStatusKeyFromStatus = exports.logContext = exports.logOutputSerialize = exports.logInputSerialize = exports.ERROR_END = exports.REQ_END = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const consola_1 = tslib_1.__importDefault(__webpack_require__("consola"));
+const _ = tslib_1.__importStar(__webpack_require__("radash"));
+const common_1 = __webpack_require__("@nestjs/common");
+const lodash_1 = __webpack_require__("lodash");
+const cuid2_1 = __webpack_require__("@paralleldrive/cuid2");
+exports.REQ_END = '================================================ End ================================================\n';
+exports.ERROR_END = '***************************************** ERROR END *****************************************';
+function logInputSerialize(object) {
+    consola_1.default.info('request args  :');
+    console.log(object);
+    console.log();
+}
+exports.logInputSerialize = logInputSerialize;
+function logOutputSerialize(object) {
+    console.log();
+    if ((object === null || object === void 0 ? void 0 : object.code) < 0) {
+        consola_1.default.info('response error:');
+        console.log(Object.assign(Object.assign({}, object), { message: '<...>', data: Object.assign(Object.assign({}, object.data), { stack: '<...>' }) }));
+    }
+    else {
+        consola_1.default.info('response data :');
+        console.log(object);
+    }
+    console.log(exports.REQ_END + '\n');
+}
+exports.logOutputSerialize = logOutputSerialize;
+function logContext(opts) {
+    const req = opts.req;
+    console.log('=============================================== Start ===============================================');
+    consola_1.default.info('url           :', req.url.split('?')[0]);
+    consola_1.default.info('from          :', req.headers['x-from']);
+}
+exports.logContext = logContext;
+function getStatusKeyFromStatus(status) {
+    var _a;
+    return (_a = JSONRPC2_TO_HTTP_STATUS[status]) !== null && _a !== void 0 ? _a : 'INTERNAL_SERVER_ERROR';
+}
+exports.getStatusKeyFromStatus = getStatusKeyFromStatus;
+function getErrorCodeFromKey(key) {
+    var _a;
+    return (_a = TRPC_ERROR_CODES_BY_KEY[key]) !== null && _a !== void 0 ? _a : -32603;
+}
+exports.getErrorCodeFromKey = getErrorCodeFromKey;
+const JSONRPC2_TO_HTTP_CODE = {
+    PARSE_ERROR: 400,
+    BAD_REQUEST: 400,
+    UNAUTHORIZED: 401,
+    NOT_FOUND: 404,
+    FORBIDDEN: 403,
+    METHOD_NOT_SUPPORTED: 405,
+    TIMEOUT: 408,
+    CONFLICT: 409,
+    PRECONDITION_FAILED: 412,
+    PAYLOAD_TOO_LARGE: 413,
+    UNPROCESSABLE_CONTENT: 422,
+    TOO_MANY_REQUESTS: 429,
+    CLIENT_CLOSED_REQUEST: 499,
+    INTERNAL_SERVER_ERROR: 500,
+    NOT_IMPLEMENTED: 501,
+};
+const JSONRPC2_TO_HTTP_STATUS = _.invert(JSONRPC2_TO_HTTP_CODE);
+const TRPC_ERROR_CODES_BY_KEY = {
+    /**
+     * Invalid JSON was received by the server.
+     * An error occurred on the server while parsing the JSON text.
+     */
+    PARSE_ERROR: -32700,
+    /**
+     * The JSON sent is not a valid Request object.
+     */
+    BAD_REQUEST: -32600, // 400
+    // Internal JSON-RPC error
+    INTERNAL_SERVER_ERROR: -32603,
+    NOT_IMPLEMENTED: -32603,
+    // Implementation specific errors
+    UNAUTHORIZED: -32001, // 401
+    FORBIDDEN: -32003, // 403
+    NOT_FOUND: -32004, // 404
+    METHOD_NOT_SUPPORTED: -32005, // 405
+    TIMEOUT: -32008, // 408
+    CONFLICT: -32009, // 409
+    PRECONDITION_FAILED: -32012, // 412
+    PAYLOAD_TOO_LARGE: -32013, // 413
+    UNPROCESSABLE_CONTENT: -32022, // 422
+    TOO_MANY_REQUESTS: -32029, // 429
+    CLIENT_CLOSED_REQUEST: -32099, // 499
+};
+function logErrorStart(opts) {
+    consola_1.default.error('**************************************** ERROR START ****************************************');
+    consola_1.default.info(`procedure    :`, `${opts.path}.${opts.type}`);
+    consola_1.default.info(`input        :`);
+    console.log(opts.input);
+}
+exports.logErrorStart = logErrorStart;
+function logErrorEnd(opts) {
+    consola_1.default.info(`message      :`, opts.error.message);
+    consola_1.default.info(`stack        :`, opts.error.stack);
+    consola_1.default.error(exports.ERROR_END);
+}
+exports.logErrorEnd = logErrorEnd;
+function transformHttpException(opts, json) {
+    const shape = opts.shape;
+    const key = getStatusKeyFromStatus(json.status);
+    const code = getErrorCodeFromKey(key);
+    consola_1.default.info(`cause`);
+    console.log(`    status     :`, json.status);
+    console.log(`    message    :`, json.message);
+    console.log(`    error      :`, json.error);
+    consola_1.default.info(`stack        :`, json.stack);
+    consola_1.default.error(exports.ERROR_END);
+    return Object.assign(Object.assign({}, shape), { code, 
+        // message // message 无需替代 throw new ConflictException('<message>') 第一个参数已经替代了 https://docs.nestjs.com/exception-filters#built-in-http-exceptions
+        data: Object.assign(Object.assign({}, shape.data), {
+            code: key, // 替换成 HttpException 对应的 短字符
+            httpStatus: json.status, // 替换成 http status code
+            description: {
+                // 详情
+                procedure: `${opts.path}.${opts.type}`,
+                input: opts.input,
+                error: json.error,
+            },
+        }) });
+}
+exports.transformHttpException = transformHttpException;
+function errorFormatter(opts, handlers) {
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+    let json = {
+        procedure: `${opts.path}.${opts.type}`,
+        input: opts.input,
+        diagnosis: ((_a = opts.ctx) === null || _a === void 0 ? void 0 : _a._diagnosis) || [],
+    };
+    const requestId = ((_b = opts.ctx) === null || _b === void 0 ? void 0 : _b.requestId) || '';
+    const tenantId = ((_d = (_c = opts.ctx) === null || _c === void 0 ? void 0 : _c.user) === null || _d === void 0 ? void 0 : _d.tenantId) || ((_f = (_e = opts.ctx) === null || _e === void 0 ? void 0 : _e.tenant) === null || _f === void 0 ? void 0 : _f.id);
+    const userId = (_h = (_g = opts.ctx) === null || _g === void 0 ? void 0 : _g.user) === null || _h === void 0 ? void 0 : _h.id;
+    logErrorStart(opts);
+    consola_1.default.info(`tenantId     :`, tenantId);
+    consola_1.default.info(`userId       :`, userId);
+    if (Array.isArray((_j = opts.ctx) === null || _j === void 0 ? void 0 : _j._diagnosis) && opts.ctx._diagnosis.length > 0) {
+        consola_1.default.info(`trace:`);
+        const msg = opts.ctx._diagnosis
+            .map((m) => {
+            const indent = (0, lodash_1.repeat)(' ', 4);
+            const msg = m.map(i => (typeof i === 'string' ? i : JSON.stringify(i))).join(', ');
+            return indent + msg;
+        })
+            .join('\n');
+        console.log(msg);
+        console.log();
+    }
+    // 如果是 nestjs HttpException
+    if (opts.error.cause instanceof common_1.HttpException) {
+        const json2 = {
+            status: opts.error.cause.getStatus(),
+            message: opts.error.cause.getResponse()['message'],
+            error: opts.error.cause.getResponse()['error'],
+            stack: opts.error.stack,
+        };
+        json = Object.assign(json, json2);
+        const ret = transformHttpException(opts, json2);
+        if (typeof (handlers === null || handlers === void 0 ? void 0 : handlers.log) === 'function') {
+            handlers.log({
+                requestId,
+                tenantId,
+                userId,
+                log: json,
+            });
+        }
+        return ret;
+    }
+    else {
+        logErrorEnd(opts);
+        json = Object.assign(json, {
+            message: opts.error.message,
+            stack: opts.error.stack,
+        });
+        if (typeof (handlers === null || handlers === void 0 ? void 0 : handlers.log) === 'function') {
+            handlers.log({
+                requestId,
+                tenantId,
+                userId,
+                log: json,
+            });
+        }
+        return opts.shape;
+    }
+}
+exports.errorFormatter = errorFormatter;
+// object => object 是默认值
+// https://github.com/trpc/trpc/blob/next/packages/client/src/internals/transformer.ts#L57
+exports.transformer = {
+    input: {
+        // on client
+        serialize: (object) => object,
+        // on server -> resolver
+        deserialize: (object) => {
+            logInputSerialize(object);
+            return object;
+        },
+    },
+    output: {
+        // on server -> client
+        serialize: (object) => {
+            logOutputSerialize(object);
+            return object;
+        },
+        // on client
+        deserialize: (object) => object,
+    },
+};
+function createContext(opts) {
+    logContext(opts);
+    const requestId = (0, cuid2_1.createId)();
+    opts.res.setHeader('x-request-id', requestId);
+    consola_1.default.info('x-request-id  :', requestId);
+    return {
+        req: opts.req,
+        res: opts.res,
+        requestId,
+        _diagnosis: [],
+        user: undefined,
+        tenant: undefined,
+    };
+}
+exports.createContext = createContext;
+/**
+ * 一个简单的基于 trpc ctx 的 诊断工具 报错之后会记录手动埋的路径，方便排查错误
+ */
+function diag(ctx, ...message) {
+    (ctx === null || ctx === void 0 ? void 0 : ctx._diagnosis) != null && ctx._diagnosis.push(message);
+}
+exports.diag = diag;
+
+
+/***/ }),
+
+/***/ "../../../libs/flowda-shared-types/src/index.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const tslib_1 = __webpack_require__("tslib");
+tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared-types/src/symbols.ts"), exports);
+tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared-types/src/types.ts"), exports);
+tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared-types/src/zods.ts"), exports);
+tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared-types/src/zod-utils.ts"), exports);
+
+
+/***/ }),
+
+/***/ "../../../libs/flowda-shared-types/src/symbols.ts":
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LoginModelSymbol = exports.GridModelSymbol = exports.WechatpayNodeV3FactorySymbol = exports.WechatpayNodeV3Symbol = exports.MenuServiceSymbol = exports.DynamicTableDefServiceSymbol = exports.DynamicTableDataServiceSymbol = exports.WechatOAuthSymbol = exports.SmsClientSymbol = exports.COSSymbol = exports.K3CloudIdentifyInfoSymbol = exports.CustomZodSchemaSymbol = exports.PrismaZodSchemaSymbol = exports.ENVSymbol = exports.URLSymbol = exports.APISymbol = exports.ServiceSymbol = exports.PrismaClientSymbol = exports.FlowdaGatewayTrpcClientSymbol = exports.FlowdaTrpcClientSymbol = exports.DynamicTableSchemaTransformerSymbol = exports.SchemaServiceSymbol = exports.DataServiceSymbol = exports.PrismaUtilsSymbol = exports.SchemaTransformerSymbol = exports.PrismaSchemaServiceSymbol = void 0;
+exports.PrismaSchemaServiceSymbol = Symbol.for('PrismaSchemaService');
+exports.SchemaTransformerSymbol = Symbol.for('SchemaTransformer');
+exports.PrismaUtilsSymbol = Symbol.for('PrismaUtils');
+exports.DataServiceSymbol = Symbol.for('DataService');
+exports.SchemaServiceSymbol = Symbol.for('SchemaService');
+exports.DynamicTableSchemaTransformerSymbol = Symbol.for('DynamicTableSchemaTransformer');
+exports.FlowdaTrpcClientSymbol = Symbol.for('FlowdaTrpcClient');
+exports.FlowdaGatewayTrpcClientSymbol = Symbol.for('FlowdaGatewayTrpcClient');
+exports.PrismaClientSymbol = Symbol('PrismaClient');
+/**
+ * getServices 方法会将 inversify module 转换成 nestjs module，这样 nestjs controller 就可以使用了
+ * 所以，注意：如果不需要给 controller 使用，则不需要 bind
+ */
+exports.ServiceSymbol = Symbol('Service');
+exports.APISymbol = Symbol('API');
+exports.URLSymbol = Symbol.for('URL');
+exports.ENVSymbol = Symbol.for('ENV');
+exports.PrismaZodSchemaSymbol = Symbol.for('PrismaZodSchema');
+exports.CustomZodSchemaSymbol = Symbol.for('CustomZodSchema');
+exports.K3CloudIdentifyInfoSymbol = Symbol.for('K3CloudIdentifyInfo');
+exports.COSSymbol = Symbol('COS');
+exports.SmsClientSymbol = Symbol.for('SmsClient');
+exports.WechatOAuthSymbol = Symbol.for('WechatOAuth');
+exports.DynamicTableDataServiceSymbol = Symbol.for('DynamicTableDataService');
+exports.DynamicTableDefServiceSymbol = Symbol.for('DynamicTableDefService');
+exports.MenuServiceSymbol = Symbol.for('MenuService');
+exports.WechatpayNodeV3Symbol = Symbol.for('WechatpayNodeV3Symbol');
+exports.WechatpayNodeV3FactorySymbol = Symbol.for('WechatpayNodeV3FactorySymbol');
+exports.GridModelSymbol = Symbol.for('GridModel');
+exports.LoginModelSymbol = Symbol.for('LoginModel');
+
+
+/***/ }),
+
+/***/ "../../../libs/flowda-shared-types/src/types.ts":
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Serial_Max = exports.Serial_Min = exports.EPlan = void 0;
+var EPlan;
+(function (EPlan) {
+    EPlan[EPlan["Free"] = 1] = "Free";
+    EPlan[EPlan["VIP"] = 2] = "VIP";
+})(EPlan || (exports.EPlan = EPlan = {}));
+exports.Serial_Min = 10001;
+exports.Serial_Max = 99999;
+
+
+/***/ }),
+
+/***/ "../../../libs/flowda-shared-types/src/zod-utils.ts":
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.createZodDto = void 0;
+function createZodDto(schema) {
+    class AugmentedZodDto {
+        static create(input) {
+            return this.schema.parse(input);
+        }
+    }
+    AugmentedZodDto.isZodDto = true;
+    AugmentedZodDto.schema = schema;
+    return AugmentedZodDto;
+}
+exports.createZodDto = createZodDto;
+
+
+/***/ }),
+
+/***/ "../../../libs/flowda-shared-types/src/zods.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SdkProductCreateManyItemDto = exports.productCreateManyItemSchema = exports.ResetPasswordDto = exports.resetPasswordWithRecoveryCodeTenantJwtSchemaDto = exports.resetPasswordWithRecoveryCodeSchemaDto = exports.resetPasswordWithRecoveryCodeSchema = exports.GenerateRecoveryCodeDto = exports.generateRecoveryCodeTenantJwtSchemaDto = exports.generateRecoveryCodeSchemaDto = exports.generateRecoveryCodeSchema = exports.wxValidateUserTenantJwtPayloadSchemaDto = exports.wxValidateUserSchema = exports.wxGetUserRes = exports.wxGetAccessTokenRes = exports.customerSignupTenantJwtPayloadSchemaDto = exports.customerSignupSchemaDto = exports.customerSignupSchema = exports.customerPreSignupTenantJwtPayloadSchemaDto = exports.customerPreSignupSchemaDto = exports.customerPreSignupSchema = exports.userJwtPayloadSchemaDto = exports.userJwtPayloadSchema = exports.tenantJwtPayloadSchema = exports.verifyMobileSchemaDto = exports.verifyMobileSchema = exports.resetPasswordSchemaDto = exports.resetPasswordSchema = exports.RegisterByUnionIdSchemaDto = exports.registerByUnionIdSchema = exports.FindByUnionIdAndTenantIdSchemaDto = exports.findByUnionIdAndTenantIdSchema = exports.GetTenantByNameSchemaDto = exports.getTenantByNameSchema = exports.validateSchemaDto = exports.validateSchema = exports.AccountExistsSchemaDto = exports.accountExistsSchema = exports.RegisterDto = exports.registerSchema = exports.prismaFilterSchema = exports.agSortSchema = exports.agFilterSchema = exports.agFilter2Schema = exports.agFilter1Schema = exports.agFilterInner2Schema = exports.agFilterInnerSchema = exports.resourceSchema = exports.resourceColumnSchema = exports.resourceAssociationSchema = exports.selectOptionSchema = void 0;
+exports.loginSchemaDto = exports.loginSchema = exports.ctxUserSchemaDto = exports.ctxUserSchema = exports.ctxTenantSchemaDto = exports.ctxTenantSchema = exports.refreshTokenSchemaDto = exports.refreshTokenSchema = exports.sendSmsVerifyCodeSchemaDto = exports.sendSmsVerifyCodeSchema = exports.kanzhunDataSchema = exports.kanzhunItemSchemaDto = exports.kanzhunItemSchema = exports.kanzhunDetailSchemaDto = exports.kanzhunDetailSchema = exports.customerExtendDataSchemaDto = exports.customerExtendDataSchema = exports._resetTenantPasswordSchemaDto = exports._resetTenantPasswordSchema = exports.validateByEmailSchemaDto = exports.validateByEmailSchema = exports.validateTenantSchemaDto = exports.validateTenantSchema = exports.appCreateV4SchemaDto = exports.appCreateV4Schema = exports.createQuickOrderTenantJWTPayloadSchemaDto = exports.SdkCreateQuickOrderDto = exports.createQuickOrderSchema = exports.SdkCreateOrderInJSAPIDto = exports.createOrderJSAPISchema = exports.transactionsNativeSchemaDto = exports.transactionsNativeSchema = exports.createOrderUserJwtPayloadSchemaDto = exports.SdkCreateOrderDto = exports.createOrderSchema = exports.amountUpdateUserJwtPayloadSchemaDto = exports.amountUpdateSchemaDto = exports.amountUpdateSchema = exports.fwhLoginTenantJwtPayloadSchemaDto = exports.fwhLoginSchema = exports.wxPayQuerySchema = exports.updateFreeProfileSchema = exports.updatePaidProfileSchema = void 0;
+const zod_1 = __webpack_require__("zod");
+const zod_utils_1 = __webpack_require__("../../../libs/flowda-shared-types/src/zod-utils.ts");
+exports.selectOptionSchema = zod_1.z.object({
+    value: zod_1.z.union([zod_1.z.string(), zod_1.z.number()]),
+    label: zod_1.z.string(),
+});
+exports.resourceAssociationSchema = zod_1.z.object({
+    foreign_key: zod_1.z.string(),
+    model_name: zod_1.z.string(),
+    primary_key: zod_1.z.string(),
+    name: zod_1.z.string(),
+    slug: zod_1.z.string(),
+    display_name: zod_1.z.string(),
+    schema_name: zod_1.z.string(),
+});
+exports.resourceColumnSchema = zod_1.z.object({
+    name: zod_1.z.string(),
+    access_type: zod_1.z.enum(['read_only']).optional(),
+    column_type: zod_1.z.enum(['reference', 'string', 'tag', 'integer', 'datetime', 'textarea', 'boolean']),
+    prisma: zod_1.z.boolean().optional(),
+    format: zod_1.z
+        .object({
+        select_options: exports.selectOptionSchema.array(),
+    })
+        .optional(),
+    reference: zod_1.z.object({
+        model_name: zod_1.z.string(),
+        primary_key: zod_1.z.string(),
+        display_name: zod_1.z.string(),
+        display_column: zod_1.z.union([zod_1.z.string(), zod_1.z.array(zod_1.z.string()), zod_1.z.undefined()]),
+        'x-relationField': zod_1.z.string(),
+        'x-onSoftDelete': zod_1.z.string(),
+        'x-unique': zod_1.z.boolean().optional(),
+    }),
+    display_name: zod_1.z.string().optional(),
+    validators: zod_1.z.array(zod_1.z.union([
+        zod_1.z.object({
+            required: zod_1.z.boolean(),
+        }),
+        zod_1.z.object({
+            format: zod_1.z.string(),
+            message: zod_1.z.string(),
+        }),
+    ])),
+});
+exports.resourceSchema = zod_1.z.object({
+    namespace: zod_1.z.string().optional(),
+    prisma: zod_1.z.boolean().optional(),
+    is_dynamic: zod_1.z.boolean().optional(),
+    schema_name: zod_1.z.string(),
+    name: zod_1.z.string(),
+    slug: zod_1.z.string(),
+    primary_key: zod_1.z.string(),
+    custom: zod_1.z.any(),
+    display_column: zod_1.z.union([zod_1.z.string(), zod_1.z.array(zod_1.z.string()), zod_1.z.undefined()]),
+    display_name: zod_1.z.string().nullable(),
+    display_primary_key: zod_1.z.boolean(),
+    searchable_columns: zod_1.z.array(zod_1.z.string()).optional(),
+    columns: exports.resourceColumnSchema.array(),
+    associations: exports.resourceAssociationSchema.array(),
+    __jsonschema: zod_1.z.any(),
+});
+exports.agFilterInnerSchema = zod_1.z.object({
+    filterType: zod_1.z.enum(['text', 'number']),
+    // filterType: z.string(),
+    type: zod_1.z.enum(['contains', 'equals']),
+    // type: z.string(),
+    filter: zod_1.z.union([zod_1.z.string(), zod_1.z.number()]),
+});
+exports.agFilterInner2Schema = zod_1.z.object({
+    filterType: zod_1.z.enum(['text']),
+    // filterType: z.string(),
+    operator: zod_1.z.enum(['OR', 'AND']),
+    // operator: z.string(),
+    conditions: zod_1.z.array(exports.agFilterInnerSchema),
+});
+exports.agFilter1Schema = zod_1.z.record(exports.agFilterInnerSchema);
+exports.agFilter2Schema = zod_1.z.record(exports.agFilterInner2Schema);
+exports.agFilterSchema = zod_1.z
+    .record(exports.agFilterInnerSchema.or(exports.agFilterInner2Schema))
+    .or(zod_1.z.object({ _ref: zod_1.z.string().optional() }));
+exports.agSortSchema = zod_1.z.array(zod_1.z.object({
+    colId: zod_1.z.string(),
+    sort: zod_1.z.enum(['asc', 'desc']),
+}));
+exports.prismaFilterSchema = zod_1.z.object({
+    OR: zod_1.z.array(zod_1.z.record(zod_1.z.record(zod_1.z.enum(['contains']), zod_1.z.string()))),
+});
+exports.registerSchema = zod_1.z.object({
+    username: zod_1.z.string(),
+    password: zod_1.z.string(),
+    tenantId: zod_1.z.number(),
+});
+class RegisterDto extends (0, zod_utils_1.createZodDto)(exports.registerSchema) {
+}
+exports.RegisterDto = RegisterDto;
+exports.accountExistsSchema = zod_1.z.object({
+    username: zod_1.z.string(),
+    tenantName: zod_1.z.string(),
+});
+class AccountExistsSchemaDto extends (0, zod_utils_1.createZodDto)(exports.accountExistsSchema) {
+}
+exports.AccountExistsSchemaDto = AccountExistsSchemaDto;
+exports.validateSchema = zod_1.z.object({
+    username: zod_1.z.string(),
+    password: zod_1.z.string(),
+});
+class validateSchemaDto extends (0, zod_utils_1.createZodDto)(exports.validateSchema) {
+}
+exports.validateSchemaDto = validateSchemaDto;
+exports.getTenantByNameSchema = zod_1.z.object({
+    tenantName: zod_1.z.string(),
+});
+class GetTenantByNameSchemaDto extends (0, zod_utils_1.createZodDto)(exports.getTenantByNameSchema) {
+}
+exports.GetTenantByNameSchemaDto = GetTenantByNameSchemaDto;
+exports.findByUnionIdAndTenantIdSchema = zod_1.z.object({
+    unionid: zod_1.z.string(),
+    tenantId: zod_1.z.number(),
+});
+class FindByUnionIdAndTenantIdSchemaDto extends (0, zod_utils_1.createZodDto)(exports.findByUnionIdAndTenantIdSchema) {
+}
+exports.FindByUnionIdAndTenantIdSchemaDto = FindByUnionIdAndTenantIdSchemaDto;
+exports.registerByUnionIdSchema = zod_1.z.object({
+    unionid: zod_1.z.string(),
+    tenantId: zod_1.z.number(),
+});
+class RegisterByUnionIdSchemaDto extends (0, zod_utils_1.createZodDto)(exports.registerByUnionIdSchema) {
+}
+exports.RegisterByUnionIdSchemaDto = RegisterByUnionIdSchemaDto;
+exports.resetPasswordSchema = zod_1.z.object({
+    userId: zod_1.z.number(),
+    tenantId: zod_1.z.number(),
+    password: zod_1.z.string(),
+});
+class resetPasswordSchemaDto extends (0, zod_utils_1.createZodDto)(exports.resetPasswordSchema) {
+}
+exports.resetPasswordSchemaDto = resetPasswordSchemaDto;
+exports.verifyMobileSchema = zod_1.z.object({
+    uid: zod_1.z.number(),
+    tid: zod_1.z.number(),
+    mobile: zod_1.z.string(),
+    code: zod_1.z.string(),
+    slug: zod_1.z.string(),
+});
+class verifyMobileSchemaDto extends (0, zod_utils_1.createZodDto)(exports.verifyMobileSchema) {
+}
+exports.verifyMobileSchemaDto = verifyMobileSchemaDto;
+exports.tenantJwtPayloadSchema = zod_1.z.object({
+    tid: zod_1.z.number(),
+});
+exports.userJwtPayloadSchema = zod_1.z.object({
+    uid: zod_1.z.number(),
+    tid: zod_1.z.number(),
+});
+class userJwtPayloadSchemaDto extends (0, zod_utils_1.createZodDto)(exports.userJwtPayloadSchema) {
+}
+exports.userJwtPayloadSchemaDto = userJwtPayloadSchemaDto;
+exports.customerPreSignupSchema = zod_1.z.object({
+    email: zod_1.z.string(),
+});
+class customerPreSignupSchemaDto extends (0, zod_utils_1.createZodDto)(exports.customerPreSignupSchema) {
+}
+exports.customerPreSignupSchemaDto = customerPreSignupSchemaDto;
+class customerPreSignupTenantJwtPayloadSchemaDto extends (0, zod_utils_1.createZodDto)(exports.customerPreSignupSchema.merge(exports.tenantJwtPayloadSchema)) {
+}
+exports.customerPreSignupTenantJwtPayloadSchemaDto = customerPreSignupTenantJwtPayloadSchemaDto;
+exports.customerSignupSchema = zod_1.z.object({
+    email: zod_1.z.string(),
+    verifyCode: zod_1.z.string(),
+    password: zod_1.z.string(),
+});
+class customerSignupSchemaDto extends (0, zod_utils_1.createZodDto)(exports.customerSignupSchema) {
+}
+exports.customerSignupSchemaDto = customerSignupSchemaDto;
+class customerSignupTenantJwtPayloadSchemaDto extends (0, zod_utils_1.createZodDto)(exports.customerSignupSchema.merge(exports.tenantJwtPayloadSchema)) {
+}
+exports.customerSignupTenantJwtPayloadSchemaDto = customerSignupTenantJwtPayloadSchemaDto;
+exports.wxGetAccessTokenRes = zod_1.z.object({
+    access_token: zod_1.z.string(),
+    expires_in: zod_1.z.string(),
+    refresh_token: zod_1.z.string(),
+    openid: zod_1.z.string(),
+    scope: zod_1.z.string(),
+    unionid: zod_1.z.string(),
+    create_at: zod_1.z.string(),
+});
+exports.wxGetUserRes = zod_1.z.object({
+    openid: zod_1.z.string(),
+    nickname: zod_1.z.string(),
+    sex: zod_1.z.number(),
+    headimgurl: zod_1.z.string(),
+    unionid: zod_1.z.string(),
+    language: zod_1.z.string(),
+    city: zod_1.z.string(),
+    province: zod_1.z.string(),
+    country: zod_1.z.string(),
+    privilege: zod_1.z.array(zod_1.z.string()),
+});
+exports.wxValidateUserSchema = zod_1.z.object({
+    code: zod_1.z.string(),
+});
+class wxValidateUserTenantJwtPayloadSchemaDto extends (0, zod_utils_1.createZodDto)(exports.wxValidateUserSchema.merge(exports.tenantJwtPayloadSchema)) {
+}
+exports.wxValidateUserTenantJwtPayloadSchemaDto = wxValidateUserTenantJwtPayloadSchemaDto;
+exports.generateRecoveryCodeSchema = zod_1.z.object({
+    email: zod_1.z.string(),
+});
+class generateRecoveryCodeSchemaDto extends (0, zod_utils_1.createZodDto)(exports.generateRecoveryCodeSchema) {
+}
+exports.generateRecoveryCodeSchemaDto = generateRecoveryCodeSchemaDto;
+class generateRecoveryCodeTenantJwtSchemaDto extends (0, zod_utils_1.createZodDto)(exports.generateRecoveryCodeSchema.merge(exports.tenantJwtPayloadSchema)) {
+}
+exports.generateRecoveryCodeTenantJwtSchemaDto = generateRecoveryCodeTenantJwtSchemaDto;
+class GenerateRecoveryCodeDto extends (0, zod_utils_1.createZodDto)(exports.generateRecoveryCodeSchema.merge(zod_1.z.object({
+    appId: zod_1.z.string(),
+}))) {
+}
+exports.GenerateRecoveryCodeDto = GenerateRecoveryCodeDto;
+exports.resetPasswordWithRecoveryCodeSchema = zod_1.z.object({
+    recoveryCode: zod_1.z.string(),
+    password: zod_1.z.string(),
+});
+class resetPasswordWithRecoveryCodeSchemaDto extends (0, zod_utils_1.createZodDto)(exports.resetPasswordWithRecoveryCodeSchema) {
+}
+exports.resetPasswordWithRecoveryCodeSchemaDto = resetPasswordWithRecoveryCodeSchemaDto;
+class resetPasswordWithRecoveryCodeTenantJwtSchemaDto extends (0, zod_utils_1.createZodDto)(exports.resetPasswordWithRecoveryCodeSchema.merge(exports.tenantJwtPayloadSchema)) {
+}
+exports.resetPasswordWithRecoveryCodeTenantJwtSchemaDto = resetPasswordWithRecoveryCodeTenantJwtSchemaDto;
+class ResetPasswordDto extends (0, zod_utils_1.createZodDto)(exports.resetPasswordWithRecoveryCodeSchema.merge(zod_1.z.object({
+    appId: zod_1.z.string(),
+}))) {
+}
+exports.ResetPasswordDto = ResetPasswordDto;
+exports.productCreateManyItemSchema = zod_1.z.object({
+    name: zod_1.z.string(),
+    price: zod_1.z.number(),
+    productType: zod_1.z.string(),
+    amount: zod_1.z.number().optional(),
+    plan: zod_1.z.number().nullable().optional(),
+    extendedDescriptionData: zod_1.z.any().optional(),
+    restricted: zod_1.z.number().nullable().optional(),
+    fileSize: zod_1.z.string().nullable().optional(),
+    storeDuration: zod_1.z.number().nullable().optional(),
+    hasAds: zod_1.z.string().nullable().optional(),
+    tecSupport: zod_1.z.string().nullable().optional(),
+});
+class SdkProductCreateManyItemDto extends (0, zod_utils_1.createZodDto)(exports.productCreateManyItemSchema) {
+}
+exports.SdkProductCreateManyItemDto = SdkProductCreateManyItemDto;
+exports.updatePaidProfileSchema = zod_1.z.object({
+    product: zod_1.z.object({
+        productType: zod_1.z.any(),
+        plan: zod_1.z.number().nullable(),
+        amount: zod_1.z.number().nullable(),
+        validityPeriod: zod_1.z.number().nullable(),
+    }),
+});
+exports.updateFreeProfileSchema = zod_1.z.object({
+    product: zod_1.z.object({
+        productType: zod_1.z.any(),
+        plan: zod_1.z.number().nullable(),
+        amount: zod_1.z.number().nullable(),
+        validityPeriod: zod_1.z.number().nullable(),
+    }),
+});
+exports.wxPayQuerySchema = zod_1.z.object({
+    status: zod_1.z.number(),
+    trade_state: zod_1.z.string(),
+    transaction_id: zod_1.z.string(),
+    payer: zod_1.z.object({
+        openid: zod_1.z.string(),
+    }),
+});
+exports.fwhLoginSchema = zod_1.z.object({
+    code: zod_1.z.string(),
+});
+class fwhLoginTenantJwtPayloadSchemaDto extends (0, zod_utils_1.createZodDto)(exports.fwhLoginSchema.merge(exports.tenantJwtPayloadSchema)) {
+}
+exports.fwhLoginTenantJwtPayloadSchemaDto = fwhLoginTenantJwtPayloadSchemaDto;
+exports.amountUpdateSchema = zod_1.z.object({
+    action: zod_1.z.enum(['decrement']).optional(),
+    count: zod_1.z.number().optional(),
+});
+class amountUpdateSchemaDto extends (0, zod_utils_1.createZodDto)(exports.amountUpdateSchema) {
+}
+exports.amountUpdateSchemaDto = amountUpdateSchemaDto;
+class amountUpdateUserJwtPayloadSchemaDto extends (0, zod_utils_1.createZodDto)(exports.amountUpdateSchema.merge(exports.userJwtPayloadSchema)) {
+}
+exports.amountUpdateUserJwtPayloadSchemaDto = amountUpdateUserJwtPayloadSchemaDto;
+exports.createOrderSchema = zod_1.z.object({
+    productId: zod_1.z.number(),
+    openid: zod_1.z.string().optional(),
+});
+class SdkCreateOrderDto extends (0, zod_utils_1.createZodDto)(exports.createOrderSchema) {
+}
+exports.SdkCreateOrderDto = SdkCreateOrderDto;
+class createOrderUserJwtPayloadSchemaDto extends (0, zod_utils_1.createZodDto)(exports.createOrderSchema.merge(exports.userJwtPayloadSchema)) {
+}
+exports.createOrderUserJwtPayloadSchemaDto = createOrderUserJwtPayloadSchemaDto;
+exports.transactionsNativeSchema = zod_1.z.object({
+    orderId: zod_1.z.string(),
+    desc: zod_1.z.string(),
+    total: zod_1.z.number(),
+    openid: zod_1.z.string().optional(),
+});
+class transactionsNativeSchemaDto extends (0, zod_utils_1.createZodDto)(exports.transactionsNativeSchema) {
+}
+exports.transactionsNativeSchemaDto = transactionsNativeSchemaDto;
+exports.createOrderJSAPISchema = exports.createOrderSchema.extend({ openid: zod_1.z.string() });
+class SdkCreateOrderInJSAPIDto extends (0, zod_utils_1.createZodDto)(exports.createOrderJSAPISchema) {
+}
+exports.SdkCreateOrderInJSAPIDto = SdkCreateOrderInJSAPIDto;
+exports.createQuickOrderSchema = exports.createOrderSchema.extend({
+    // 快捷创建需要客户端提供一个匿名 Token
+    anonymousCustomerToken: zod_1.z.string(),
+});
+class SdkCreateQuickOrderDto extends (0, zod_utils_1.createZodDto)(exports.createQuickOrderSchema) {
+}
+exports.SdkCreateQuickOrderDto = SdkCreateQuickOrderDto;
+class createQuickOrderTenantJWTPayloadSchemaDto extends (0, zod_utils_1.createZodDto)(exports.createQuickOrderSchema.merge(exports.tenantJwtPayloadSchema)) {
+}
+exports.createQuickOrderTenantJWTPayloadSchemaDto = createQuickOrderTenantJWTPayloadSchemaDto;
+exports.appCreateV4Schema = zod_1.z.object({
+    displayName: zod_1.z.string(),
+});
+class appCreateV4SchemaDto extends (0, zod_utils_1.createZodDto)(exports.appCreateV4Schema) {
+}
+exports.appCreateV4SchemaDto = appCreateV4SchemaDto;
+exports.validateTenantSchema = zod_1.z.object({
+    name: zod_1.z.string(),
+    password: zod_1.z.string(),
+});
+class validateTenantSchemaDto extends (0, zod_utils_1.createZodDto)(exports.validateTenantSchema) {
+}
+exports.validateTenantSchemaDto = validateTenantSchemaDto;
+exports.validateByEmailSchema = zod_1.z.object({
+    email: zod_1.z.string(),
+    tenantId: zod_1.z.number(),
+    password: zod_1.z.string(),
+});
+class validateByEmailSchemaDto extends (0, zod_utils_1.createZodDto)(exports.validateByEmailSchema) {
+}
+exports.validateByEmailSchemaDto = validateByEmailSchemaDto;
+exports._resetTenantPasswordSchema = zod_1.z.object({
+    id: zod_1.z.number(),
+});
+class _resetTenantPasswordSchemaDto extends (0, zod_utils_1.createZodDto)(exports._resetTenantPasswordSchema) {
+}
+exports._resetTenantPasswordSchemaDto = _resetTenantPasswordSchemaDto;
+exports.customerExtendDataSchema = zod_1.z
+    .object({
+    biz: zod_1.z.string(),
+    icp: zod_1.z.string().nullable(),
+    contact: zod_1.z
+        .object({
+        email: zod_1.z.string(),
+        phone: zod_1.z.string(),
+        address: zod_1.z.string(),
+    })
+        .partial(),
+    companyName: zod_1.z.string(),
+    description: zod_1.z.string(),
+})
+    .partial();
+class customerExtendDataSchemaDto extends (0, zod_utils_1.createZodDto)(exports.customerExtendDataSchema) {
+}
+exports.customerExtendDataSchemaDto = customerExtendDataSchemaDto;
+exports.kanzhunDetailSchema = zod_1.z
+    .object({
+    公司全称: zod_1.z.string(),
+    联系方式: zod_1.z.array(zod_1.z.string()),
+    地址: zod_1.z.string(),
+    简介: zod_1.z.string(),
+})
+    .partial();
+class kanzhunDetailSchemaDto extends (0, zod_utils_1.createZodDto)(exports.kanzhunDetailSchema) {
+}
+exports.kanzhunDetailSchemaDto = kanzhunDetailSchemaDto;
+exports.kanzhunItemSchema = zod_1.z
+    .object({
+    id: zod_1.z.number(),
+    name: zod_1.z.string(),
+    detail: exports.kanzhunDetailSchema,
+})
+    .partial();
+class kanzhunItemSchemaDto extends (0, zod_utils_1.createZodDto)(exports.kanzhunItemSchema) {
+}
+exports.kanzhunItemSchemaDto = kanzhunItemSchemaDto;
+exports.kanzhunDataSchema = zod_1.z
+    .object({
+    date: zod_1.z.string(),
+    data: zod_1.z.array(exports.kanzhunItemSchema),
+})
+    .partial();
+exports.sendSmsVerifyCodeSchema = zod_1.z.object({ mobile: zod_1.z.string() });
+class sendSmsVerifyCodeSchemaDto extends (0, zod_utils_1.createZodDto)(exports.sendSmsVerifyCodeSchema) {
+}
+exports.sendSmsVerifyCodeSchemaDto = sendSmsVerifyCodeSchemaDto;
+exports.refreshTokenSchema = zod_1.z.object({ rt: zod_1.z.string() });
+class refreshTokenSchemaDto extends (0, zod_utils_1.createZodDto)(exports.refreshTokenSchema) {
+}
+exports.refreshTokenSchemaDto = refreshTokenSchemaDto;
+exports.ctxTenantSchema = zod_1.z.object({
+    id: zod_1.z.number(),
+    name: zod_1.z.string(),
+});
+class ctxTenantSchemaDto extends (0, zod_utils_1.createZodDto)(exports.ctxTenantSchema) {
+}
+exports.ctxTenantSchemaDto = ctxTenantSchemaDto;
+exports.ctxUserSchema = zod_1.z.object({
+    id: zod_1.z.number(),
+    tenantId: zod_1.z.number(),
+    username: zod_1.z.string(),
+});
+class ctxUserSchemaDto extends (0, zod_utils_1.createZodDto)(exports.ctxUserSchema) {
+}
+exports.ctxUserSchemaDto = ctxUserSchemaDto;
+exports.loginSchema = zod_1.z.object({
+    username: zod_1.z.string(),
+    password: zod_1.z.string().min(4),
+});
+class loginSchemaDto extends (0, zod_utils_1.createZodDto)(exports.loginSchema) {
+}
+exports.loginSchemaDto = loginSchemaDto;
 
 
 /***/ }),
@@ -1284,28 +2359,29 @@ tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared-node/src/a
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.flowdaSharedModule = void 0;
 const inversify_1 = __webpack_require__("inversify");
-const flowda_shared_1 = __webpack_require__("../../../libs/flowda-shared/src/index.ts");
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
 const prismaSchema_service_1 = __webpack_require__("../../../libs/flowda-shared/src/services/schema/prismaSchema.service.ts");
 const data_service_1 = __webpack_require__("../../../libs/flowda-shared/src/services/data/data.service.ts");
 const schema_service_1 = __webpack_require__("../../../libs/flowda-shared/src/services/schema/schema.service.ts");
 const schemaTransformer_1 = __webpack_require__("../../../libs/flowda-shared/src/services/schema/schemaTransformer.ts");
 const prismaUtils_1 = __webpack_require__("../../../libs/flowda-shared/src/services/schema/prismaUtils.ts");
-const symbols_1 = __webpack_require__("../../../libs/flowda-shared/src/symbols.ts");
+const bindService_1 = __webpack_require__("../../../libs/flowda-shared/src/utils/bindService.ts");
+const dynamicTableSchemaTransformer_1 = __webpack_require__("../../../libs/flowda-shared/src/services/schema/dynamicTableSchemaTransformer.ts");
 exports.flowdaSharedModule = new inversify_1.ContainerModule((bind) => {
-    (0, flowda_shared_1.bindServiceSymbol)(bind, flowda_shared_1.ServiceSymbol, flowda_shared_1.DataServiceSymbol, data_service_1.DataService);
-    (0, flowda_shared_1.bindServiceSymbol)(bind, flowda_shared_1.ServiceSymbol, flowda_shared_1.SchemaServiceSymbol, schema_service_1.SchemaService);
-    bind(symbols_1.PrismaSchemaServiceSymbol).to(prismaSchema_service_1.PrismaSchemaService).inSingletonScope();
-    bind(flowda_shared_1.PrismaUtilsSymbol).to(prismaUtils_1.PrismaUtils).inSingletonScope();
-    bind(symbols_1.SchemaTransformerSymbol).to(schemaTransformer_1.SchemaTransformer).inTransientScope();
+    (0, bindService_1.bindServiceSymbol)(bind, flowda_shared_types_1.ServiceSymbol, flowda_shared_types_1.DataServiceSymbol, data_service_1.DataService);
+    (0, bindService_1.bindServiceSymbol)(bind, flowda_shared_types_1.ServiceSymbol, flowda_shared_types_1.SchemaServiceSymbol, schema_service_1.SchemaService);
+    bind(flowda_shared_types_1.PrismaSchemaServiceSymbol).to(prismaSchema_service_1.PrismaSchemaService).inSingletonScope();
+    bind(flowda_shared_types_1.PrismaUtilsSymbol).to(prismaUtils_1.PrismaUtils).inSingletonScope();
+    bind(flowda_shared_types_1.SchemaTransformerSymbol).to(schemaTransformer_1.SchemaTransformer).inTransientScope();
     bind('Factory<SchemaTransformer>').toFactory(context => {
         return (z) => {
-            const transformer = context.container.get(symbols_1.SchemaTransformerSymbol);
+            const transformer = context.container.get(flowda_shared_types_1.SchemaTransformerSymbol);
             transformer.setZodType(z);
             return transformer;
         };
     });
-    bind(flowda_shared_1.DynamicTableSchemaTransformerSymbol)
-        .to(flowda_shared_1.DynamicTableSchemaTransformer)
+    bind(flowda_shared_types_1.DynamicTableSchemaTransformerSymbol)
+        .to(dynamicTableSchemaTransformer_1.DynamicTableSchemaTransformer)
         .inTransientScope();
 });
 
@@ -1318,57 +2394,20 @@ exports.flowdaSharedModule = new inversify_1.ContainerModule((bind) => {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const tslib_1 = __webpack_require__("tslib");
-tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared/src/symbols.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared/src/flowdaShared.module.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared/src/utils/bindService.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared/src/utils/matchPath.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared/src/utils/getServices.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared/src/utils/browser-log-utils.ts"), exports);
-tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared/src/interfaces/types.ts"), exports);
-tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared/src/interfaces/schema.ts"), exports);
+tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared/src/utils/ag-grid-utils.ts"), exports);
+tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared/src/utils/schema-utils.ts"), exports);
+tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared/src/utils/custom-error.ts"), exports);
+tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared/src/utils/dayjs-utils.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared/src/services/schema/meta.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared/src/services/schema/schemaTransformer.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared/src/services/schema/dynamicTableSchemaTransformer.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared/src/services/schema/schema.service.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/flowda-shared/src/services/data/data.service.ts"), exports);
-
-
-/***/ }),
-
-/***/ "../../../libs/flowda-shared/src/interfaces/schema.ts":
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-
-
-/***/ }),
-
-/***/ "../../../libs/flowda-shared/src/interfaces/types.ts":
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.COSSymbol = exports.CustomError = exports.K3CloudIdentifyInfoSymbol = exports.CustomZodSchemaSymbol = exports.PrismaZodSchemaSymbol = exports.URLSymbol = exports.APISymbol = exports.ServiceSymbol = exports.PrismaClientSymbol = void 0;
-exports.PrismaClientSymbol = Symbol('PrismaClient');
-/**
- * getServices 方法会将 inversify module 转换成 nestjs module，这样 nestjs controller 就可以使用了
- * 所以，注意：如果不需要给 controller 使用，则不需要 bind
- */
-exports.ServiceSymbol = Symbol('Service');
-exports.APISymbol = Symbol('API');
-exports.URLSymbol = Symbol.for('URL');
-exports.PrismaZodSchemaSymbol = Symbol.for('PrismaZodSchema');
-exports.CustomZodSchemaSymbol = Symbol.for('CustomZodSchema');
-exports.K3CloudIdentifyInfoSymbol = Symbol.for('K3CloudIdentifyInfo');
-class CustomError extends Error {
-    constructor(code, message, extra) {
-        super(JSON.stringify({ code: code, message }));
-        this.message = JSON.stringify({ code, message, extra });
-    }
-}
-exports.CustomError = CustomError;
-exports.COSSymbol = Symbol('COS');
 
 
 /***/ }),
@@ -1382,28 +2421,23 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DataService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
-const _ = __webpack_require__("radash");
+const _ = tslib_1.__importStar(__webpack_require__("radash"));
 const lodash_1 = __webpack_require__("lodash");
-const types_1 = __webpack_require__("../../../libs/flowda-shared/src/interfaces/types.ts");
-const symbols_1 = __webpack_require__("../../../libs/flowda-shared/src/symbols.ts");
-// import * as db from '@prisma/client-wms'
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
+// import * as db from '@prisma/client-cms_admin'
 /*
 todo: 增加 reference_type 区分是如何做 nest
 e.g. Customer#weixinProfile 和 Order#customerId 的 nest 查询有区别
  */
 let DataService = DataService_1 = class DataService {
-    constructor(
-    // todo: prisma 要不要强类型
-    // @inject(PrismaClientSymbol) private prisma: db.PrismaClient,
-    prisma, prismaSchemaService, loggerFactory) {
+    constructor(prisma, prismaSchemaService, loggerFactory) {
         this.prisma = prisma;
         this.prismaSchemaService = prismaSchemaService;
         this.logger = loggerFactory(DataService_1.name);
     }
     get(reqUser, pathname, query) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            this.logger.debug(`[get] reqUser ${JSON.stringify(reqUser, null, 2)}`);
-            this.logger.debug(`get ${pathname}, query: ${JSON.stringify(query, null, 2)}`);
+            this.logger.log(`get(reqUser ${JSON.stringify(reqUser)}, path: ${pathname}, query: ${JSON.stringify(query)})`);
             const findParamRet = yield this.prismaSchemaService.toFindParam(pathname, query);
             if (_.isEmpty(findParamRet)) {
                 return {};
@@ -1411,7 +2445,7 @@ let DataService = DataService_1 = class DataService {
             const { resource, action, param } = findParamRet;
             if (action === 'findUnique') {
                 const ret = yield this.prisma[resource][action](param);
-                if (ret.isDeleted)
+                if (!ret || ret.isDeleted)
                     return {};
                 return _.omit(ret, ['isDeleted']);
             }
@@ -1431,7 +2465,7 @@ let DataService = DataService_1 = class DataService {
     }
     put(reqUser, path, values) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            this.logger.debug(`[put] reqUser ${JSON.stringify(reqUser, null, 2)}`);
+            this.logger.log(`put(reqUser ${JSON.stringify(reqUser)}), path: ${path}, values: ${JSON.stringify(values)}`);
             const updateParamRet = yield this.prismaSchemaService.toUpdateParam(path, values);
             const { resource, param } = updateParamRet;
             const prevRet = yield this.prisma[resource].findUnique({
@@ -1440,7 +2474,6 @@ let DataService = DataService_1 = class DataService {
                 },
                 select: _.mapValues(param.data, item => true),
             });
-            this.logger.debug(`prevRet ${JSON.stringify(prevRet, null, 2)}`);
             const auditChanges = Object.keys(param.data).reduce((acc, k) => {
                 acc[k] = [prevRet[k], param.data[k]];
                 return acc;
@@ -1449,22 +2482,27 @@ let DataService = DataService_1 = class DataService {
             const auditInfo = {
                 auditId: param.where.id,
                 auditType: resource,
-                userId: JSON.stringify(reqUser['user_id'] || reqUser['uid']),
+                userId: JSON.stringify(reqUser['user_id'] || reqUser['uid']), // todo: 暂时兼容 java 和 node
                 username: reqUser['user_name'],
                 action: 'update',
                 auditChanges: JSON.stringify(auditChanges),
                 version: 0,
             };
-            this.logger.log(`audit ${JSON.stringify(auditInfo, null, 2)}`);
-            yield this.prisma.audits.create({
-                data: auditInfo,
-            });
+            this.logger.debug(`audit ${JSON.stringify(auditInfo)}`);
+            try {
+                yield this.prisma.audits.create({
+                    data: auditInfo,
+                });
+            }
+            catch (e) {
+                this.logger.warn(`audit create failed, ${JSON.stringify(auditInfo)}`);
+            }
             return ret;
         });
     }
     post(reqUser, path, values) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            this.logger.debug(`[post] reqUser ${JSON.stringify(reqUser, null, 2)}`);
+            this.logger.log(`[post] reqUser ${JSON.stringify(reqUser)}, path: ${path}, query: ${JSON.stringify(values)})`);
             const createParamRet = yield this.prismaSchemaService.toCreateParam(path, values);
             const { resource, param } = createParamRet;
             if (createParamRet['x-unique']) {
@@ -1491,16 +2529,21 @@ let DataService = DataService_1 = class DataService {
                 const auditInfo = {
                     auditId: id,
                     auditType: resource,
-                    userId: JSON.stringify(reqUser['user_id'] || reqUser['uid']),
+                    userId: JSON.stringify(reqUser['user_id'] || reqUser['uid']), // todo: 暂时兼容 java 和 node
                     username: reqUser['user_name'],
                     action: 'soft_delete_revert',
                     auditChanges: JSON.stringify(param.data),
                     version: 0,
                 };
-                this.logger.log(`audit ${JSON.stringify(auditInfo, null, 2)}`);
-                yield this.prisma.audits.create({
-                    data: auditInfo,
-                });
+                this.logger.debug(`audit ${JSON.stringify(auditInfo)}`);
+                try {
+                    yield this.prisma.audits.create({
+                        data: auditInfo,
+                    });
+                }
+                catch (e) {
+                    this.logger.warn(`audit create failed, ${JSON.stringify(auditInfo)}`);
+                }
                 return ret;
             }
             else {
@@ -1508,23 +2551,28 @@ let DataService = DataService_1 = class DataService {
                 const auditInfo = {
                     auditId: ret.id,
                     auditType: resource,
-                    userId: JSON.stringify(reqUser['user_id'] || reqUser['uid']),
+                    userId: JSON.stringify(reqUser['user_id'] || reqUser['uid']), // todo: 暂时兼容 java 和 node
                     username: reqUser['user_name'],
                     action: 'create',
                     auditChanges: JSON.stringify(param.data),
                     version: 0,
                 };
-                this.logger.log(`audit ${JSON.stringify(auditInfo, null, 2)}`);
-                yield this.prisma.audits.create({
-                    data: auditInfo,
-                });
+                this.logger.debug(`audit ${JSON.stringify(auditInfo)}`);
+                try {
+                    yield this.prisma.audits.create({
+                        data: auditInfo,
+                    });
+                }
+                catch (e) {
+                    this.logger.warn(`audit create failed, ${JSON.stringify(auditInfo)}`);
+                }
                 return ret;
             }
         });
     }
     remove(reqUser, pathname) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            this.logger.debug(`[remove] reqUser ${JSON.stringify(reqUser, null, 2)}`);
+            this.logger.log(`[remove] reqUser ${JSON.stringify(reqUser)}, path: ${pathname}`);
             const assDelStrategy = yield this.prismaSchemaService.getAssociationDeleteStrategy(pathname);
             const { resource, param } = yield this.prismaSchemaService.toRemoveParam(pathname);
             for (const k of Object.keys(assDelStrategy)) {
@@ -1550,28 +2598,33 @@ let DataService = DataService_1 = class DataService {
             const auditInfo = {
                 auditId: param.where.id,
                 auditType: resource,
-                userId: JSON.stringify(reqUser['user_id'] || reqUser['uid']),
+                userId: JSON.stringify(reqUser['user_id'] || reqUser['uid']), // todo: 暂时兼容 java 和 node
                 username: reqUser['user_name'],
                 action: 'soft_delete',
                 auditChanges: JSON.stringify(prevRet),
                 version: 0,
             };
-            this.logger.log(`audit ${JSON.stringify(auditInfo, null, 2)}`);
-            yield this.prisma.audits.create({
-                data: auditInfo,
-            });
+            this.logger.debug(`audit ${JSON.stringify(auditInfo)}`);
+            try {
+                yield this.prisma.audits.create({
+                    data: auditInfo,
+                });
+            }
+            catch (e) {
+                this.logger.warn(`audit create failed, ${JSON.stringify(auditInfo)}`);
+            }
             return ret;
         });
     }
 };
-DataService = DataService_1 = tslib_1.__decorate([
+exports.DataService = DataService;
+exports.DataService = DataService = DataService_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
-    tslib_1.__param(0, (0, inversify_1.inject)(types_1.PrismaClientSymbol)),
-    tslib_1.__param(1, (0, inversify_1.inject)(symbols_1.PrismaSchemaServiceSymbol)),
+    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_types_1.PrismaClientSymbol)),
+    tslib_1.__param(1, (0, inversify_1.inject)(flowda_shared_types_1.PrismaSchemaServiceSymbol)),
     tslib_1.__param(2, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [Object, Object, Function])
 ], DataService);
-exports.DataService = DataService;
 
 
 /***/ }),
@@ -1608,12 +2661,12 @@ let DynamicTableSchemaTransformer = DynamicTableSchemaTransformer_1 = class Dyna
         }, input.extendedSchema);
     }
 };
-DynamicTableSchemaTransformer = DynamicTableSchemaTransformer_1 = tslib_1.__decorate([
+exports.DynamicTableSchemaTransformer = DynamicTableSchemaTransformer;
+exports.DynamicTableSchemaTransformer = DynamicTableSchemaTransformer = DynamicTableSchemaTransformer_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [Function])
 ], DynamicTableSchemaTransformer);
-exports.DynamicTableSchemaTransformer = DynamicTableSchemaTransformer;
 
 
 /***/ }),
@@ -1646,26 +2699,34 @@ exports.PrismaSchemaService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
 const matchPath_1 = __webpack_require__("../../../libs/flowda-shared/src/utils/matchPath.ts");
-const _ = __webpack_require__("lodash");
-const flowda_shared_1 = __webpack_require__("../../../libs/flowda-shared/src/index.ts");
+const lodash_1 = __webpack_require__("lodash");
+const _ = tslib_1.__importStar(__webpack_require__("radash"));
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
 let PrismaSchemaService = PrismaSchemaService_1 = class PrismaSchemaService {
     constructor(prismaUtils, schemaService, loggerFactory) {
         this.prismaUtils = prismaUtils;
         this.schemaService = schemaService;
         this.logger = loggerFactory(PrismaSchemaService_1.name);
     }
-    toPrismaSelect(fields) {
-        return fields.split(',').reduce((acc, cur) => {
+    toPrismaSelect(fields, theResourceSchema) {
+        let fieldsArr = [];
+        if (fields == null) {
+            fieldsArr = theResourceSchema.columns.filter(c => c.prisma !== false).map(c => c.name);
+        }
+        else {
+            fieldsArr = fields.split(',');
+        }
+        return fieldsArr.reduce((acc, cur) => {
             acc[cur] = true;
             return acc;
         }, {});
     }
     toFindParam(pathname, query) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            if (!query.fields) {
-                throw new Error('No query fields');
-            }
-            this.logger.debug(`pathname: ${pathname}, query: ${JSON.stringify(query, null, 2)}`);
+            // if (!query['fields']) {
+            //   throw new Error('No query fields')
+            // }
+            this.logger.debug(`[toFindParam] pathname: ${pathname}, query: ${JSON.stringify(query)}`);
             const parsedPath = (0, matchPath_1.matchPath)(pathname);
             if (parsedPath.length === 0)
                 return Promise.resolve({});
@@ -1674,14 +2735,14 @@ let PrismaSchemaService = PrismaSchemaService_1 = class PrismaSchemaService {
             const theResourceSchema = schemaCache[resourceSchema];
             let action;
             let param = {};
-            const queryFields = query.fields;
-            const fields = this.toPrismaSelect(queryFields[resource]);
+            const queryFields = query['fields'];
+            const fields = this.toPrismaSelect(queryFields && queryFields[resource], theResourceSchema);
             const include = {};
-            if (typeof query.include === 'string' && query.include !== '') {
-                query.include.split(',').forEach((inc) => {
+            if (typeof query['include'] === 'string' && query['include'] !== '') {
+                query['include'].split(',').forEach((inc) => {
                     // this.logger.log(`[toFindParam] parse include ${inc}`)
                     const refSelect = this.getRefSelect(schemaCache, theResourceSchema, inc);
-                    const selectRet = this.toPrismaSelect(queryFields[inc]);
+                    const selectRet = this.toPrismaSelect(queryFields[inc], theResourceSchema);
                     include[inc] = {
                         // todo: 似乎 prisma nest select 不支持 order by 只有 include 支持，但是 include 不支持 nest select fields
                         // orderBy: [{ createdAt: 'desc' }],
@@ -1703,13 +2764,13 @@ let PrismaSchemaService = PrismaSchemaService_1 = class PrismaSchemaService {
                 const filter = this.convertQueryToPrismaFilter(schemaCache, theResourceSchema, query);
                 const orderBy = this.convertToOrderBy(query);
                 action = 'findMany';
-                const skip = query.current ? (_.toNumber(query.current) - 1) * _.toNumber(query.pageSize) : undefined;
-                const take = query.pageSize ? _.toNumber(query.pageSize) : undefined;
+                const skip = query['current'] ? (Number(query['current']) - 1) * Number(query['pageSize']) : undefined;
+                const take = query['pageSize'] ? Number(query['pageSize']) : undefined;
                 if (parsedPath.length > 1) {
                     // 情况1：根据前一个 resource id 搜索 list
                     const pResource = parsedPath[parsedPath.length - 2];
                     // this.logger.log(`${resource}.findMany`)
-                    param = _.omitBy({
+                    param = (0, lodash_1.omitBy)({
                         where: Object.assign({
                             [`${pResource.resource}Id`]: pResource.id,
                             isDeleted: false,
@@ -1718,10 +2779,10 @@ let PrismaSchemaService = PrismaSchemaService_1 = class PrismaSchemaService {
                         skip,
                         take,
                         select: Object.assign(Object.assign({}, fields), include),
-                    }, _.isUndefined);
+                    }, lodash_1.isUndefined);
                 }
                 else {
-                    param = _.omitBy({
+                    param = (0, lodash_1.omitBy)({
                         where: Object.assign({
                             isDeleted: false,
                         }, filter),
@@ -1729,7 +2790,7 @@ let PrismaSchemaService = PrismaSchemaService_1 = class PrismaSchemaService {
                         skip,
                         take,
                         select: Object.assign(Object.assign({}, fields), include),
-                    }, _.isUndefined);
+                    }, lodash_1.isUndefined);
                 }
             }
             const ret = {
@@ -1737,7 +2798,7 @@ let PrismaSchemaService = PrismaSchemaService_1 = class PrismaSchemaService {
                 param,
                 resource,
             };
-            this.logger.debug(JSON.stringify(ret));
+            this.logger.debug(`[toFindParam] ret ${JSON.stringify(ret)}`);
             return ret;
         });
     }
@@ -1822,7 +2883,10 @@ let PrismaSchemaService = PrismaSchemaService_1 = class PrismaSchemaService {
       ]
      */
     convertQueryToPrismaFilter(schemaCache, resourceSchema, query) {
-        if (query.filter && Array.isArray(query.filter) && query.filter.length > 0) {
+        if (query.filterModel) {
+            return this.convertAgFilterModelToPrismaFilter(query.filterModel);
+        }
+        else if (query.filter && Array.isArray(query.filter) && query.filter.length > 0) {
             // console.log(query.filter)
             const filter = query.filter;
             const andIdx = filter.findIndex(item => typeof item === 'string' && item === 'AND');
@@ -1873,6 +2937,41 @@ let PrismaSchemaService = PrismaSchemaService_1 = class PrismaSchemaService {
         }
         else {
             return {};
+        }
+    }
+    convertAgFilterModelToPrismaFilter(agFilter) {
+        const parsedRet = flowda_shared_types_1.agFilter1Schema.safeParse(agFilter);
+        if (parsedRet.success) {
+            return _.mapValues(parsedRet.data, (v, k) => {
+                return {
+                    [v.type]: v.filter,
+                };
+            });
+        }
+        else {
+            const parsedRet = flowda_shared_types_1.agFilter2Schema.safeParse(agFilter);
+            if (parsedRet.success) {
+                const ret = {};
+                for (const k of Object.keys(parsedRet.data)) {
+                    const item = parsedRet.data[k];
+                    if (item.operator === 'OR') {
+                        if (ret.OR == null) {
+                            ret.OR = [];
+                        }
+                        for (const cond of item.conditions) {
+                            ret.OR.push({
+                                [k]: {
+                                    [cond.type]: cond.filter,
+                                },
+                            });
+                        }
+                    }
+                }
+                return ret;
+            }
+            else {
+                return {};
+            }
         }
     }
     toUpdateParam(pathname, values) {
@@ -1978,7 +3077,7 @@ let PrismaSchemaService = PrismaSchemaService_1 = class PrismaSchemaService {
         // 先初步转换
         const k = Object.keys(item)[0];
         // https://javascript.plainenglish.io/how-to-rename-object-keys-in-react-javascript-using-lodash-b73fb92ea24d
-        item[k] = _.mapKeys(item[k], (v, k) => {
+        item[k] = _.mapKeys(item[k], (k, v) => {
             switch (k) {
                 case 'eq':
                     return 'equals';
@@ -2006,7 +3105,7 @@ let PrismaSchemaService = PrismaSchemaService_1 = class PrismaSchemaService {
                 return v;
             }
             else if ((0, matchPath_1.isLikeNumber)(v)) {
-                return _.toNumber(v);
+                return Number(v);
             }
             else {
                 return v;
@@ -2014,8 +3113,8 @@ let PrismaSchemaService = PrismaSchemaService_1 = class PrismaSchemaService {
         });
         // 再将 . 改成嵌套（chatGPT 给出的方式）
         const ret = {};
-        _.forEach(item, (value, key) => {
-            _.set(ret, key.replace(/\./g, '.'), value);
+        (0, lodash_1.forEach)(item, (value, key) => {
+            (0, lodash_1.set)(ret, key.replace(/\./g, '.'), value);
         });
         return ret;
     }
@@ -2074,20 +3173,19 @@ let PrismaSchemaService = PrismaSchemaService_1 = class PrismaSchemaService {
                 }
             });
         }
-        // console.log(relationFields)
         relationFields.forEach(k => {
             delete values[k];
         });
     }
 };
-PrismaSchemaService = PrismaSchemaService_1 = tslib_1.__decorate([
+exports.PrismaSchemaService = PrismaSchemaService;
+exports.PrismaSchemaService = PrismaSchemaService = PrismaSchemaService_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
-    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_1.PrismaUtilsSymbol)),
-    tslib_1.__param(1, (0, inversify_1.inject)(flowda_shared_1.SchemaServiceSymbol)),
+    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_types_1.PrismaUtilsSymbol)),
+    tslib_1.__param(1, (0, inversify_1.inject)(flowda_shared_types_1.SchemaServiceSymbol)),
     tslib_1.__param(2, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [Object, Object, Function])
 ], PrismaSchemaService);
-exports.PrismaSchemaService = PrismaSchemaService;
 
 
 /***/ }),
@@ -2102,12 +3200,9 @@ exports.PrismaUtils = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
 const matchPath_1 = __webpack_require__("../../../libs/flowda-shared/src/utils/matchPath.ts");
-const types_1 = __webpack_require__("../../../libs/flowda-shared/src/interfaces/types.ts");
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
 let PrismaUtils = PrismaUtils_1 = class PrismaUtils {
-    constructor(
-    // todo: prisma 要不要强类型
-    // @inject(PrismaClientSymbol) private prisma: db.PrismaClient,
-    prisma, loggerFactory) {
+    constructor(prisma, loggerFactory) {
         this.prisma = prisma;
         this.logger = loggerFactory(PrismaUtils_1.name);
     }
@@ -2121,13 +3216,13 @@ let PrismaUtils = PrismaUtils_1 = class PrismaUtils {
         });
     }
 };
-PrismaUtils = PrismaUtils_1 = tslib_1.__decorate([
+exports.PrismaUtils = PrismaUtils;
+exports.PrismaUtils = PrismaUtils = PrismaUtils_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
-    tslib_1.__param(0, (0, inversify_1.inject)(types_1.PrismaClientSymbol)),
+    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_types_1.PrismaClientSymbol)),
     tslib_1.__param(1, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [Object, Function])
 ], PrismaUtils);
-exports.PrismaUtils = PrismaUtils;
 
 
 /***/ }),
@@ -2141,7 +3236,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SchemaService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
-const types_1 = __webpack_require__("../../../libs/flowda-shared/src/interfaces/types.ts");
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
 let SchemaService = SchemaService_1 = class SchemaService {
     constructor(loggerFactory, modelSchemaFactory, zt, czt) {
         this.modelSchemaFactory = modelSchemaFactory;
@@ -2179,15 +3274,15 @@ let SchemaService = SchemaService_1 = class SchemaService {
         });
     }
 };
-SchemaService = SchemaService_1 = tslib_1.__decorate([
+exports.SchemaService = SchemaService;
+exports.SchemaService = SchemaService = SchemaService_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__param(1, (0, inversify_1.inject)('Factory<SchemaTransformer>')),
-    tslib_1.__param(2, (0, inversify_1.inject)(types_1.PrismaZodSchemaSymbol)),
-    tslib_1.__param(3, (0, inversify_1.inject)(types_1.CustomZodSchemaSymbol)),
+    tslib_1.__param(2, (0, inversify_1.inject)(flowda_shared_types_1.PrismaZodSchemaSymbol)),
+    tslib_1.__param(3, (0, inversify_1.inject)(flowda_shared_types_1.CustomZodSchemaSymbol)),
     tslib_1.__metadata("design:paramtypes", [Function, Function, Object, Object])
 ], SchemaService);
-exports.SchemaService = SchemaService;
 
 
 /***/ }),
@@ -2203,8 +3298,9 @@ const tslib_1 = __webpack_require__("tslib");
 const zod_1 = __webpack_require__("zod");
 const inversify_1 = __webpack_require__("inversify");
 const zod_openapi_1 = __webpack_require__("@anatine/zod-openapi");
-const _ = __webpack_require__("lodash");
-const types_1 = __webpack_require__("../../../libs/flowda-shared/src/interfaces/types.ts");
+const _ = tslib_1.__importStar(__webpack_require__("radash"));
+const lodash_1 = __webpack_require__("lodash");
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
 const matchPath_1 = __webpack_require__("../../../libs/flowda-shared/src/utils/matchPath.ts");
 exports.SUFFIX = 'ResourceSchema';
 let SchemaTransformer = SchemaTransformer_1 = class SchemaTransformer {
@@ -2248,7 +3344,7 @@ let SchemaTransformer = SchemaTransformer_1 = class SchemaTransformer {
                 });
                 return acc; // 不处理 array
             }
-            const c = _.omitBy(_.assign({ name: k }, {
+            const c = _.assign({ name: k }, {
                 name: k,
                 column_type: this.doColumnType(k),
                 format: this.doFormat(k),
@@ -2257,8 +3353,8 @@ let SchemaTransformer = SchemaTransformer_1 = class SchemaTransformer {
                 reference: jsProp.reference ? this.doRef(k) : undefined,
                 validators: this.doValidators(k),
                 prisma: jsProp.prisma,
-            }), _.isUndefined);
-            acc.push(c);
+            });
+            acc.push((0, lodash_1.omitBy)(c, lodash_1.isUndefined));
             return acc;
         }, []);
         if (Array.isArray(this.extendSchema.columns)) {
@@ -2272,7 +3368,7 @@ let SchemaTransformer = SchemaTransformer_1 = class SchemaTransformer {
     }
     toSchema() {
         const name = this.schemaName.split(exports.SUFFIX)[0];
-        return _.omitBy({
+        const ret = {
             name: name,
             slug: (0, matchPath_1.toPath)(name),
             prisma: this.modelLevelSchema.prisma != null ? this.modelLevelSchema.prisma : undefined,
@@ -2281,16 +3377,15 @@ let SchemaTransformer = SchemaTransformer_1 = class SchemaTransformer {
             custom: this.jsonSchema.custom,
             display_column: this.doDisplayColumn(this.modelLevelSchema.display_column),
             display_name: this.modelLevelSchema.display_name,
-            display_primary_key: this.modelLevelSchema.display_primary_key == null
-                ? true
-                : this.modelLevelSchema.display_primary_key === 'true',
+            display_primary_key: this.modelLevelSchema.display_primary_key == null ? true : this.modelLevelSchema.display_primary_key === 'true',
             searchable_columns: this.modelLevelSchema.searchable_columns
                 ? this.modelLevelSchema.searchable_columns.split(',')
                 : undefined,
             columns: this.columns,
             associations: this.associations,
             // __jsonschema: this.jsonSchema,
-        }, _.isUndefined);
+        };
+        return (0, lodash_1.omitBy)(ret, lodash_1.isUndefined);
     }
     doDisplayColumn(display_column) {
         if (!display_column)
@@ -2447,32 +3542,30 @@ let SchemaTransformer = SchemaTransformer_1 = class SchemaTransformer {
         if (fk)
             return fk;
         const schema = this.extendSchema.extends;
-        return _.lowerFirst(schema.split('Schema')[0]) + 'Id';
+        return (0, lodash_1.lowerFirst)(schema.split('Schema')[0]) + 'Id';
     }
 };
-SchemaTransformer = SchemaTransformer_1 = tslib_1.__decorate([
+exports.SchemaTransformer = SchemaTransformer;
+exports.SchemaTransformer = SchemaTransformer = SchemaTransformer_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)('Factory<Logger>')),
-    tslib_1.__param(1, (0, inversify_1.inject)(types_1.PrismaZodSchemaSymbol)),
+    tslib_1.__param(1, (0, inversify_1.inject)(flowda_shared_types_1.PrismaZodSchemaSymbol)),
     tslib_1.__metadata("design:paramtypes", [Function, Object])
 ], SchemaTransformer);
-exports.SchemaTransformer = SchemaTransformer;
 
 
 /***/ }),
 
-/***/ "../../../libs/flowda-shared/src/symbols.ts":
+/***/ "../../../libs/flowda-shared/src/utils/ag-grid-utils.ts":
 /***/ ((__unused_webpack_module, exports) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DynamicTableSchemaTransformerSymbol = exports.SchemaServiceSymbol = exports.DataServiceSymbol = exports.PrismaUtilsSymbol = exports.SchemaTransformerSymbol = exports.PrismaSchemaServiceSymbol = void 0;
-exports.PrismaSchemaServiceSymbol = Symbol.for('PrismaSchemaService');
-exports.SchemaTransformerSymbol = Symbol.for('SchemaTransformer');
-exports.PrismaUtilsSymbol = Symbol.for('PrismaUtils');
-exports.DataServiceSymbol = Symbol.for('DataService');
-exports.SchemaServiceSymbol = Symbol.for('SchemaService');
-exports.DynamicTableSchemaTransformerSymbol = Symbol.for('DynamicTableSchemaTransformer');
+exports.convertSortAgToMotor = void 0;
+function convertSortAgToMotor(sort) {
+    return sort[0] != null ? (sort[0].sort === 'asc' ? sort[0].colId : '-' + sort[0].colId) : undefined;
+}
+exports.convertSortAgToMotor = convertSortAgToMotor;
 
 
 /***/ }),
@@ -2508,9 +3601,9 @@ exports.bindServiceSymbol = bindServiceSymbol;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.error = exports.warn = exports.info = exports.debug = void 0;
 const levelColorMap = {
-    0: '#c0392b',
-    1: '#f39c12',
-    3: '#00BCD4',
+    0: '#c0392b', // Red
+    1: '#f39c12', // Yellow
+    3: '#00BCD4', // Cyan
     4: '#ccc',
 };
 function style(level) {
@@ -2542,15 +3635,65 @@ exports.error = error;
 
 /***/ }),
 
+/***/ "../../../libs/flowda-shared/src/utils/custom-error.ts":
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CustomError = void 0;
+class CustomError extends Error {
+    constructor(code, message, extra) {
+        super(JSON.stringify({ code: code, message }));
+        this.message = JSON.stringify({ code, message, extra });
+    }
+}
+exports.CustomError = CustomError;
+
+
+/***/ }),
+
+/***/ "../../../libs/flowda-shared/src/utils/dayjs-utils.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getTimeByDay = exports.getTimeExpire = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const utc_1 = tslib_1.__importDefault(__webpack_require__("dayjs/plugin/utc"));
+const timezone_1 = tslib_1.__importDefault(__webpack_require__("dayjs/plugin/timezone"));
+const advancedFormat_1 = tslib_1.__importDefault(__webpack_require__("dayjs/plugin/advancedFormat"));
+const dayjs_1 = tslib_1.__importDefault(__webpack_require__("dayjs"));
+dayjs_1.default.extend(utc_1.default);
+dayjs_1.default.extend(timezone_1.default);
+dayjs_1.default.extend(advancedFormat_1.default);
+function getTimeExpire(min) {
+    const fmt = (0, dayjs_1.default)().tz('Asia/Shanghai').add(min, 'minute').format('YYYY-MM-DDTHH:mm:ss+z');
+    const ret = fmt.match(/.*(GMT\+(\d))/);
+    if (ret == null) {
+        return '';
+    }
+    else {
+        return ret[0].replace(ret[1], ret[2].padStart(2, '0') + ':00');
+    }
+}
+exports.getTimeExpire = getTimeExpire;
+function getTimeByDay(day) {
+    return (0, dayjs_1.default)().tz('Asia/Shanghai').add(day, 'day').toDate();
+}
+exports.getTimeByDay = getTimeByDay;
+
+
+/***/ }),
+
 /***/ "../../../libs/flowda-shared/src/utils/getServices.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getServices = void 0;
-const types_1 = __webpack_require__("../../../libs/flowda-shared/src/interfaces/types.ts");
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
 function getServices(servicesContainer) {
-    return servicesContainer.getAll(types_1.ServiceSymbol).map((service) => {
+    return servicesContainer.getAll(flowda_shared_types_1.ServiceSymbol).map((service) => {
         return {
             provide: service.constructor,
             useValue: service,
@@ -2568,9 +3711,12 @@ exports.getServices = getServices;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.matchPath = exports.toSchemaName = exports.toPath = exports.toModelName = exports.isLikeNumber = void 0;
-const plur = __webpack_require__("pluralize");
-const _ = __webpack_require__("lodash");
+const tslib_1 = __webpack_require__("tslib");
+const plur = tslib_1.__importStar(__webpack_require__("pluralize"));
+const _ = tslib_1.__importStar(__webpack_require__("lodash"));
 plur.addSingularRule(/data/i, 'data');
+plur.addSingularRule(/data/i, 'data');
+plur.addSingularRule(/sms/i, 'sms');
 // s* equipment 不可数
 const REG = /(([a-z_]+s*)\/?([A-Za-z0-9-_:]+)?)+/g;
 const NUM_REG = /^-?\d+(\.\d+)?$/;
@@ -2617,6 +3763,28 @@ exports.matchPath = matchPath;
 
 /***/ }),
 
+/***/ "../../../libs/flowda-shared/src/utils/schema-utils.ts":
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getSchemaByDisplayName = void 0;
+function getSchemaByDisplayName(schemaCache, displayName) {
+    const k = Object.keys(schemaCache).find(k => {
+        return schemaCache[k].display_name === displayName;
+    });
+    if (k) {
+        return schemaCache[k];
+    }
+    else {
+        return null;
+    }
+}
+exports.getSchemaByDisplayName = getSchemaByDisplayName;
+
+
+/***/ }),
+
 /***/ "../../../libs/v1/flowda-services/src/index.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
@@ -2644,7 +3812,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ConfigService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
-const env = __webpack_require__("dotenv");
+const env = tslib_1.__importStar(__webpack_require__("dotenv"));
 const envalid_1 = __webpack_require__("envalid");
 const common_1 = __webpack_require__("@nestjs/common");
 env.config();
@@ -2695,6 +3863,7 @@ let ConfigService = ConfigService_1 = class ConfigService {
             CHAT_SALT: (0, envalid_1.str)({ default: 'CHAT_SALT_STR' }),
             WORKER_LIST: (0, envalid_1.str)({ default: '' }),
             WECOM_HOOK_KEY: (0, envalid_1.str)({ default: 'f392b278-930a-4ccf-81ab-31128d668631' }),
+            FLOWDA_URL: (0, envalid_1.str)({ devDefault: (0, envalid_1.testOnly)('http://localhost:3350') }),
         }, {
             reporter: ({ errors, env }) => {
                 for (const [envVar, err] of Object.entries(errors)) {
@@ -2716,11 +3885,11 @@ let ConfigService = ConfigService_1 = class ConfigService {
         return this.env[key];
     }
 };
-ConfigService = ConfigService_1 = tslib_1.__decorate([
+exports.ConfigService = ConfigService;
+exports.ConfigService = ConfigService = ConfigService_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__metadata("design:paramtypes", [])
 ], ConfigService);
-exports.ConfigService = ConfigService;
 
 
 /***/ }),
@@ -2735,7 +3904,7 @@ const inversify_1 = __webpack_require__("inversify");
 const mail_service_1 = __webpack_require__("../../../libs/v1/flowda-services/src/infra/interfaces/mail/mail.service.ts");
 const mail_service_2 = __webpack_require__("../../../libs/v1/flowda-services/src/infra/mail/mail.service.ts");
 const config_service_1 = __webpack_require__("../../../libs/v1/flowda-services/src/infra/config/config.service.ts");
-const flowda_shared_1 = __webpack_require__("../../../libs/flowda-shared/src/index.ts");
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
 const config_service_2 = __webpack_require__("../../../libs/v1/flowda-services/src/infra/interfaces/config/config.service.ts");
 const legacy_libs_1 = __webpack_require__("../../../libs/v1/flowda-services/src/legacy-libs.ts");
 exports.flowdaInfraModule = new inversify_1.ContainerModule((bind) => {
@@ -2743,7 +3912,7 @@ exports.flowdaInfraModule = new inversify_1.ContainerModule((bind) => {
     // 现在分出 domain 层的目标主要是为了解决循环依赖
     bind(mail_service_1.IMailService).to(mail_service_2.MailService).inSingletonScope();
     bind(config_service_2.IConfigService).to(config_service_1.ConfigService).inSingletonScope();
-    bind(flowda_shared_1.COSSymbol)
+    bind(flowda_shared_types_1.COSSymbol)
         .toDynamicValue((context) => {
         const config = context.container.get(config_service_2.IConfigService);
         return new legacy_libs_1.COS({
@@ -2752,7 +3921,7 @@ exports.flowdaInfraModule = new inversify_1.ContainerModule((bind) => {
         });
     })
         .inSingletonScope();
-    bind(legacy_libs_1.WechatpayNodeV3Symbol)
+    bind(flowda_shared_types_1.WechatpayNodeV3Symbol)
         .toDynamicValue((context) => {
         const config = context.container.get(config_service_2.IConfigService);
         return new legacy_libs_1.WechatpayNodeV3({
@@ -2763,17 +3932,17 @@ exports.flowdaInfraModule = new inversify_1.ContainerModule((bind) => {
         });
     })
         .inSingletonScope();
-    bind(legacy_libs_1.WechatpayNodeV3FactorySymbol).toFactory(context => {
-        return () => context.container.get(legacy_libs_1.WechatpayNodeV3Symbol);
+    bind(flowda_shared_types_1.WechatpayNodeV3FactorySymbol).toFactory(context => {
+        return () => context.container.get(flowda_shared_types_1.WechatpayNodeV3Symbol);
     });
-    bind(legacy_libs_1.WechatOAuthSymbol)
+    bind(flowda_shared_types_1.WechatOAuthSymbol)
         .toDynamicValue((context) => {
         const config = context.container.get(config_service_2.IConfigService);
         return new legacy_libs_1.WechatOAuth(config.getEnv('freecharger_pc_appid'), config.getEnv('freecharger_pc_appSecret'));
     })
         .inSingletonScope();
-    bind(legacy_libs_1.WechatOAuthFactorySymbol).toFactory(context => {
-        return () => context.container.get(legacy_libs_1.WechatOAuthSymbol);
+    bind(`Factory<WechatOAuth>`).toFactory(context => {
+        return () => context.container.get(flowda_shared_types_1.WechatOAuthSymbol);
     });
 });
 
@@ -2827,7 +3996,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MailService = void 0;
 const tslib_1 = __webpack_require__("tslib");
-const nodemailer = __webpack_require__("nodemailer");
+const nodemailer = tslib_1.__importStar(__webpack_require__("nodemailer"));
 const inversify_1 = __webpack_require__("inversify");
 const common_1 = __webpack_require__("@nestjs/common");
 const config_service_1 = __webpack_require__("../../../libs/v1/flowda-services/src/infra/interfaces/config/config.service.ts");
@@ -2917,12 +4086,12 @@ let MailService = MailService_1 = class MailService {
         });
     }
 };
-MailService = MailService_1 = tslib_1.__decorate([
+exports.MailService = MailService;
+exports.MailService = MailService = MailService_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)(config_service_1.IConfigService)),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof config_service_1.IConfigService !== "undefined" && config_service_1.IConfigService) === "function" ? _a : Object])
 ], MailService);
-exports.MailService = MailService;
 
 
 /***/ }),
@@ -2933,8 +4102,9 @@ exports.MailService = MailService;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.render = void 0;
-const reader_1 = __webpack_require__("../../../libs/v1/flowda-services/src/infra/mail/templates/reader/index.ts");
-const license_1 = __webpack_require__("../../../libs/v1/flowda-services/src/infra/mail/templates/license/index.ts");
+const tslib_1 = __webpack_require__("tslib");
+const reader_1 = tslib_1.__importDefault(__webpack_require__("../../../libs/v1/flowda-services/src/infra/mail/templates/reader/index.ts"));
+const license_1 = tslib_1.__importDefault(__webpack_require__("../../../libs/v1/flowda-services/src/infra/mail/templates/license/index.ts"));
 const templateMap = {
     COLLECT: reader_1.default,
     LICENSE: license_1.default,
@@ -3481,12 +4651,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.prismaClientFlowdaModule = void 0;
 const inversify_1 = __webpack_require__("inversify");
 const client_v1_flowda_1 = __webpack_require__("@prisma/client-v1-flowda");
-const flowda_shared_1 = __webpack_require__("../../../libs/flowda-shared/src/index.ts");
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
 const prisma = new client_v1_flowda_1.PrismaClient({
 // log: ['query', 'info', 'warn', 'error'],
 });
 exports.prismaClientFlowdaModule = new inversify_1.ContainerModule((bind) => {
-    bind(flowda_shared_1.PrismaClientSymbol).toConstantValue(prisma);
+    bind(flowda_shared_types_1.PrismaClientSymbol).toConstantValue(prisma);
 });
 
 
@@ -3498,13 +4668,11 @@ exports.prismaClientFlowdaModule = new inversify_1.ContainerModule((bind) => {
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.COS = exports.WechatpayNodeV3 = exports.advancedFormat = exports.timezone = exports.utc = exports.dayjs = exports.WechatOAuth = exports.cuid = exports.WechatpayNodeV3FactorySymbol = exports.WechatpayNodeV3Symbol = exports.WechatOAuthFactorySymbol = exports.WechatOAuthSymbol = void 0;
+exports.COS = exports.WechatpayNodeV3 = exports.advancedFormat = exports.timezone = exports.utc = exports.dayjs = exports.WechatOAuth = exports.cuid = void 0;
 const cuid = __webpack_require__("cuid");
 exports.cuid = cuid;
 const WechatOAuth = __webpack_require__("wechat-oauth");
 exports.WechatOAuth = WechatOAuth;
-exports.WechatOAuthSymbol = Symbol.for('WechatOAuth');
-exports.WechatOAuthFactorySymbol = Symbol.for('WechatOAuthFactory');
 const dayjs = __webpack_require__("dayjs");
 exports.dayjs = dayjs;
 const utc = __webpack_require__("dayjs/plugin/utc");
@@ -3515,8 +4683,6 @@ const advancedFormat = __webpack_require__("dayjs/plugin/advancedFormat");
 exports.advancedFormat = advancedFormat;
 const WechatpayNodeV3 = __webpack_require__("wechatpay-node-v3");
 exports.WechatpayNodeV3 = WechatpayNodeV3;
-exports.WechatpayNodeV3Symbol = Symbol.for('WechatpayNodeV3Symbol');
-exports.WechatpayNodeV3FactorySymbol = Symbol.for('WechatpayNodeV3FactorySymbol');
 const COS = __webpack_require__("cos-nodejs-sdk-v5");
 exports.COS = COS;
 
@@ -3533,9 +4699,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
-const flowda_shared_1 = __webpack_require__("../../../libs/flowda-shared/src/index.ts");
-const db = __webpack_require__("@prisma/client-v1-flowda");
-const jwt = __webpack_require__("jsonwebtoken");
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
+const db = tslib_1.__importStar(__webpack_require__("@prisma/client-v1-flowda"));
+const jwt = tslib_1.__importStar(__webpack_require__("jsonwebtoken"));
 const infra_1 = __webpack_require__("../../../libs/v1/flowda-services/src/infra/index.ts");
 let AppService = AppService_1 = class AppService {
     constructor(prisma, config, loggerFactory) {
@@ -3605,14 +4771,14 @@ let AppService = AppService_1 = class AppService {
         return decode.appToken;
     }
 };
-AppService = AppService_1 = tslib_1.__decorate([
+exports.AppService = AppService;
+exports.AppService = AppService = AppService_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
-    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
+    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_types_1.PrismaClientSymbol)),
     tslib_1.__param(1, (0, inversify_1.inject)(infra_1.IConfigService)),
     tslib_1.__param(2, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof db !== "undefined" && db.PrismaClient) === "function" ? _a : Object, typeof (_b = typeof infra_1.IConfigService !== "undefined" && infra_1.IConfigService) === "function" ? _b : Object, Function])
 ], AppService);
-exports.AppService = AppService;
 
 
 /***/ }),
@@ -3627,13 +4793,13 @@ exports.AppAuthService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
 const v1_flowda_types_1 = __webpack_require__("../../../libs/v1/flowda-types/src/index.ts");
-const flowda_shared_1 = __webpack_require__("../../../libs/flowda-shared/src/index.ts");
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
 const jwt_service_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/jwt/jwt.service.ts");
 const infra_1 = __webpack_require__("../../../libs/v1/flowda-services/src/infra/index.ts");
 const client_v1_flowda_1 = __webpack_require__("@prisma/client-v1-flowda");
 const authentication_service_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/authentication/authentication.service.ts");
-const keymachine_1 = __webpack_require__("keymachine");
-const bcrypt = __webpack_require__("bcrypt");
+const keymachine_1 = tslib_1.__importDefault(__webpack_require__("keymachine"));
+const bcrypt = tslib_1.__importStar(__webpack_require__("bcrypt"));
 let AppAuthService = class AppAuthService extends authentication_service_1.AuthenticationService {
     constructor(identityProvider, jwt, config, mailService, prisma) {
         super(identityProvider, jwt, config, mailService);
@@ -3663,7 +4829,7 @@ let AppAuthService = class AppAuthService extends authentication_service_1.Authe
             return {
                 id: user.id,
                 appId: user.name,
-                appToken: randomAppToken,
+                appToken: randomAppToken, // appToken 虽然是密码，但是需要返回给前台
                 displayName: user.displayName,
                 description: user.description,
             };
@@ -3717,23 +4883,23 @@ let AppAuthService = class AppAuthService extends authentication_service_1.Authe
         });
     }
 };
+exports.AppAuthService = AppAuthService;
 tslib_1.__decorate([
     (0, inversify_1.postConstruct)(),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", []),
     tslib_1.__metadata("design:returntype", void 0)
 ], AppAuthService.prototype, "postConstruct", null);
-AppAuthService = tslib_1.__decorate([
+exports.AppAuthService = AppAuthService = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)(v1_flowda_types_1.IdentityProviderServiceSymbol)),
     tslib_1.__param(0, (0, inversify_1.named)('app')),
     tslib_1.__param(1, (0, inversify_1.inject)(jwt_service_1.JwtService)),
     tslib_1.__param(2, (0, inversify_1.inject)(infra_1.IConfigService)),
     tslib_1.__param(3, (0, inversify_1.inject)(infra_1.IMailService)),
-    tslib_1.__param(4, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
+    tslib_1.__param(4, (0, inversify_1.inject)(flowda_shared_types_1.PrismaClientSymbol)),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_types_1.IIdentityProviderService !== "undefined" && v1_flowda_types_1.IIdentityProviderService) === "function" ? _a : Object, typeof (_b = typeof jwt_service_1.JwtService !== "undefined" && jwt_service_1.JwtService) === "function" ? _b : Object, typeof (_c = typeof infra_1.IConfigService !== "undefined" && infra_1.IConfigService) === "function" ? _c : Object, typeof (_d = typeof infra_1.IMailService !== "undefined" && infra_1.IMailService) === "function" ? _d : Object, typeof (_e = typeof client_v1_flowda_1.PrismaClient !== "undefined" && client_v1_flowda_1.PrismaClient) === "function" ? _e : Object])
 ], AppAuthService);
-exports.AppAuthService = AppAuthService;
 
 
 /***/ }),
@@ -3800,6 +4966,7 @@ exports.AppUpdateDto = AppUpdateDto;
 // 也就是放弃使用 class validator 了
 class AppCreateDto extends (0, nestjs_zod_1.createZodDto)(AppCreateSchema) {
 }
+exports.AppCreateDto = AppCreateDto;
 tslib_1.__decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_jsonschema_1.JSONSchema)({
@@ -3807,7 +4974,6 @@ tslib_1.__decorate([
     }),
     tslib_1.__metadata("design:type", String)
 ], AppCreateDto.prototype, "displayName", void 0);
-exports.AppCreateDto = AppCreateDto;
 
 
 /***/ }),
@@ -3822,12 +4988,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.excludedIdentity = exports.excludedIdentityAndRefreshToken = exports.exclude = exports.AuthenticationService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const v1_flowda_types_1 = __webpack_require__("../../../libs/v1/flowda-types/src/index.ts");
-const bcrypt = __webpack_require__("bcrypt");
+const bcrypt = tslib_1.__importStar(__webpack_require__("bcrypt"));
 const jwt_service_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/jwt/jwt.service.ts");
 const index_1 = __webpack_require__("../../../libs/v1/flowda-services/src/infra/index.ts");
 const inversify_1 = __webpack_require__("inversify");
 const common_1 = __webpack_require__("@nestjs/common");
-const keymachine_1 = __webpack_require__("keymachine");
+const keymachine_1 = tslib_1.__importDefault(__webpack_require__("keymachine"));
 /**
  * 为了保证 nest module 和 inversify 配合简单，需要将 auth service 降为 base class
  * 新建3个 child 来 bind
@@ -4069,11 +5235,11 @@ let AuthenticationService = AuthenticationService_1 = class AuthenticationServic
         });
     }
 };
-AuthenticationService = AuthenticationService_1 = tslib_1.__decorate([
+exports.AuthenticationService = AuthenticationService;
+exports.AuthenticationService = AuthenticationService = AuthenticationService_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_types_1.IIdentityProviderService !== "undefined" && v1_flowda_types_1.IIdentityProviderService) === "function" ? _a : Object, typeof (_b = typeof jwt_service_1.JwtService !== "undefined" && jwt_service_1.JwtService) === "function" ? _b : Object, typeof (_c = typeof index_1.IConfigService !== "undefined" && index_1.IConfigService) === "function" ? _c : Object, typeof (_d = typeof index_1.IMailService !== "undefined" && index_1.IMailService) === "function" ? _d : Object])
 ], AuthenticationService);
-exports.AuthenticationService = AuthenticationService;
 function exclude(clazz, keys) {
     for (const key of keys) {
         delete clazz[key];
@@ -4089,32 +5255,6 @@ function excludedIdentity(user) {
     return exclude(user, ['hashedPassword', 'hashedRefreshToken', 'recoveryCode', 'recoveryToken']);
 }
 exports.excludedIdentity = excludedIdentity;
-
-
-/***/ }),
-
-/***/ "../../../libs/v1/flowda-services/src/services/authentication/dto/generateRecoveryCode.dto.ts":
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.GenerateRecoveryCodeDto = void 0;
-class GenerateRecoveryCodeDto {
-}
-exports.GenerateRecoveryCodeDto = GenerateRecoveryCodeDto;
-
-
-/***/ }),
-
-/***/ "../../../libs/v1/flowda-services/src/services/authentication/dto/resetPassword.dto.ts":
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ResetPasswordDto = void 0;
-class ResetPasswordDto {
-}
-exports.ResetPasswordDto = ResetPasswordDto;
 
 
 /***/ }),
@@ -4155,8 +5295,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SuperAdminAuthenticationQuery = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
-const flowda_shared_1 = __webpack_require__("../../../libs/flowda-shared/src/index.ts");
-const db = __webpack_require__("@prisma/client-v1-flowda");
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
+const db = tslib_1.__importStar(__webpack_require__("@prisma/client-v1-flowda"));
 // todo: 借着创建 super admin 账户，准备重构 authentication
 let SuperAdminAuthenticationQuery = SuperAdminAuthenticationQuery_1 = class SuperAdminAuthenticationQuery {
     constructor(prisma, loggerFactory) {
@@ -4176,13 +5316,13 @@ let SuperAdminAuthenticationQuery = SuperAdminAuthenticationQuery_1 = class Supe
         return this.prisma.tenant.findMany();
     }
 };
-SuperAdminAuthenticationQuery = SuperAdminAuthenticationQuery_1 = tslib_1.__decorate([
+exports.SuperAdminAuthenticationQuery = SuperAdminAuthenticationQuery;
+exports.SuperAdminAuthenticationQuery = SuperAdminAuthenticationQuery = SuperAdminAuthenticationQuery_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
-    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
+    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_types_1.PrismaClientSymbol)),
     tslib_1.__param(1, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof db !== "undefined" && db.PrismaClient) === "function" ? _a : Object, Function])
 ], SuperAdminAuthenticationQuery);
-exports.SuperAdminAuthenticationQuery = SuperAdminAuthenticationQuery;
 
 
 /***/ }),
@@ -4196,7 +5336,7 @@ exports.SuperAdminAuthenticationService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
 const v1_flowda_types_1 = __webpack_require__("../../../libs/v1/flowda-types/src/index.ts");
-const bcrypt = __webpack_require__("bcrypt");
+const bcrypt = tslib_1.__importStar(__webpack_require__("bcrypt"));
 // todo: 借着创建 super admin 账户，准备重构 authentication
 let SuperAdminAuthenticationService = class SuperAdminAuthenticationService {
     // todo: 后续换成 zod
@@ -4223,10 +5363,10 @@ let SuperAdminAuthenticationService = class SuperAdminAuthenticationService {
         });
     }
 };
-SuperAdminAuthenticationService = tslib_1.__decorate([
+exports.SuperAdminAuthenticationService = SuperAdminAuthenticationService;
+exports.SuperAdminAuthenticationService = SuperAdminAuthenticationService = tslib_1.__decorate([
     (0, inversify_1.injectable)()
 ], SuperAdminAuthenticationService);
-exports.SuperAdminAuthenticationService = SuperAdminAuthenticationService;
 
 
 /***/ }),
@@ -4241,9 +5381,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SuperAdminAuthenticationTx = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
-const flowda_shared_1 = __webpack_require__("../../../libs/flowda-shared/src/index.ts");
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
 const superAdminAuthentication_service_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/authentication/superAdminAuthentication.service.ts");
-const db = __webpack_require__("@prisma/client-v1-flowda");
+const db = tslib_1.__importStar(__webpack_require__("@prisma/client-v1-flowda"));
 let SuperAdminAuthenticationTx = SuperAdminAuthenticationTx_1 = class SuperAdminAuthenticationTx {
     constructor(service, prisma, loggerFactory) {
         this.service = service;
@@ -4256,14 +5396,14 @@ let SuperAdminAuthenticationTx = SuperAdminAuthenticationTx_1 = class SuperAdmin
         });
     }
 };
-SuperAdminAuthenticationTx = SuperAdminAuthenticationTx_1 = tslib_1.__decorate([
+exports.SuperAdminAuthenticationTx = SuperAdminAuthenticationTx;
+exports.SuperAdminAuthenticationTx = SuperAdminAuthenticationTx = SuperAdminAuthenticationTx_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)(superAdminAuthentication_service_1.SuperAdminAuthenticationService)),
-    tslib_1.__param(1, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
+    tslib_1.__param(1, (0, inversify_1.inject)(flowda_shared_types_1.PrismaClientSymbol)),
     tslib_1.__param(2, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof superAdminAuthentication_service_1.SuperAdminAuthenticationService !== "undefined" && superAdminAuthentication_service_1.SuperAdminAuthenticationService) === "function" ? _a : Object, typeof (_b = typeof db !== "undefined" && db.PrismaClient) === "function" ? _b : Object, Function])
 ], SuperAdminAuthenticationTx);
-exports.SuperAdminAuthenticationTx = SuperAdminAuthenticationTx;
 
 
 /***/ }),
@@ -4277,9 +5417,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CustomerAuthService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
-const bcrypt = __webpack_require__("bcrypt");
+const bcrypt = tslib_1.__importStar(__webpack_require__("bcrypt"));
 const v1_flowda_types_1 = __webpack_require__("../../../libs/v1/flowda-types/src/index.ts");
-const flowda_shared_1 = __webpack_require__("../../../libs/flowda-shared/src/index.ts");
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
 const jwt_service_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/jwt/jwt.service.ts");
 const infra_1 = __webpack_require__("../../../libs/v1/flowda-services/src/infra/index.ts");
 const client_v1_flowda_1 = __webpack_require__("@prisma/client-v1-flowda");
@@ -4400,20 +5540,21 @@ let CustomerAuthService = class CustomerAuthService extends authentication_servi
     }
     wxValidateUser(code, appId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            this.logger.debug('invoke wxValidateUser');
             // appId valite
             if (!appId) {
                 throw new v1_flowda_types_1.AuthenticationError.InvalidAppId();
             }
             const ret = yield this.wxLogin.getAccessToken(code);
             const data = ret.data;
-            const findCustomerRet = yield this.identityProvider.find({ name: data.unionid, appId });
+            const findCustomerRet = yield this.identityProvider.find({ name: data.unionid + appId, appId });
             let customer;
             if (!findCustomerRet) {
                 // 如果不存在则创建
                 // 微信注册，只需要 name
                 customer = yield this.signup({
                     appId,
-                    name: data.unionid,
+                    name: data.unionid + appId,
                 });
                 const wxUser = yield this.wxLogin.getUser(data.openid, data.access_token);
                 const app = yield this.prisma.app.findUniqueOrThrow({ where: { id: appId } });
@@ -4569,25 +5710,25 @@ let CustomerAuthService = class CustomerAuthService extends authentication_servi
         });
     }
 };
+exports.CustomerAuthService = CustomerAuthService;
 tslib_1.__decorate([
     (0, inversify_1.postConstruct)(),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", []),
     tslib_1.__metadata("design:returntype", void 0)
 ], CustomerAuthService.prototype, "postConstruct", null);
-CustomerAuthService = tslib_1.__decorate([
+exports.CustomerAuthService = CustomerAuthService = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)(v1_flowda_types_1.IdentityProviderServiceSymbol)),
     tslib_1.__param(0, (0, inversify_1.named)('customer')),
     tslib_1.__param(1, (0, inversify_1.inject)(jwt_service_1.JwtService)),
     tslib_1.__param(2, (0, inversify_1.inject)(infra_1.IConfigService)),
     tslib_1.__param(3, (0, inversify_1.inject)(infra_1.IMailService)),
-    tslib_1.__param(4, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
+    tslib_1.__param(4, (0, inversify_1.inject)(flowda_shared_types_1.PrismaClientSymbol)),
     tslib_1.__param(5, (0, inversify_1.inject)(wxLogin_service_1.WxLoginService)),
     tslib_1.__param(6, (0, inversify_1.inject)(wxFwhLogin_service_1.WxFwhLoginService)),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_types_1.IIdentityProviderService !== "undefined" && v1_flowda_types_1.IIdentityProviderService) === "function" ? _a : Object, typeof (_b = typeof jwt_service_1.JwtService !== "undefined" && jwt_service_1.JwtService) === "function" ? _b : Object, typeof (_c = typeof infra_1.IConfigService !== "undefined" && infra_1.IConfigService) === "function" ? _c : Object, typeof (_d = typeof infra_1.IMailService !== "undefined" && infra_1.IMailService) === "function" ? _d : Object, typeof (_e = typeof client_v1_flowda_1.PrismaClient !== "undefined" && client_v1_flowda_1.PrismaClient) === "function" ? _e : Object, typeof (_f = typeof wxLogin_service_1.WxLoginService !== "undefined" && wxLogin_service_1.WxLoginService) === "function" ? _f : Object, typeof (_g = typeof wxFwhLogin_service_1.WxFwhLoginService !== "undefined" && wxFwhLogin_service_1.WxFwhLoginService) === "function" ? _g : Object])
 ], CustomerAuthService);
-exports.CustomerAuthService = CustomerAuthService;
 
 
 /***/ }),
@@ -4602,6 +5743,7 @@ const tslib_1 = __webpack_require__("tslib");
 const class_validator_1 = __webpack_require__("class-validator");
 class CustomerEmailSignupDto {
 }
+exports.CustomerEmailSignupDto = CustomerEmailSignupDto;
 tslib_1.__decorate([
     (0, class_validator_1.IsNotEmpty)(),
     tslib_1.__metadata("design:type", String)
@@ -4622,7 +5764,6 @@ tslib_1.__decorate([
     (0, class_validator_1.IsNotEmpty)(),
     tslib_1.__metadata("design:type", String)
 ], CustomerEmailSignupDto.prototype, "name", void 0);
-exports.CustomerEmailSignupDto = CustomerEmailSignupDto;
 
 
 /***/ }),
@@ -4650,11 +5791,11 @@ const tslib_1 = __webpack_require__("tslib");
 const class_validator_1 = __webpack_require__("class-validator");
 class CustomerSignupDto {
 }
+exports.CustomerSignupDto = CustomerSignupDto;
 tslib_1.__decorate([
     (0, class_validator_1.IsNotEmpty)(),
     tslib_1.__metadata("design:type", String)
 ], CustomerSignupDto.prototype, "appId", void 0);
-exports.CustomerSignupDto = CustomerSignupDto;
 
 
 /***/ }),
@@ -4670,9 +5811,10 @@ exports.CustomerService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
 const v1_flowda_types_1 = __webpack_require__("../../../libs/v1/flowda-types/src/index.ts");
-const flowda_shared_1 = __webpack_require__("../../../libs/flowda-shared/src/index.ts");
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
+const flowda_shared_types_2 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
 const client_v1_flowda_1 = __webpack_require__("@prisma/client-v1-flowda");
-const db = __webpack_require__("@prisma/client-v1-flowda");
+const db = tslib_1.__importStar(__webpack_require__("@prisma/client-v1-flowda"));
 const dayjs_1 = __webpack_require__("../../../libs/v1/flowda-services/src/utils/dayjs.ts");
 let CustomerService = CustomerService_1 = class CustomerService {
     constructor(loggerFactory, prisma) {
@@ -4804,7 +5946,7 @@ let CustomerService = CustomerService_1 = class CustomerService {
             const profile = {
                 tenantId: product.tenantId,
                 productType: (product === null || product === void 0 ? void 0 : product.productType) || db.ProductType.PLAN,
-                plan: v1_flowda_types_1.EPlan.Free,
+                plan: flowda_shared_types_1.EPlan.Free,
                 amount: product.amount == null ? prevProfile === null || prevProfile === void 0 ? void 0 : prevProfile.amount : product.amount + ((prevProfile === null || prevProfile === void 0 ? void 0 : prevProfile.amount) || 0),
                 expireAt: null,
             };
@@ -4883,13 +6025,13 @@ let CustomerService = CustomerService_1 = class CustomerService {
         });
     }
 };
-CustomerService = CustomerService_1 = tslib_1.__decorate([
+exports.CustomerService = CustomerService;
+exports.CustomerService = CustomerService = CustomerService_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)('Factory<Logger>')),
-    tslib_1.__param(1, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
+    tslib_1.__param(1, (0, inversify_1.inject)(flowda_shared_types_2.PrismaClientSymbol)),
     tslib_1.__metadata("design:paramtypes", [Function, typeof (_a = typeof client_v1_flowda_1.PrismaClient !== "undefined" && client_v1_flowda_1.PrismaClient) === "function" ? _a : Object])
 ], CustomerService);
-exports.CustomerService = CustomerService;
 
 
 /***/ }),
@@ -4904,8 +6046,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CustomerTx = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
-const flowda_shared_1 = __webpack_require__("../../../libs/flowda-shared/src/index.ts");
-const db = __webpack_require__("@prisma/client-v1-flowda");
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
+const db = tslib_1.__importStar(__webpack_require__("@prisma/client-v1-flowda"));
 const customer_service_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/customer/customer.service.ts");
 let CustomerTx = CustomerTx_1 = class CustomerTx {
     constructor(service, prisma, loggerFactory) {
@@ -4919,14 +6061,14 @@ let CustomerTx = CustomerTx_1 = class CustomerTx {
         });
     }
 };
-CustomerTx = CustomerTx_1 = tslib_1.__decorate([
+exports.CustomerTx = CustomerTx;
+exports.CustomerTx = CustomerTx = CustomerTx_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)(customer_service_1.CustomerService)),
-    tslib_1.__param(1, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
+    tslib_1.__param(1, (0, inversify_1.inject)(flowda_shared_types_1.PrismaClientSymbol)),
     tslib_1.__param(2, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof customer_service_1.CustomerService !== "undefined" && customer_service_1.CustomerService) === "function" ? _a : Object, typeof (_b = typeof db !== "undefined" && db.PrismaClient) === "function" ? _b : Object, Function])
 ], CustomerTx);
-exports.CustomerTx = CustomerTx;
 
 
 /***/ }),
@@ -4950,9 +6092,11 @@ exports.CustomerUpdateAmountDto = CustomerUpdateAmountDto;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.flowdaServicesModule = void 0;
+const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
 const v1_flowda_types_1 = __webpack_require__("../../../libs/v1/flowda-types/src/index.ts");
 const v1_prisma_flowda_1 = __webpack_require__("../../../libs/v1/prisma-flowda/src/index.ts");
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
 const flowda_shared_1 = __webpack_require__("../../../libs/flowda-shared/src/index.ts");
 const wxPay_service_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/wx-pay/wxPay.service.ts");
 const jwt_service_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/jwt/jwt.service.ts");
@@ -4977,32 +6121,32 @@ const superAdminAuthentication_tx_1 = __webpack_require__("../../../libs/v1/flow
 const superAdminAuthentication_query_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/authentication/superAdminAuthentication.query.ts");
 const superAdminAuthentication_service_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/authentication/superAdminAuthentication.service.ts");
 const tenant_query_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/tenant/tenant.query.ts");
-const schema = __webpack_require__("../../../libs/v1/flowda-services/src/services/schema/schema.ts");
+const schema = tslib_1.__importStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/schema/schema.ts"));
 exports.flowdaServicesModule = new inversify_1.ContainerModule((bind) => {
     // const schema = generateSchema()
-    bind(flowda_shared_1.PrismaZodSchemaSymbol).toConstantValue(v1_prisma_flowda_1.zt);
-    bind(flowda_shared_1.CustomZodSchemaSymbol).toConstantValue(schema);
+    bind(flowda_shared_types_1.PrismaZodSchemaSymbol).toConstantValue(v1_prisma_flowda_1.zt);
+    bind(flowda_shared_types_1.CustomZodSchemaSymbol).toConstantValue(schema);
     // bind(TenantService).toSelf().inRequestScope()
     bind(wxPay_service_1.WxPayService).toSelf().inSingletonScope();
     bind(jwt_service_1.JwtService).toSelf().inSingletonScope();
     bind(wxLogin_service_1.WxLoginService).toSelf().inSingletonScope();
     bind(wxFwhLogin_service_1.WxFwhLoginService).toSelf().inSingletonScope();
-    (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, tenantAuth_service_1.TenantAuthService);
-    (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, app_service_1.AppService);
+    (0, flowda_shared_1.bindService)(bind, flowda_shared_types_1.ServiceSymbol, tenantAuth_service_1.TenantAuthService);
+    (0, flowda_shared_1.bindService)(bind, flowda_shared_types_1.ServiceSymbol, app_service_1.AppService);
     // sdk
-    (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, appAuth_service_1.AppAuthService);
-    (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, customerAuth_service_1.CustomerAuthService);
-    (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, order_service_1.OrderService);
-    (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, order_tx_1.OrderTx);
-    (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, order_query_1.OrderQuery);
-    (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, customer_service_1.CustomerService);
-    (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, customer_tx_1.CustomerTx);
-    (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, product_service_1.ProductService);
-    (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, product_query_1.ProductQuery);
-    (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, product_tx_1.ProductTx);
+    (0, flowda_shared_1.bindService)(bind, flowda_shared_types_1.ServiceSymbol, appAuth_service_1.AppAuthService);
+    (0, flowda_shared_1.bindService)(bind, flowda_shared_types_1.ServiceSymbol, customerAuth_service_1.CustomerAuthService);
+    (0, flowda_shared_1.bindService)(bind, flowda_shared_types_1.ServiceSymbol, order_service_1.OrderService);
+    (0, flowda_shared_1.bindService)(bind, flowda_shared_types_1.ServiceSymbol, order_tx_1.OrderTx);
+    (0, flowda_shared_1.bindService)(bind, flowda_shared_types_1.ServiceSymbol, order_query_1.OrderQuery);
+    (0, flowda_shared_1.bindService)(bind, flowda_shared_types_1.ServiceSymbol, customer_service_1.CustomerService);
+    (0, flowda_shared_1.bindService)(bind, flowda_shared_types_1.ServiceSymbol, customer_tx_1.CustomerTx);
+    (0, flowda_shared_1.bindService)(bind, flowda_shared_types_1.ServiceSymbol, product_service_1.ProductService);
+    (0, flowda_shared_1.bindService)(bind, flowda_shared_types_1.ServiceSymbol, product_query_1.ProductQuery);
+    (0, flowda_shared_1.bindService)(bind, flowda_shared_types_1.ServiceSymbol, product_tx_1.ProductTx);
     bind(superAdminAuthentication_service_1.SuperAdminAuthenticationService).toSelf().inSingletonScope();
-    (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, superAdminAuthentication_tx_1.SuperAdminAuthenticationTx);
-    (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, superAdminAuthentication_query_1.SuperAdminAuthenticationQuery);
+    (0, flowda_shared_1.bindService)(bind, flowda_shared_types_1.ServiceSymbol, superAdminAuthentication_tx_1.SuperAdminAuthenticationTx);
+    (0, flowda_shared_1.bindService)(bind, flowda_shared_types_1.ServiceSymbol, superAdminAuthentication_query_1.SuperAdminAuthenticationQuery);
     bind(tenant_query_1.TenantQuery).toSelf().inSingletonScope();
     // identity provider
     bind(v1_flowda_types_1.IdentityProviderServiceSymbol)
@@ -5028,9 +6172,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppIdentityProviderService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
-const flowda_shared_1 = __webpack_require__("../../../libs/flowda-shared/src/index.ts");
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
 const client_v1_flowda_1 = __webpack_require__("@prisma/client-v1-flowda");
-const jwt = __webpack_require__("jsonwebtoken");
+const jwt = tslib_1.__importStar(__webpack_require__("jsonwebtoken"));
 const infra_1 = __webpack_require__("../../../libs/v1/flowda-services/src/infra/index.ts");
 let AppIdentityProviderService = class AppIdentityProviderService {
     constructor(prisma, config) {
@@ -5078,13 +6222,13 @@ let AppIdentityProviderService = class AppIdentityProviderService {
         });
     }
 };
-AppIdentityProviderService = tslib_1.__decorate([
+exports.AppIdentityProviderService = AppIdentityProviderService;
+exports.AppIdentityProviderService = AppIdentityProviderService = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
-    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
+    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_types_1.PrismaClientSymbol)),
     tslib_1.__param(1, (0, inversify_1.inject)(infra_1.IConfigService)),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof client_v1_flowda_1.PrismaClient !== "undefined" && client_v1_flowda_1.PrismaClient) === "function" ? _a : Object, typeof (_b = typeof infra_1.IConfigService !== "undefined" && infra_1.IConfigService) === "function" ? _b : Object])
 ], AppIdentityProviderService);
-exports.AppIdentityProviderService = AppIdentityProviderService;
 
 
 /***/ }),
@@ -5099,7 +6243,7 @@ exports.CustomerIdentityProviderService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
 const v1_flowda_types_1 = __webpack_require__("../../../libs/v1/flowda-types/src/index.ts");
-const flowda_shared_1 = __webpack_require__("../../../libs/flowda-shared/src/index.ts");
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
 const client_v1_flowda_1 = __webpack_require__("@prisma/client-v1-flowda");
 let CustomerIdentityProviderService = class CustomerIdentityProviderService {
     constructor(prisma) {
@@ -5182,12 +6326,12 @@ let CustomerIdentityProviderService = class CustomerIdentityProviderService {
         });
     }
 };
-CustomerIdentityProviderService = tslib_1.__decorate([
+exports.CustomerIdentityProviderService = CustomerIdentityProviderService;
+exports.CustomerIdentityProviderService = CustomerIdentityProviderService = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
-    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
+    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_types_1.PrismaClientSymbol)),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof client_v1_flowda_1.PrismaClient !== "undefined" && client_v1_flowda_1.PrismaClient) === "function" ? _a : Object])
 ], CustomerIdentityProviderService);
-exports.CustomerIdentityProviderService = CustomerIdentityProviderService;
 
 
 /***/ }),
@@ -5201,7 +6345,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TenantIdentityProviderService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
-const flowda_shared_1 = __webpack_require__("../../../libs/flowda-shared/src/index.ts");
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
 const client_v1_flowda_1 = __webpack_require__("@prisma/client-v1-flowda");
 let TenantIdentityProviderService = class TenantIdentityProviderService {
     constructor(prisma) {
@@ -5244,12 +6388,12 @@ let TenantIdentityProviderService = class TenantIdentityProviderService {
         });
     }
 };
-TenantIdentityProviderService = tslib_1.__decorate([
+exports.TenantIdentityProviderService = TenantIdentityProviderService;
+exports.TenantIdentityProviderService = TenantIdentityProviderService = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
-    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
+    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_types_1.PrismaClientSymbol)),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof client_v1_flowda_1.PrismaClient !== "undefined" && client_v1_flowda_1.PrismaClient) === "function" ? _a : Object])
 ], TenantIdentityProviderService);
-exports.TenantIdentityProviderService = TenantIdentityProviderService;
 
 
 /***/ }),
@@ -5267,8 +6411,6 @@ tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/s
 // authentication
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/tenant/tenantAuth.service.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/authentication/dto/signup.dto.ts"), exports);
-tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/authentication/dto/generateRecoveryCode.dto.ts"), exports);
-tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/authentication/dto/resetPassword.dto.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/customer-auth/dto/customerEmailSignup.dto.ts"), exports);
 // tenant
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/tenant/dto/tenantEmailSignup.dto.ts"), exports);
@@ -5286,9 +6428,6 @@ tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/s
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/order/order.service.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/order/order.tx.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/order/order.query.ts"), exports);
-tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/order/dto/sdkCreateOrder.dto.ts"), exports);
-tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/order/dto/sdkCreateQuickOrder.dto.ts"), exports);
-tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/order/dto/sdkCreateOrderInJSAPI.dto.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/order/dto/sdkCreateOrderInJSAPIRes.dto.ts"), exports);
 // sdk customer
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/customer/customer.service.ts"), exports);
@@ -5298,7 +6437,6 @@ tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/s
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/product/product.service.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/product/product.query.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/product/product.tx.ts"), exports);
-tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/product/dto/sdkProductCreateManyItem.dto.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/wx-login/wxLogin.service.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/app/app.service.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-services/src/services/app/dto/dto.ts"), exports);
@@ -5319,7 +6457,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.JwtService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
-const jwt = __webpack_require__("jsonwebtoken");
+const jwt = tslib_1.__importStar(__webpack_require__("jsonwebtoken"));
 const index_1 = __webpack_require__("../../../libs/v1/flowda-services/src/infra/index.ts");
 let JwtService = class JwtService {
     constructor(config) {
@@ -5368,59 +6506,12 @@ let JwtService = class JwtService {
         return jwt.verify(at, options.secret);
     }
 };
-JwtService = tslib_1.__decorate([
+exports.JwtService = JwtService;
+exports.JwtService = JwtService = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)(index_1.IConfigService)),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof index_1.IConfigService !== "undefined" && index_1.IConfigService) === "function" ? _a : Object])
 ], JwtService);
-exports.JwtService = JwtService;
-
-
-/***/ }),
-
-/***/ "../../../libs/v1/flowda-services/src/services/order/dto/sdkCreateOrder.dto.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SdkCreateOrderDto = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const class_validator_1 = __webpack_require__("class-validator");
-const swagger_1 = __webpack_require__("@nestjs/swagger");
-class SdkCreateOrderDto {
-}
-tslib_1.__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '产品 id',
-    }),
-    (0, class_validator_1.IsNotEmpty)(),
-    tslib_1.__metadata("design:type", String)
-], SdkCreateOrderDto.prototype, "productId", void 0);
-exports.SdkCreateOrderDto = SdkCreateOrderDto;
-
-
-/***/ }),
-
-/***/ "../../../libs/v1/flowda-services/src/services/order/dto/sdkCreateOrderInJSAPI.dto.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SdkCreateOrderInJSAPIDto = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const class_validator_1 = __webpack_require__("class-validator");
-const swagger_1 = __webpack_require__("@nestjs/swagger");
-const sdkCreateOrder_dto_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/order/dto/sdkCreateOrder.dto.ts");
-class SdkCreateOrderInJSAPIDto extends sdkCreateOrder_dto_1.SdkCreateOrderDto {
-}
-tslib_1.__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'jsapi 支付需要的 openid',
-    }),
-    (0, class_validator_1.IsNotEmpty)(),
-    tslib_1.__metadata("design:type", String)
-], SdkCreateOrderInJSAPIDto.prototype, "openid", void 0);
-exports.SdkCreateOrderInJSAPIDto = SdkCreateOrderInJSAPIDto;
 
 
 /***/ }),
@@ -5436,13 +6527,13 @@ const swagger_1 = __webpack_require__("@nestjs/swagger");
 const sdkCreateOrderRes_dto_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/order/dto/sdkCreateOrderRes.dto.ts");
 class SdkCreateOrderInJSAPIResDto extends sdkCreateOrderRes_dto_1.SdkCreateOrderBaseResDto {
 }
+exports.SdkCreateOrderInJSAPIResDto = SdkCreateOrderInJSAPIResDto;
 tslib_1.__decorate([
     (0, swagger_1.ApiProperty)({
         description: 'prepay_id',
     }),
     tslib_1.__metadata("design:type", Object)
 ], SdkCreateOrderInJSAPIResDto.prototype, "wxRet", void 0);
-exports.SdkCreateOrderInJSAPIResDto = SdkCreateOrderInJSAPIResDto;
 
 
 /***/ }),
@@ -5459,6 +6550,7 @@ const client_v1_flowda_1 = __webpack_require__("@prisma/client-v1-flowda");
 const swagger_1 = __webpack_require__("@nestjs/swagger");
 class SdkCreateOrderBaseResDto {
 }
+exports.SdkCreateOrderBaseResDto = SdkCreateOrderBaseResDto;
 tslib_1.__decorate([
     (0, swagger_1.ApiProperty)({
         description: '返回订单信息',
@@ -5477,40 +6569,15 @@ tslib_1.__decorate([
     }),
     tslib_1.__metadata("design:type", typeof (_c = typeof client_v1_flowda_1.ProductSnapshot !== "undefined" && client_v1_flowda_1.ProductSnapshot) === "function" ? _c : Object)
 ], SdkCreateOrderBaseResDto.prototype, "productSnapshot", void 0);
-exports.SdkCreateOrderBaseResDto = SdkCreateOrderBaseResDto;
 class SdkCreateOrderResDto extends SdkCreateOrderBaseResDto {
 }
+exports.SdkCreateOrderResDto = SdkCreateOrderResDto;
 tslib_1.__decorate([
     (0, swagger_1.ApiProperty)({
         description: '返回支付二维码链接',
     }),
     tslib_1.__metadata("design:type", String)
 ], SdkCreateOrderResDto.prototype, "codeUrl", void 0);
-exports.SdkCreateOrderResDto = SdkCreateOrderResDto;
-
-
-/***/ }),
-
-/***/ "../../../libs/v1/flowda-services/src/services/order/dto/sdkCreateQuickOrder.dto.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SdkCreateQuickOrderDto = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const class_validator_1 = __webpack_require__("class-validator");
-const swagger_1 = __webpack_require__("@nestjs/swagger");
-const sdkCreateOrder_dto_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/order/dto/sdkCreateOrder.dto.ts");
-class SdkCreateQuickOrderDto extends sdkCreateOrder_dto_1.SdkCreateOrderDto {
-}
-tslib_1.__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '快捷创建需要客户端提供一个匿名 Token',
-    }),
-    (0, class_validator_1.IsNotEmpty)(),
-    tslib_1.__metadata("design:type", String)
-], SdkCreateQuickOrderDto.prototype, "anonymousCustomerToken", void 0);
-exports.SdkCreateQuickOrderDto = SdkCreateQuickOrderDto;
 
 
 /***/ }),
@@ -5525,9 +6592,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OrderQuery = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
-const flowda_shared_1 = __webpack_require__("../../../libs/flowda-shared/src/index.ts");
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
 const authentication_service_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/authentication/authentication.service.ts");
-const db = __webpack_require__("@prisma/client-v1-flowda");
+const db = tslib_1.__importStar(__webpack_require__("@prisma/client-v1-flowda"));
 let OrderQuery = OrderQuery_1 = class OrderQuery {
     constructor(prisma, loggerFactory) {
         this.prisma = prisma;
@@ -5538,11 +6605,21 @@ let OrderQuery = OrderQuery_1 = class OrderQuery {
             const ret = yield this.prisma.order.findMany({
                 where: { id: orderId },
                 include: {
-                    customer: true,
+                    // customer: true,
                     productSnapshots: true,
                 },
             });
-            return ret.map(item => (Object.assign(Object.assign({}, item), { customer: (0, authentication_service_1.excludedIdentity)(item.customer) })));
+            const customersRet = yield this.prisma.customer.findMany({
+                where: {
+                    id: {
+                        in: ret.map(i => i.customerId),
+                    },
+                },
+            });
+            return ret.map(item => {
+                const customer = customersRet.find(c => c.id === item.customerId);
+                return Object.assign(Object.assign({}, item), { customer: customer ? (0, authentication_service_1.excludedIdentity)(customer) : {} });
+            });
         });
     }
     findAll(query) {
@@ -5557,11 +6634,21 @@ let OrderQuery = OrderQuery_1 = class OrderQuery {
                 where: query || {},
                 take: limit,
                 include: {
-                    customer: true,
+                    // customer: true,
                     productSnapshots: false,
                 },
             });
-            return ret;
+            const customersRet = yield this.prisma.customer.findMany({
+                where: {
+                    id: {
+                        in: ret.map(i => i.customerId),
+                    },
+                },
+            });
+            return ret.map(item => {
+                const customer = customersRet.find(c => c.id === item.customerId);
+                return Object.assign(Object.assign({}, item), { customer: customer });
+            });
         });
     }
     count(query) {
@@ -5599,13 +6686,13 @@ let OrderQuery = OrderQuery_1 = class OrderQuery {
         });
     }
 };
-OrderQuery = OrderQuery_1 = tslib_1.__decorate([
+exports.OrderQuery = OrderQuery;
+exports.OrderQuery = OrderQuery = OrderQuery_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
-    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
+    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_types_1.PrismaClientSymbol)),
     tslib_1.__param(1, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof db !== "undefined" && db.PrismaClient) === "function" ? _a : Object, Function])
 ], OrderQuery);
-exports.OrderQuery = OrderQuery;
 
 
 /***/ }),
@@ -5617,19 +6704,18 @@ exports.OrderQuery = OrderQuery;
 var OrderService_1;
 var _a, _b, _c, _d, _e;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.OrderService = exports.Serial_Max = exports.Serial_Min = void 0;
+exports.OrderService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
 const v1_flowda_types_1 = __webpack_require__("../../../libs/v1/flowda-types/src/index.ts");
-const db = __webpack_require__("@prisma/client-v1-flowda");
+const db = tslib_1.__importStar(__webpack_require__("@prisma/client-v1-flowda"));
 const wxPay_service_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/wx-pay/wxPay.service.ts");
 const authentication_service_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/authentication/authentication.service.ts");
 const product_service_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/product/product.service.ts");
 const customer_service_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/customer/customer.service.ts");
 const product_query_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/product/product.query.ts");
 const order_query_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/order/order.query.ts");
-exports.Serial_Min = 10001;
-exports.Serial_Max = 99999;
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
 let OrderService = OrderService_1 = class OrderService {
     constructor(wxPayService, productService, productQuery, orderQuery, customerService, loggerFactory) {
         this.wxPayService = wxPayService;
@@ -5641,8 +6727,10 @@ let OrderService = OrderService_1 = class OrderService {
     }
     create(user, dto, { tx }) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const { product, productSnapshot, order } = yield this.doCreate(user.id, dto.productId, { tx });
+            this.logger.log(`creating order: `, user.id, dto.productId);
+            const { product, productSnapshot, order } = yield this.doCreate(user.appId, user.id, String(dto.productId), { tx });
             const profile = yield tx.profile.findUnique({ where: { customerId: user.id } });
+            this.logger.log(`profile `, profile);
             // 检查限购情况
             if (product.restricted) {
                 const purchased = yield this.orderQuery.queryOrderHistory(user.id, product.id);
@@ -5667,11 +6755,16 @@ let OrderService = OrderService_1 = class OrderService {
                 // }
                 // 发起微信支付
                 this.logger.log(`product price ${productSnapshot.snapshotPrice}, call wechat pay`);
-                const wxRet = yield this.wxPayService.transactionsNative(order.id, product.name, productSnapshot.snapshotPrice.toNumber());
-                const { updatedOrder, customer } = yield this.processPaidOrder(order.id, user, { tx });
+                const wxRet = yield this.wxPayService.transactionsNative({
+                    orderId: order.id,
+                    desc: product.name,
+                    total: productSnapshot.snapshotPrice.toNumber(),
+                });
+                const { updatedOrder } = yield this.processPaidOrder(order.id, user, { tx });
                 return {
                     order: updatedOrder,
-                    customer: (0, authentication_service_1.excludedIdentity)(customer),
+                    // customer: excludedIdentity(customer),
+                    customer: user,
                     productSnapshot,
                     codeUrl: wxRet.code_url,
                 };
@@ -5683,7 +6776,7 @@ let OrderService = OrderService_1 = class OrderService {
      */
     createJSAPI(user, dto, { tx }) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const { product, productSnapshot, order } = yield this.doCreate(user.id, dto.productId, { tx });
+            const { product, productSnapshot, order } = yield this.doCreate(user.appId, user.id, String(dto.productId), { tx });
             const profile = yield tx.profile.findUnique({ where: { customerId: user.id } });
             // 检查限购情况
             if (product.restricted) {
@@ -5708,11 +6801,16 @@ let OrderService = OrderService_1 = class OrderService {
                 // }
                 // 发起微信支付
                 this.logger.log(`product price ${productSnapshot.snapshotPrice}, call wechat jsapi pay`);
-                const wxRet = yield this.wxPayService.transactionsJSAPI(dto.openid, order.id, product.name, productSnapshot.snapshotPrice.toNumber());
-                const { updatedOrder, customer } = yield this.processPaidOrder(order.id, user, { tx });
+                const wxRet = yield this.wxPayService.transactionsJSAPI({
+                    openid: dto.openid,
+                    orderId: order.id,
+                    desc: product.name,
+                    total: productSnapshot.snapshotPrice.toNumber(),
+                });
+                const { updatedOrder } = yield this.processPaidOrder(order.id, user, { tx });
                 return {
                     order: updatedOrder,
-                    customer: (0, authentication_service_1.excludedIdentity)(customer),
+                    customer: user,
                     productSnapshot,
                     wxRet,
                 };
@@ -5724,10 +6822,10 @@ let OrderService = OrderService_1 = class OrderService {
        - 但是如果内聚了，还真容易出现这种情况
        - 那还是通过 jest 的 spyOn，拿到 instance 后 mock 相应的 method 吧
        */
-    doCreate(customerId, productId, { tx }) {
+    doCreate(tenantId, customerId, productId, { tx }) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            this.logger.log(`${customerId} creating order of product: ${productId} `);
-            const order = yield this.createOrder(customerId, { tx });
+            this.logger.log(`tenant: ${tenantId} customer: ${customerId} creating order of product: ${productId} `);
+            const order = yield this.createOrder(tenantId, customerId, { tx });
             const { product, snapshot } = yield this.productService.createProductSnapshot(productId, order.id, { tx });
             return {
                 order,
@@ -5736,7 +6834,7 @@ let OrderService = OrderService_1 = class OrderService {
             };
         });
     }
-    createOrder(customerId, { tx }) {
+    createOrder(tenantId, customerId, { tx }) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const last = yield tx.order.findFirst({
                 orderBy: [
@@ -5746,17 +6844,17 @@ let OrderService = OrderService_1 = class OrderService {
                 ],
             });
             let serial;
-            if (last == null || last.serial >= exports.Serial_Max) {
-                serial = exports.Serial_Min;
+            if (last == null || last.serial >= flowda_shared_types_1.Serial_Max) {
+                serial = flowda_shared_types_1.Serial_Min;
             }
             else {
                 serial = last.serial + 1;
             }
-            const customer = yield tx.customer.findUniqueOrThrow({ where: { id: customerId } });
+            // const customer = await tx.customer.findUniqueOrThrow({ where: { id: customerId } })
             const order = yield tx.order.create({
                 data: {
-                    tenantId: customer.tenantId,
-                    appId: customer.appId,
+                    // tenantId: customer.tenantId,
+                    appId: String(tenantId),
                     customerId,
                     status: db.OrderStatus.INITIALIZED,
                     serial: serial,
@@ -5811,7 +6909,7 @@ let OrderService = OrderService_1 = class OrderService {
             const order = yield tx.order.findFirstOrThrow({
                 where: { id: orderId },
                 include: {
-                    customer: true,
+                    // customer: true,
                     productSnapshots: true,
                 },
             });
@@ -5838,8 +6936,11 @@ let OrderService = OrderService_1 = class OrderService {
                     transactionId: payQueryRet.transaction_id,
                 },
             });
+            const customer = yield tx.customer.findUnique({
+                where: { id: order.customerId },
+            });
             return {
-                order: Object.assign(Object.assign({}, order), { customer: (0, authentication_service_1.excludedIdentity)(order.customer) }),
+                order: Object.assign(Object.assign({}, order), { customer: customer ? (0, authentication_service_1.excludedIdentity)(customer) : {} }),
                 payQueryRet,
             };
         });
@@ -5851,12 +6952,12 @@ let OrderService = OrderService_1 = class OrderService {
                 data: { status: db.OrderStatus.PAY_ASSOCIATED },
             });
             this.logger.log(`order ${orderId} update to status ${db.OrderStatus.PAY_ASSOCIATED}`);
-            const customer = yield tx.customer.findFirstOrThrow({
-                where: {
-                    id: user.id,
-                },
-            });
-            return { updatedOrder, customer };
+            // const customer = await tx.customer.findFirstOrThrow({
+            //   where: {
+            //     id: user.id,
+            //   },
+            // })
+            return { updatedOrder };
         });
     }
     processFreeOrder(orderId, userId, profile, product, { tx }) {
@@ -5876,7 +6977,8 @@ let OrderService = OrderService_1 = class OrderService {
         });
     }
 };
-OrderService = OrderService_1 = tslib_1.__decorate([
+exports.OrderService = OrderService;
+exports.OrderService = OrderService = OrderService_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)(wxPay_service_1.WxPayService)),
     tslib_1.__param(1, (0, inversify_1.inject)(product_service_1.ProductService)),
@@ -5886,7 +6988,6 @@ OrderService = OrderService_1 = tslib_1.__decorate([
     tslib_1.__param(5, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof wxPay_service_1.WxPayService !== "undefined" && wxPay_service_1.WxPayService) === "function" ? _a : Object, typeof (_b = typeof product_service_1.ProductService !== "undefined" && product_service_1.ProductService) === "function" ? _b : Object, typeof (_c = typeof product_query_1.ProductQuery !== "undefined" && product_query_1.ProductQuery) === "function" ? _c : Object, typeof (_d = typeof order_query_1.OrderQuery !== "undefined" && order_query_1.OrderQuery) === "function" ? _d : Object, typeof (_e = typeof customer_service_1.CustomerService !== "undefined" && customer_service_1.CustomerService) === "function" ? _e : Object, Function])
 ], OrderService);
-exports.OrderService = OrderService;
 
 
 /***/ }),
@@ -5901,9 +7002,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OrderTx = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
-const flowda_shared_1 = __webpack_require__("../../../libs/flowda-shared/src/index.ts");
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
 const order_service_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/order/order.service.ts");
-const db = __webpack_require__("@prisma/client-v1-flowda");
+const db = tslib_1.__importStar(__webpack_require__("@prisma/client-v1-flowda"));
 let OrderTx = OrderTx_1 = class OrderTx {
     constructor(prisma, service, loggerFactory) {
         this.prisma = prisma;
@@ -5940,47 +7041,20 @@ let OrderTx = OrderTx_1 = class OrderTx {
             return this.prisma.$transaction((tx) => tslib_1.__awaiter(this, void 0, void 0, function* () { return this.service.doQueryPay(orderId, { tx }); }));
         });
     }
-    createOrder(customerId) {
+    createOrder(tenantId, customerId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.prisma.$transaction((tx) => tslib_1.__awaiter(this, void 0, void 0, function* () { return this.service.createOrder(customerId, { tx }); }));
+            return this.prisma.$transaction((tx) => tslib_1.__awaiter(this, void 0, void 0, function* () { return this.service.createOrder(tenantId, customerId, { tx }); }));
         });
     }
 };
-OrderTx = OrderTx_1 = tslib_1.__decorate([
+exports.OrderTx = OrderTx;
+exports.OrderTx = OrderTx = OrderTx_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
-    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
+    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_types_1.PrismaClientSymbol)),
     tslib_1.__param(1, (0, inversify_1.inject)(order_service_1.OrderService)),
     tslib_1.__param(2, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof db !== "undefined" && db.PrismaClient) === "function" ? _a : Object, typeof (_b = typeof order_service_1.OrderService !== "undefined" && order_service_1.OrderService) === "function" ? _b : Object, Function])
 ], OrderTx);
-exports.OrderTx = OrderTx;
-
-
-/***/ }),
-
-/***/ "../../../libs/v1/flowda-services/src/services/product/dto/sdkProductCreateManyItem.dto.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SdkProductCreateManyItemDto = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const class_validator_1 = __webpack_require__("class-validator");
-class SdkProductCreateManyItemDto {
-}
-tslib_1.__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    tslib_1.__metadata("design:type", String)
-], SdkProductCreateManyItemDto.prototype, "name", void 0);
-tslib_1.__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    tslib_1.__metadata("design:type", Number)
-], SdkProductCreateManyItemDto.prototype, "price", void 0);
-tslib_1.__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    tslib_1.__metadata("design:type", String)
-], SdkProductCreateManyItemDto.prototype, "productType", void 0);
-exports.SdkProductCreateManyItemDto = SdkProductCreateManyItemDto;
 
 
 /***/ }),
@@ -5995,7 +7069,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProductQuery = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
-const flowda_shared_1 = __webpack_require__("../../../libs/flowda-shared/src/index.ts");
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
 const client_v1_flowda_1 = __webpack_require__("@prisma/client-v1-flowda");
 let ProductQuery = ProductQuery_1 = class ProductQuery {
     constructor(prisma, loggerFactory) {
@@ -6005,7 +7079,7 @@ let ProductQuery = ProductQuery_1 = class ProductQuery {
     findAll(appId) {
         return this.prisma.product.findMany({
             where: {
-                appId,
+                appId: String(appId),
             },
         });
     }
@@ -6031,13 +7105,13 @@ let ProductQuery = ProductQuery_1 = class ProductQuery {
         });
     }
 };
-ProductQuery = ProductQuery_1 = tslib_1.__decorate([
+exports.ProductQuery = ProductQuery;
+exports.ProductQuery = ProductQuery = ProductQuery_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
-    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
+    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_types_1.PrismaClientSymbol)),
     tslib_1.__param(1, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof client_v1_flowda_1.PrismaClient !== "undefined" && client_v1_flowda_1.PrismaClient) === "function" ? _a : Object, Function])
 ], ProductQuery);
-exports.ProductQuery = ProductQuery;
 
 
 /***/ }),
@@ -6059,9 +7133,9 @@ let ProductService = ProductService_1 = class ProductService {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             // todo: 根据 appId -> tenantId
             const app = yield tx.app.findUniqueOrThrow({ where: { id: appId } });
-            const data = list.map(item => (Object.assign(Object.assign({}, item), { tenantId: app.tenantId, appId: appId, productType: item.productType, restricted: item.restricted || 0, 
+            const data = list.map(item => (Object.assign(Object.assign({}, item), { tenantId: app.tenantId, appId: appId, productType: item.productType, restricted: item.restricted || 0, amount: item.amount, 
                 // 以下是为了处理 prisma null
-                amount: item.amount === undefined ? null : item.amount, plan: item.plan === undefined ? null : item.plan, extendedDescriptionData: item.extendedDescriptionData, fileSize: item.fileSize === undefined ? null : item.fileSize, storeDuration: item.storeDuration === undefined ? null : item.storeDuration, hasAds: item.hasAds === undefined ? null : item.hasAds, tecSupport: item.tecSupport === undefined ? null : item.tecSupport, validityPeriod: null })));
+                plan: item.plan === undefined ? null : item.plan, extendedDescriptionData: item.extendedDescriptionData, fileSize: item.fileSize === undefined ? null : item.fileSize, storeDuration: item.storeDuration === undefined ? null : item.storeDuration, hasAds: item.hasAds === undefined ? null : item.hasAds, tecSupport: item.tecSupport === undefined ? null : item.tecSupport, validityPeriod: null })));
             yield tx.product.createMany({ data });
             return tx.product.findMany({
                 where: {
@@ -6069,12 +7143,6 @@ let ProductService = ProductService_1 = class ProductService {
                 },
             });
         });
-    }
-    mapToProduct(appId, product) {
-        const data = Object.assign(Object.assign({ appId: appId }, product), { productType: product.productType, 
-            // 以下是为了处理 prisma null
-            amount: product.amount === undefined ? null : product.amount, plan: product.plan === undefined ? null : product.plan, fileSize: product.fileSize === undefined ? null : product.fileSize, storeDuration: product.storeDuration === undefined ? null : product.storeDuration, hasAds: product.hasAds === undefined ? null : product.hasAds, tecSupport: product.tecSupport === undefined ? null : product.tecSupport });
-        return data;
     }
     createProductSnapshot(productId, orderId, { tx }) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
@@ -6097,12 +7165,12 @@ let ProductService = ProductService_1 = class ProductService {
         });
     }
 };
-ProductService = ProductService_1 = tslib_1.__decorate([
+exports.ProductService = ProductService;
+exports.ProductService = ProductService = ProductService_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [Function])
 ], ProductService);
-exports.ProductService = ProductService;
 
 
 /***/ }),
@@ -6117,8 +7185,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProductTx = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
-const flowda_shared_1 = __webpack_require__("../../../libs/flowda-shared/src/index.ts");
-const db = __webpack_require__("@prisma/client-v1-flowda");
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
+const db = tslib_1.__importStar(__webpack_require__("@prisma/client-v1-flowda"));
 const product_service_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/product/product.service.ts");
 let ProductTx = ProductTx_1 = class ProductTx {
     constructor(prisma, productService, loggerFactory) {
@@ -6132,14 +7200,14 @@ let ProductTx = ProductTx_1 = class ProductTx {
         });
     }
 };
-ProductTx = ProductTx_1 = tslib_1.__decorate([
+exports.ProductTx = ProductTx;
+exports.ProductTx = ProductTx = ProductTx_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
-    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
+    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_types_1.PrismaClientSymbol)),
     tslib_1.__param(1, (0, inversify_1.inject)(product_service_1.ProductService)),
     tslib_1.__param(2, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof db !== "undefined" && db.PrismaClient) === "function" ? _a : Object, typeof (_b = typeof product_service_1.ProductService !== "undefined" && product_service_1.ProductService) === "function" ? _b : Object, Function])
 ], ProductTx);
-exports.ProductTx = ProductTx;
 
 
 /***/ }),
@@ -6245,6 +7313,7 @@ const tslib_1 = __webpack_require__("tslib");
 const class_validator_1 = __webpack_require__("class-validator");
 class TenantEmailSignupDto {
 }
+exports.TenantEmailSignupDto = TenantEmailSignupDto;
 tslib_1.__decorate([
     (0, class_validator_1.IsNotEmpty)(),
     tslib_1.__metadata("design:type", String)
@@ -6257,7 +7326,6 @@ tslib_1.__decorate([
     (0, class_validator_1.IsNotEmpty)(),
     tslib_1.__metadata("design:type", String)
 ], TenantEmailSignupDto.prototype, "password", void 0);
-exports.TenantEmailSignupDto = TenantEmailSignupDto;
 
 
 /***/ }),
@@ -6272,10 +7340,10 @@ const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
 let TenantQuery = class TenantQuery {
 };
-TenantQuery = tslib_1.__decorate([
+exports.TenantQuery = TenantQuery;
+exports.TenantQuery = TenantQuery = tslib_1.__decorate([
     (0, inversify_1.injectable)()
 ], TenantQuery);
-exports.TenantQuery = TenantQuery;
 
 
 /***/ }),
@@ -6290,9 +7358,9 @@ exports.TenantAuthService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
 const v1_flowda_types_1 = __webpack_require__("../../../libs/v1/flowda-types/src/index.ts");
-const flowda_shared_1 = __webpack_require__("../../../libs/flowda-shared/src/index.ts");
-const db = __webpack_require__("@prisma/client-v1-flowda");
-const bcrypt = __webpack_require__("bcrypt");
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
+const db = tslib_1.__importStar(__webpack_require__("@prisma/client-v1-flowda"));
+const bcrypt = tslib_1.__importStar(__webpack_require__("bcrypt"));
 const jwt_service_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/jwt/jwt.service.ts");
 const index_1 = __webpack_require__("../../../libs/v1/flowda-services/src/infra/index.ts");
 const authentication_service_1 = __webpack_require__("../../../libs/v1/flowda-services/src/services/authentication/authentication.service.ts");
@@ -6384,23 +7452,23 @@ let TenantAuthService = class TenantAuthService extends authentication_service_1
         });
     }
 };
+exports.TenantAuthService = TenantAuthService;
 tslib_1.__decorate([
     (0, inversify_1.postConstruct)(),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", []),
     tslib_1.__metadata("design:returntype", void 0)
 ], TenantAuthService.prototype, "postConstruct", null);
-TenantAuthService = tslib_1.__decorate([
+exports.TenantAuthService = TenantAuthService = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)(v1_flowda_types_1.IdentityProviderServiceSymbol)),
     tslib_1.__param(0, (0, inversify_1.named)('tenant')),
     tslib_1.__param(1, (0, inversify_1.inject)(jwt_service_1.JwtService)),
     tslib_1.__param(2, (0, inversify_1.inject)(index_1.IConfigService)),
     tslib_1.__param(3, (0, inversify_1.inject)(index_1.IMailService)),
-    tslib_1.__param(4, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
+    tslib_1.__param(4, (0, inversify_1.inject)(flowda_shared_types_1.PrismaClientSymbol)),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof v1_flowda_types_1.IIdentityProviderService !== "undefined" && v1_flowda_types_1.IIdentityProviderService) === "function" ? _a : Object, typeof (_b = typeof jwt_service_1.JwtService !== "undefined" && jwt_service_1.JwtService) === "function" ? _b : Object, typeof (_c = typeof index_1.IConfigService !== "undefined" && index_1.IConfigService) === "function" ? _c : Object, typeof (_d = typeof index_1.IMailService !== "undefined" && index_1.IMailService) === "function" ? _d : Object, typeof (_e = typeof db !== "undefined" && db.PrismaClient) === "function" ? _e : Object])
 ], TenantAuthService);
-exports.TenantAuthService = TenantAuthService;
 
 
 /***/ }),
@@ -6415,7 +7483,7 @@ exports.WxFwhLoginService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
 const infra_1 = __webpack_require__("../../../libs/v1/flowda-services/src/infra/index.ts");
-const axios_1 = __webpack_require__("axios");
+const axios_1 = tslib_1.__importDefault(__webpack_require__("axios"));
 const v1_flowda_types_1 = __webpack_require__("../../../libs/v1/flowda-types/src/index.ts");
 let WxFwhLoginService = class WxFwhLoginService {
     constructor(config) {
@@ -6449,12 +7517,12 @@ let WxFwhLoginService = class WxFwhLoginService {
         });
     }
 };
-WxFwhLoginService = tslib_1.__decorate([
+exports.WxFwhLoginService = WxFwhLoginService;
+exports.WxFwhLoginService = WxFwhLoginService = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)(infra_1.IConfigService)),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof infra_1.IConfigService !== "undefined" && infra_1.IConfigService) === "function" ? _a : Object])
 ], WxFwhLoginService);
-exports.WxFwhLoginService = WxFwhLoginService;
 
 
 /***/ }),
@@ -6469,7 +7537,6 @@ exports.WxLoginService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
 const infra_1 = __webpack_require__("../../../libs/v1/flowda-services/src/infra/index.ts");
-const legacy_libs_1 = __webpack_require__("../../../libs/v1/flowda-services/src/legacy-libs.ts");
 let WxLoginService = class WxLoginService {
     constructor(config, wechatOAuthFactory) {
         this.config = config;
@@ -6506,13 +7573,13 @@ let WxLoginService = class WxLoginService {
         });
     }
 };
-WxLoginService = tslib_1.__decorate([
+exports.WxLoginService = WxLoginService;
+exports.WxLoginService = WxLoginService = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)(infra_1.IConfigService)),
-    tslib_1.__param(1, (0, inversify_1.inject)(legacy_libs_1.WechatOAuthFactorySymbol)),
+    tslib_1.__param(1, (0, inversify_1.inject)('Factory<WechatOAuth>')),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof infra_1.IConfigService !== "undefined" && infra_1.IConfigService) === "function" ? _a : Object, Function])
 ], WxLoginService);
-exports.WxLoginService = WxLoginService;
 
 
 /***/ }),
@@ -6525,10 +7592,10 @@ var WxPayService_1;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.WxPayService = void 0;
 const tslib_1 = __webpack_require__("tslib");
-const legacy_libs_1 = __webpack_require__("../../../libs/v1/flowda-services/src/legacy-libs.ts");
 const inversify_1 = __webpack_require__("inversify");
 const dayjs_1 = __webpack_require__("../../../libs/v1/flowda-services/src/utils/dayjs.ts");
 const v1_flowda_types_1 = __webpack_require__("../../../libs/v1/flowda-types/src/index.ts");
+const flowda_shared_types_1 = __webpack_require__("../../../libs/flowda-shared-types/src/index.ts");
 let WxPayService = WxPayService_1 = class WxPayService {
     constructor(wechatPayNodeV3Factory, loggerFactory) {
         this.wechatPayNodeV3Factory = wechatPayNodeV3Factory;
@@ -6545,22 +7612,22 @@ let WxPayService = WxPayService_1 = class WxPayService {
     "paySign": "xx"
   }
      */
-    transactionsJSAPI(openid, orderId, desc, total) {
+    transactionsJSAPI(input) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const timeExpire = (0, dayjs_1.getTimeExpire)(5);
             const params = {
-                description: desc,
-                out_trade_no: orderId,
+                description: input.desc, ///商品描述
+                out_trade_no: input.orderId, ///户系统内部订单号，只能是数字、大小写字母_-*且在同一个商户号下唯一
                 time_expire: timeExpire /*订单失效时间，遵循rfc3339标准格式，格式为yyyy-MM-DDTHH:mm:ss+TIMEZONE，yyyy-MM-DD表示年月日，T出现在字符串中，表示time元素的开头，HH:mm:ss表示时分秒，TIMEZONE表示时区（+08:00表示东八区时间，领先UTC8小时，即北京时间）。例如：2015-05-20T13:29:35+08:00表示，北京时间2015年5月20日 13点29分35秒。 */,
-                attach: '附加数据',
-                notify_url: 'https://www.weixin.qq.com/wxpay/pay.php',
-                support_fapiao: false,
+                attach: '附加数据', ///附加数据，在查询API和支付通知中原样返回，可作为自定义参数使用，实际情况下只有支付完成状态才会返回该字段。
+                notify_url: 'https://www.weixin.qq.com/wxpay/pay.php', // todo /* 异步接收微信支付结果通知的回调地址，通知url必须为外网可访问的url，不能携带参数。 公网域名必须为https，如果是走专线接入，使用专线NAT IP或者私有回调域名可使用http */
+                support_fapiao: false, ///传入true时，支付成功消息和支付详情页将出现开票入口。需要在微信支付商户平台或微信公众平台开通电子发票功能，传此字段才可生效。
                 amount: {
-                    total: total * 100,
+                    total: input.total * 100, ///订单总金额，单位为“分”
                     currency: 'CNY', /// CNY：人民币，境内商户号仅支持人民币。
                 },
                 payer: {
-                    openid: openid, ///用户在直连商户appid下的唯一标识，不可混用
+                    openid: input.openid, ///用户在直连商户appid下的唯一标识，不可混用
                 },
                 settle_info: {
                     profit_sharing: false, ///是否指定分账
@@ -6574,26 +7641,30 @@ let WxPayService = WxPayService_1 = class WxPayService {
             return wxRet;
         });
     }
-    transactionsNative(orderId, desc, total) {
+    /*
+    {"status":200,"code_url":"weixin://wxpay/bizpayurl?pr=pUnqLjbzz"}
+     */
+    transactionsNative(input) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const timeExpire = (0, dayjs_1.getTimeExpire)(5);
             const params = {
-                description: desc,
-                out_trade_no: orderId,
+                description: input.desc, ///商品描述
+                out_trade_no: input.orderId, ///户系统内部订单号，只能是数字、大小写字母_-*且在同一个商户号下唯一
                 // '2022-11-11T23:59:59+08:00'
                 time_expire: timeExpire,
                 /*订单失效时间，遵循rfc3339标准格式，格式为yyyy-MM-DDTHH:mm:ss+TIMEZONE，yyyy-MM-DD表示年月日，T出现在字符串中，表示time元素的开头，HH:mm:ss表示时分秒，TIMEZONE表示时区（+08:00表示东八区时间，领先UTC8小时，即北京时间）。例如：2015-05-20T13:29:35+08:00表示，北京时间2015年5月20日 13点29分35秒。 */
-                attach: '附加数据',
-                notify_url: 'https://www.weixin.qq.com/wxpay/pay.php',
-                support_fapiao: false,
+                attach: '附加数据', ///附加数据，在查询API和支付通知中原样返回，可作为自定义参数使用，实际情况下只有支付完成状态才会返回该字段。
+                notify_url: 'https://www.weixin.qq.com/wxpay/pay.php', // todo /* 异步接收微信支付结果通知的回调地址，通知url必须为外网可访问的url，不能携带参数。 公网域名必须为https，如果是走专线接入，使用专线NAT IP或者私有回调域名可使用http */
+                support_fapiao: false, ///传入true时，支付成功消息和支付详情页将出现开票入口。需要在微信支付商户平台或微信公众平台开通电子发票功能，传此字段才可生效。
                 amount: {
-                    total: total * 100,
+                    total: input.total * 100, ///订单总金额，单位为“分”
                     currency: 'CNY', /// CNY：人民币，境内商户号仅支持人民币。
                 },
                 settle_info: {
                     profit_sharing: false, ///是否指定分账
                 },
             };
+            this.logger.log(`wechat start to transactions_native ${JSON.stringify(params)}`);
             const wxRet = yield this.wechatPayNodeV3Factory().transactions_native(params);
             this.logger.log(`wechat transactions_native resp ${JSON.stringify(wxRet)}`);
             if (wxRet.status !== 200) {
@@ -6636,13 +7707,13 @@ let WxPayService = WxPayService_1 = class WxPayService {
         });
     }
 };
-WxPayService = WxPayService_1 = tslib_1.__decorate([
+exports.WxPayService = WxPayService;
+exports.WxPayService = WxPayService = WxPayService_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
-    tslib_1.__param(0, (0, inversify_1.inject)(legacy_libs_1.WechatpayNodeV3FactorySymbol)),
+    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_types_1.WechatpayNodeV3FactorySymbol)),
     tslib_1.__param(1, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [Function, Function])
 ], WxPayService);
-exports.WxPayService = WxPayService;
 
 
 /***/ }),
@@ -6658,6 +7729,7 @@ const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const flowda_shared_1 = __webpack_require__("../../../libs/flowda-shared/src/index.ts");
 const nestjs_zod_1 = __webpack_require__("nestjs-zod");
+const client_1 = __webpack_require__("@trpc/client");
 /**
  * 没有细究这里的原理已经正确的使用方式
  * 但是这个 filter 的目的是将 service 层的 error 做一层前端可读性的转换，特别是 message
@@ -6682,36 +7754,42 @@ let AppExceptionFilter = AppExceptionFilter_1 = class AppExceptionFilter {
             message = rt.message;
             errorExtra = rt.extra;
             status = common_1.HttpStatus.OK;
-            // errorStack = exception.stack
-        }
-        else if (exception instanceof Error) {
-            // 如果是一般 Error，提取 message，errorCode 继续 undef
-            message = exception.message;
-            status = common_1.HttpStatus.INTERNAL_SERVER_ERROR;
             errorStack = exception.stack;
         }
-        // 如果是 HttpException，则重新赋值下 status
-        if (exception instanceof common_1.HttpException) {
+        else if (exception instanceof common_1.HttpException) {
+            // 如果是 HttpException，则重新赋值下 status
             status = exception.getStatus();
             errorCode = status;
             const res = exception.getResponse();
             if (typeof res === 'object' && Array.isArray(res.message)) {
                 message = res.message.join(',');
             }
-            // errorStack = exception.stack
+            errorStack = exception.stack;
         }
-        // 如果是权限相关的（jwt access token 过期）
-        if (exception instanceof common_1.UnauthorizedException) {
+        else if (exception instanceof common_1.UnauthorizedException) {
+            // 如果是权限相关的（jwt access token 过期）
             status = exception.getStatus();
             errorCode = status;
             message = exception.message;
-            // errorStack = exception.stack
+            errorStack = exception.stack;
         }
-        if (exception instanceof nestjs_zod_1.ZodValidationException) {
+        else if (exception instanceof nestjs_zod_1.ZodValidationException) {
             status = exception.getStatus();
             errorCode = status;
             message = exception.message;
             errorExtra = exception.getResponse().errors;
+        }
+        else if (exception instanceof client_1.TRPCClientError) {
+            status = exception.data.httpStatus;
+            errorCode = exception.data.httpStatus;
+            message = exception.message;
+            errorExtra = exception.data.description;
+        }
+        else if (exception instanceof Error) {
+            // 如果是一般 Error，提取 message，errorCode 继续 undef
+            message = exception.message;
+            status = common_1.HttpStatus.INTERNAL_SERVER_ERROR;
+            errorStack = exception.stack;
         }
         this.logger.error({
             request: {
@@ -6724,7 +7802,7 @@ let AppExceptionFilter = AppExceptionFilter_1 = class AppExceptionFilter {
             timestamp: new Date().toISOString(),
             message: message,
             extraInfo: errorExtra,
-            // errorStack: errorStack,
+            errorStack: errorStack,
         });
         response.status(status).json({
             message: message,
@@ -6734,10 +7812,10 @@ let AppExceptionFilter = AppExceptionFilter_1 = class AppExceptionFilter {
         });
     }
 };
-AppExceptionFilter = AppExceptionFilter_1 = tslib_1.__decorate([
+exports.AppExceptionFilter = AppExceptionFilter;
+exports.AppExceptionFilter = AppExceptionFilter = AppExceptionFilter_1 = tslib_1.__decorate([
     (0, common_1.Catch)()
 ], AppExceptionFilter);
-exports.AppExceptionFilter = AppExceptionFilter;
 
 
 /***/ }),
@@ -6820,7 +7898,6 @@ const tslib_1 = __webpack_require__("tslib");
 // export * from './lib/service.type'
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-types/src/lib/prisma.type.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-types/src/lib/errors.ts"), exports);
-tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-types/src/lib/plan.type.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/flowda-types/src/interfaces/identity-provider/identityProvider.service.ts"), exports);
 
 
@@ -6859,7 +7936,7 @@ var LicenseError;
         }
     }
     LicenseError.FreeLicenseLimitReached = FreeLicenseLimitReached;
-})(LicenseError = exports.LicenseError || (exports.LicenseError = {}));
+})(LicenseError || (exports.LicenseError = LicenseError = {}));
 var OrderError;
 (function (OrderError) {
     class NoProducts extends flowda_shared_1.CustomError {
@@ -6928,7 +8005,7 @@ var OrderError;
         }
     }
     OrderError.PurchaseReactedRestrictedLimit = PurchaseReactedRestrictedLimit;
-})(OrderError = exports.OrderError || (exports.OrderError = {}));
+})(OrderError || (exports.OrderError = OrderError = {}));
 var AuthenticationError;
 (function (AuthenticationError) {
     class AccountNameAlreadyExists extends flowda_shared_1.CustomError {
@@ -7011,7 +8088,7 @@ var AuthenticationError;
         }
     }
     AuthenticationError.WrongVerifyCode = WrongVerifyCode;
-})(AuthenticationError = exports.AuthenticationError || (exports.AuthenticationError = {}));
+})(AuthenticationError || (exports.AuthenticationError = AuthenticationError = {}));
 var SdkError;
 (function (SdkError) {
     class InitFailed extends flowda_shared_1.CustomError {
@@ -7038,7 +8115,7 @@ var SdkError;
         }
     }
     SdkError.WrongVerifyCode = WrongVerifyCode;
-})(SdkError = exports.SdkError || (exports.SdkError = {}));
+})(SdkError || (exports.SdkError = SdkError = {}));
 var WXError;
 (function (WXError) {
     class FwhGetAccessTokenError extends flowda_shared_1.CustomError {
@@ -7053,22 +8130,7 @@ var WXError;
         }
     }
     WXError.RecoveryNoOrderFound = RecoveryNoOrderFound;
-})(WXError = exports.WXError || (exports.WXError = {}));
-
-
-/***/ }),
-
-/***/ "../../../libs/v1/flowda-types/src/lib/plan.type.ts":
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.EPlan = void 0;
-var EPlan;
-(function (EPlan) {
-    EPlan[EPlan["Free"] = 1] = "Free";
-    EPlan[EPlan["VIP"] = 2] = "VIP";
-})(EPlan = exports.EPlan || (exports.EPlan = {}));
+})(WXError || (exports.WXError = WXError = {}));
 
 
 /***/ }),
@@ -7093,7 +8155,7 @@ const zod_openapi_1 = __webpack_require__("@anatine/zod-openapi");
 const zod_1 = __webpack_require__("zod");
 (0, zod_openapi_1.extendZodWithOpenApi)(zod_1.z);
 tslib_1.__exportStar(__webpack_require__("../../../libs/v1/prisma-flowda/src/zod/index.ts"), exports);
-exports.zt = __webpack_require__("../../../libs/v1/prisma-flowda/src/zod/index.ts");
+exports.zt = tslib_1.__importStar(__webpack_require__("../../../libs/v1/prisma-flowda/src/zod/index.ts"));
 
 
 /***/ }),
@@ -7103,10 +8165,12 @@ exports.zt = __webpack_require__("../../../libs/v1/prisma-flowda/src/zod/index.t
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.WeixinProfileSchema = exports.CustomerWithRelationsSchema = exports.CustomerSchema = exports.PayWithRelationsSchema = exports.PaySchema = exports.ProductWithRelationsSchema = exports.ProductSchema = exports.ArticleWithRelationsSchema = exports.ArticleSchema = exports.JYFreeCountWithRelationsSchema = exports.JYFreeCountSchema = exports.JYProfileWithRelationsSchema = exports.JYProfileSchema = exports.QuestionSchema = exports.TenantPreSignupSchema = exports.TenantWithRelationsSchema = exports.TenantSchema = exports.AppWithRelationsSchema = exports.AppSchema = exports.ProductTypeSchema = exports.PayStatusSchema = exports.OrderStatusSchema = exports.WeixinProfileScalarFieldEnumSchema = exports.TransactionIsolationLevelSchema = exports.TenantScalarFieldEnumSchema = exports.TenantPreSignupScalarFieldEnumSchema = exports.SortOrderSchema = exports.QuestionScalarFieldEnumSchema = exports.ProfileScalarFieldEnumSchema = exports.ProductSnapshotScalarFieldEnumSchema = exports.ProductScalarFieldEnumSchema = exports.PayScalarFieldEnumSchema = exports.OrderScalarFieldEnumSchema = exports.NullableJsonNullValueInputSchema = exports.LegacyProfileScalarFieldEnumSchema = exports.JsonNullValueFilterSchema = exports.JYProfileScalarFieldEnumSchema = exports.JYFreeCountScalarFieldEnumSchema = exports.CustomerScalarFieldEnumSchema = exports.CustomerPreSignupScalarFieldEnumSchema = exports.ArticleScalarFieldEnumSchema = exports.AppScalarFieldEnumSchema = exports.isValidDecimalInput = exports.DECIMAL_STRING_REGEX = exports.DecimalJSLikeListSchema = exports.DecimalJSLikeSchema = exports.InputJsonValue = exports.NullableJsonValue = exports.JsonValue = exports.transformJsonNull = void 0;
+exports.WeixinProfileSchema = exports.CustomerWithRelationsSchema = exports.CustomerSchema = exports.PayWithRelationsSchema = exports.PaySchema = exports.ProductWithRelationsSchema = exports.ProductSchema = exports.ArticleWithRelationsSchema = exports.ArticleSchema = exports.JYFreeCountWithRelationsSchema = exports.JYFreeCountSchema = exports.JYProfileWithRelationsSchema = exports.JYProfileSchema = exports.QuestionSchema = exports.TenantPreSignupSchema = exports.TenantSchema = exports.AppWithRelationsSchema = exports.AppSchema = exports.ProductTypeSchema = exports.PayStatusSchema = exports.OrderStatusSchema = exports.JsonNullValueFilterSchema = exports.NullsOrderSchema = exports.NullableJsonNullValueInputSchema = exports.SortOrderSchema = exports.OrderScalarFieldEnumSchema = exports.ProductSnapshotScalarFieldEnumSchema = exports.LegacyProfileScalarFieldEnumSchema = exports.CustomerPreSignupScalarFieldEnumSchema = exports.ProfileScalarFieldEnumSchema = exports.WeixinProfileScalarFieldEnumSchema = exports.CustomerScalarFieldEnumSchema = exports.PayScalarFieldEnumSchema = exports.ProductScalarFieldEnumSchema = exports.ArticleScalarFieldEnumSchema = exports.JYFreeCountScalarFieldEnumSchema = exports.JYProfileScalarFieldEnumSchema = exports.QuestionScalarFieldEnumSchema = exports.TenantPreSignupScalarFieldEnumSchema = exports.TenantScalarFieldEnumSchema = exports.AppScalarFieldEnumSchema = exports.TransactionIsolationLevelSchema = exports.isValidDecimalInput = exports.DECIMAL_STRING_REGEX = exports.DecimalJSLikeListSchema = exports.DecimalJSLikeSchema = exports.InputJsonValue = exports.NullableJsonValue = exports.JsonValue = exports.transformJsonNull = void 0;
 exports.OrderWithRelationsSchema = exports.OrderSchema = exports.ProductSnapshotWithRelationsSchema = exports.ProductSnapshotSchema = exports.LegacyProfileWithRelationsSchema = exports.LegacyProfileSchema = exports.customerPreSignupSchema = exports.ProfileWithRelationsSchema = exports.ProfileSchema = exports.WeixinProfileWithRelationsSchema = void 0;
 const zod_1 = __webpack_require__("zod");
 const client_v1_flowda_1 = __webpack_require__("@prisma/client-v1-flowda");
+const zod_openapi_1 = __webpack_require__("@anatine/zod-openapi");
+(0, zod_openapi_1.extendZodWithOpenApi)(zod_1.z);
 const transformJsonNull = (v) => {
     if (!v || v === 'DbNull')
         return client_v1_flowda_1.Prisma.DbNull;
@@ -7149,26 +8213,27 @@ exports.isValidDecimalInput = isValidDecimalInput;
 /////////////////////////////////////////
 // ENUMS
 /////////////////////////////////////////
-exports.AppScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'name', 'hashedAppToken', 'hashedPassword', 'hashedRefreshToken', 'recoveryCode', 'recoveryToken', 'displayName', 'description', 'isDeleted', 'tenantId']);
-exports.ArticleScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'link', 'source', 'title', 'image', 'excerpt', 'profileId']);
-exports.CustomerPreSignupScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'email', 'verifyCode', 'appId', 'tenantId']);
-exports.CustomerScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'name', 'appId', 'email', 'hashedPassword', 'hashedRefreshToken', 'recoveryCode', 'recoveryToken', 'isDeleted', 'tenantId']);
-exports.JYFreeCountScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'cycle', 'count', 'profileId']);
-exports.JYProfileScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'userId']);
-exports.JsonNullValueFilterSchema = zod_1.z.enum(['DbNull', 'JsonNull', 'AnyNull',]);
-exports.LegacyProfileScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'customerId', 'license', 'refreshToken']);
-exports.NullableJsonNullValueInputSchema = zod_1.z.enum(['DbNull', 'JsonNull',]).transform((v) => (0, exports.transformJsonNull)(v));
-exports.OrderScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'serial', 'status', 'customerId', 'appId', 'isDeleted', 'tenantId']);
-exports.PayScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'status', 'orderId', 'transactionId', 'tenantId']);
-exports.ProductScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'name', 'price', 'productType', 'plan', 'amount', 'extendedDescriptionData', 'fileSize', 'storeDuration', 'hasAds', 'tecSupport', 'validityPeriod', 'appId', 'isDeleted', 'tenantId', 'restricted']);
-exports.ProductSnapshotScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'snapshotPrice', 'orderId', 'productId', 'tenantId']);
-exports.ProfileScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'customerId', 'productType', 'plan', 'amount', 'expireAt', 'tenantId']);
-exports.QuestionScalarFieldEnumSchema = zod_1.z.enum(['id', 'uid', 'question', 'answer', 'success', 'createdAt', 'updatedAt']);
-exports.SortOrderSchema = zod_1.z.enum(['asc', 'desc']);
-exports.TenantPreSignupScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'email', 'verifyCode']);
-exports.TenantScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'name', 'email', 'hashedPassword', 'hashedRefreshToken', 'recoveryCode', 'recoveryToken', 'role']);
 exports.TransactionIsolationLevelSchema = zod_1.z.enum(['ReadUncommitted', 'ReadCommitted', 'RepeatableRead', 'Serializable']);
+exports.AppScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'name', 'hashedAppToken', 'hashedPassword', 'hashedRefreshToken', 'recoveryCode', 'recoveryToken', 'displayName', 'description', 'isDeleted', 'tenantId']);
+exports.TenantScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'name', 'email', 'hashedPassword', 'hashedRefreshToken', 'recoveryCode', 'recoveryToken', 'role']);
+exports.TenantPreSignupScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'email', 'verifyCode']);
+exports.QuestionScalarFieldEnumSchema = zod_1.z.enum(['id', 'uid', 'question', 'answer', 'success', 'createdAt', 'updatedAt']);
+exports.JYProfileScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'userId']);
+exports.JYFreeCountScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'cycle', 'count', 'profileId']);
+exports.ArticleScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'link', 'source', 'title', 'image', 'excerpt', 'profileId']);
+exports.ProductScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'name', 'price', 'productType', 'plan', 'amount', 'extendedDescriptionData', 'fileSize', 'storeDuration', 'hasAds', 'tecSupport', 'validityPeriod', 'appId', 'isDeleted', 'tenantId', 'restricted']);
+exports.PayScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'status', 'orderId', 'transactionId', 'tenantId']);
+exports.CustomerScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'name', 'appId', 'email', 'hashedPassword', 'hashedRefreshToken', 'recoveryCode', 'recoveryToken', 'isDeleted', 'tenantId']);
 exports.WeixinProfileScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'unionid', 'loginOpenid', 'headimgurl', 'nickname', 'sex', 'customerId', 'tenantId']);
+exports.ProfileScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'customerId', 'productType', 'plan', 'amount', 'expireAt', 'tenantId']);
+exports.CustomerPreSignupScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'email', 'verifyCode', 'appId', 'tenantId']);
+exports.LegacyProfileScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'customerId', 'license', 'refreshToken']);
+exports.ProductSnapshotScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'snapshotPrice', 'orderId', 'productId', 'tenantId']);
+exports.OrderScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'serial', 'status', 'customerId', 'appId', 'isDeleted', 'tenantId']);
+exports.SortOrderSchema = zod_1.z.enum(['asc', 'desc']);
+exports.NullableJsonNullValueInputSchema = zod_1.z.enum(['DbNull', 'JsonNull',]).transform((v) => (0, exports.transformJsonNull)(v));
+exports.NullsOrderSchema = zod_1.z.enum(['first', 'last']);
+exports.JsonNullValueFilterSchema = zod_1.z.enum(['DbNull', 'JsonNull', 'AnyNull',]);
 exports.OrderStatusSchema = zod_1.z.enum(['INITIALIZED', 'PAY_ASSOCIATED', 'FREE_DEAL', 'CANCELED']);
 exports.PayStatusSchema = zod_1.z.enum(['UNPAIED', 'PAIED', 'REFUND']);
 exports.ProductTypeSchema = zod_1.z.enum(['AMOUNT', 'PLAN']);
@@ -7191,13 +8256,14 @@ exports.AppSchema = zod_1.z.object({
     displayName: zod_1.z.string().openapi({ "title": "应用名" }),
     description: zod_1.z.string().nullable().openapi({ "title": "应用描述" }),
     isDeleted: zod_1.z.boolean().nullable(),
-    tenantId: zod_1.z.string(),
+    /**
+     * @schema.model_name Order
+     * @schema.foreign_key appId
+     */
+    tenantId: zod_1.z.string().openapi({ "model_name": "Order", "foreign_key": "appId", "primary_key": "id", "title": "Orders" }),
 }).openapi({ "primary_key": "id", "searchable_columns": "name,displayName,description", "display_column": "displayName", "display_name": "应用", "display_primary_key": "true" });
 exports.AppWithRelationsSchema = exports.AppSchema.merge(zod_1.z.object({
-    products: zod_1.z.lazy(() => exports.ProductWithRelationsSchema).array().openapi({ "model_name": "Product", "foreign_key": "appId", "primary_key": "id", "title": "Products" }),
     customers: zod_1.z.lazy(() => exports.CustomerWithRelationsSchema).array().openapi({ "model_name": "Customer", "foreign_key": "appId", "primary_key": "id", "title": "Customers" }),
-    orders: zod_1.z.lazy(() => exports.OrderWithRelationsSchema).array().openapi({ "model_name": "Order", "foreign_key": "appId", "primary_key": "id", "title": "Orders" }),
-    tenant: zod_1.z.lazy(() => exports.TenantWithRelationsSchema).nullable(),
 }));
 /////////////////////////////////////////
 // TENANT SCHEMA
@@ -7214,9 +8280,6 @@ exports.TenantSchema = zod_1.z.object({
     recoveryToken: zod_1.z.string().nullable(),
     role: zod_1.z.string().nullable(),
 });
-exports.TenantWithRelationsSchema = exports.TenantSchema.merge(zod_1.z.object({
-    App: zod_1.z.lazy(() => exports.AppWithRelationsSchema).array(),
-}));
 /////////////////////////////////////////
 // TENANT PRE SIGNUP SCHEMA
 /////////////////////////////////////////
@@ -7297,21 +8360,24 @@ exports.ProductSchema = zod_1.z.object({
      */
     price: zod_1.z.union([zod_1.z.number(), zod_1.z.string(), exports.DecimalJSLikeSchema,]).refine((v) => (0, exports.isValidDecimalInput)(v), { message: "Field 'price' must be a Decimal. Location: ['Models', 'Product']", }).openapi({ "title": "价格", "override_type": "integer" }),
     plan: zod_1.z.number().int().nullable(),
-    amount: zod_1.z.number().int().nullable().openapi({ "title": "额度" }),
+    amount: zod_1.z.number().int().openapi({ "title": "额度" }),
     extendedDescriptionData: exports.NullableJsonValue.optional(),
     fileSize: zod_1.z.string().nullable(),
     storeDuration: zod_1.z.number().int().nullable(),
     hasAds: zod_1.z.string().nullable().openapi({ "title": "广告" }),
     tecSupport: zod_1.z.string().nullable().openapi({ "title": "技术支持" }),
     validityPeriod: zod_1.z.number().int().nullable().openapi({ "title": "有效期/天" }),
-    appId: zod_1.z.string().openapi({ "access_type": "read_only" }),
+    /**
+     * @schema.model_name App
+     * @schema.foreign_key appId
+     */
+    appId: zod_1.z.string().openapi({ "model_name": "App", "foreign_key": "appId", "primary_key": "id", "access_type": "read_only" }),
     isDeleted: zod_1.z.boolean().nullable(),
     tenantId: zod_1.z.string(),
     restricted: zod_1.z.number().int(),
 }).openapi({ "primary_key": "id", "searchable_columns": "id,name", "display_name": "产品", "display_column": "name" });
 exports.ProductWithRelationsSchema = exports.ProductSchema.merge(zod_1.z.object({
     productSnapshots: zod_1.z.lazy(() => exports.ProductSnapshotWithRelationsSchema).array().openapi({ "model_name": "ProductSnapshot", "foreign_key": "productId", "primary_key": "id" }),
-    app: zod_1.z.lazy(() => exports.AppWithRelationsSchema).openapi({ "model_name": "App", "foreign_key": "appId", "primary_key": "id" }),
 }));
 /////////////////////////////////////////
 // PAY SCHEMA
@@ -7347,8 +8413,7 @@ exports.CustomerSchema = zod_1.z.object({
 }).openapi({ "primary_key": "id", "display_name": "用户", "display_column": "name" });
 exports.CustomerWithRelationsSchema = exports.CustomerSchema.merge(zod_1.z.object({
     app: zod_1.z.lazy(() => exports.AppWithRelationsSchema),
-    orders: zod_1.z.lazy(() => exports.OrderWithRelationsSchema).array().openapi({ "model_name": "Order", "foreign_key": "customerId", "primary_key": "id", "title": "Orders" }),
-    legacyProfile: zod_1.z.lazy(() => exports.LegacyProfileWithRelationsSchema).nullable(),
+    legacyProfile: zod_1.z.lazy(() => exports.LegacyProfileWithRelationsSchema).nullable().openapi({ "model_name": "Order", "foreign_key": "customerId", "primary_key": "id", "title": "Orders" }),
     profile: zod_1.z.lazy(() => exports.ProfileWithRelationsSchema).nullable().openapi({ "reference": "Profile" }),
     weixinProfile: zod_1.z.lazy(() => exports.WeixinProfileWithRelationsSchema).nullable().openapi({ "reference": "WeixinProfile" }),
 }));
@@ -7364,11 +8429,11 @@ exports.WeixinProfileSchema = zod_1.z.object({
     headimgurl: zod_1.z.string(),
     nickname: zod_1.z.string(),
     sex: zod_1.z.number().int(),
-    customerId: zod_1.z.string(),
+    customerId: zod_1.z.string().nullable(),
     tenantId: zod_1.z.string(),
 }).openapi({ "primary_key": "id", "display_name": "微信用户信息", "display_column": "nickname" });
 exports.WeixinProfileWithRelationsSchema = exports.WeixinProfileSchema.merge(zod_1.z.object({
-    customer: zod_1.z.lazy(() => exports.CustomerWithRelationsSchema),
+    customer: zod_1.z.lazy(() => exports.CustomerWithRelationsSchema).nullable(),
 }));
 /////////////////////////////////////////
 // PROFILE SCHEMA
@@ -7444,10 +8509,8 @@ exports.OrderSchema = zod_1.z.object({
     tenantId: zod_1.z.string(),
 }).openapi({ "primary_key": "id", "display_name": "订单", "display_primary_key": "true" });
 exports.OrderWithRelationsSchema = exports.OrderSchema.merge(zod_1.z.object({
-    customer: zod_1.z.lazy(() => exports.CustomerWithRelationsSchema),
     pay: zod_1.z.lazy(() => exports.PayWithRelationsSchema).nullable(),
     productSnapshots: zod_1.z.lazy(() => exports.ProductSnapshotWithRelationsSchema).array(),
-    App: zod_1.z.lazy(() => exports.AppWithRelationsSchema),
 }));
 
 
@@ -7488,10 +8551,24 @@ module.exports = require("@nestjs/swagger");
 
 /***/ }),
 
+/***/ "@paralleldrive/cuid2":
+/***/ ((module) => {
+
+module.exports = require("@paralleldrive/cuid2");
+
+/***/ }),
+
 /***/ "@prisma/client-v1-flowda":
 /***/ ((module) => {
 
 module.exports = require("@prisma/client-v1-flowda");
+
+/***/ }),
+
+/***/ "@trpc/client":
+/***/ ((module) => {
+
+module.exports = require("@trpc/client");
 
 /***/ }),
 
@@ -7520,6 +8597,13 @@ module.exports = require("class-validator");
 /***/ ((module) => {
 
 module.exports = require("class-validator-jsonschema");
+
+/***/ }),
+
+/***/ "consola":
+/***/ ((module) => {
+
+module.exports = require("consola");
 
 /***/ }),
 
@@ -7718,15 +8802,33 @@ module.exports = require("zod");
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __webpack_require__("./src/main.ts");
-/******/ 	var __webpack_export_target__ = exports;
-/******/ 	for(var i in __webpack_exports__) __webpack_export_target__[i] = __webpack_exports__[i];
-/******/ 	if(__webpack_exports__.__esModule) Object.defineProperty(__webpack_export_target__, "__esModule", { value: true });
-/******/ 	
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+(() => {
+var exports = __webpack_exports__;
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const tslib_1 = __webpack_require__("tslib");
+const common_1 = __webpack_require__("@nestjs/common");
+const core_1 = __webpack_require__("@nestjs/core");
+const sdk_module_1 = __webpack_require__("./src/sdk/sdk.module.ts");
+const setup_1 = __webpack_require__("./src/setup.ts");
+function bootstrap() {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        const app = yield core_1.NestFactory.create(sdk_module_1.SdkModule, { cors: true });
+        (0, setup_1.setupNestApp)(app);
+        const port = process.env.PORT || 3341;
+        yield app.listen(port);
+        common_1.Logger.log(`🚀 Application is running on: http://localhost:${port}/${setup_1.globalPrefix}`);
+    });
+}
+bootstrap();
+
+})();
+
+var __webpack_export_target__ = exports;
+for(var i in __webpack_exports__) __webpack_export_target__[i] = __webpack_exports__[i];
+if(__webpack_exports__.__esModule) Object.defineProperty(__webpack_export_target__, "__esModule", { value: true });
 /******/ })()
 ;
 //# sourceMappingURL=main.js.map
